@@ -142,7 +142,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media(max-width:760px){.topo__grade{grid-template-columns:1fr;gap:1.4rem}.topo__roteiro{max-width:34rem}.painel{grid-template-columns:1fr 1fr}.selos{grid-column:1/-1;justify-content:flex-start;padding-top:.9rem;border-top:1px solid var(--borda)}}
-@media(max-width:520px){.topo-in{padding:2.6rem 0 3.8rem}.topo__chips{gap:.45rem}.painel{gap:1rem;padding:1rem}.trilha{padding-left:2.3rem}.parada::before{left:-2.3rem}.cartao{padding:1.1rem 3.5rem 1.1rem 1.1rem}.cartao::after{right:1rem}.guia-abrir{right:12px;bottom:12px}.guia{inset:auto 0 0;width:100%;height:min(78dvh,620px);border-radius:18px 18px 0 0}}
+@media(max-width:520px){.topo-in{padding:2.15rem 0 3.5rem}.topo h1{font-size:2rem}.topo p{font-size:.98rem}.topo__chips{gap:.45rem}.topo__roteiro{padding:1rem}.painel{gap:1rem;padding:1rem}.trilha{padding-left:2.3rem}.parada::before{left:-2.3rem}.cartao{padding:1.1rem 3.5rem 1.1rem 1.1rem}.cartao::after{right:1rem}.guia-abrir{right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:52px;height:52px;padding:0;border-radius:50%;font-size:1.05rem}.guia-abrir__texto{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.guia{inset:auto 0 0;width:100%;height:min(78dvh,620px);padding-bottom:env(safe-area-inset-bottom);border-radius:18px 18px 0 0}}
 </style>
 </head>
 <body data-page="expedicao">
@@ -229,12 +229,12 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 
 </main>
 
-<button class="guia-abrir" id="guia-abrir"><span aria-hidden="true">✦</span> Perguntar ao guia</button>
+<button class="guia-abrir" id="guia-abrir" type="button" aria-label="Perguntar ao guia do acervo" aria-controls="guia" aria-expanded="false"><span aria-hidden="true">✦</span><span class="guia-abrir__texto">Perguntar ao guia</span></button>
 
 <aside class="guia" id="guia" aria-label="Guia do acervo">
   <div class="guia-topo">
     <b>Guia do acervo</b>
-    <button id="guia-fechar" aria-label="Fechar guia">&times;</button>
+    <button id="guia-fechar" type="button" aria-label="Fechar guia">&times;</button>
   </div>
   <div class="guia-msgs" id="guia-msgs"></div>
   <div class="guia-baixo">
@@ -638,8 +638,12 @@ const guia = document.getElementById('guia');
 const msgs = document.getElementById('guia-msgs');
 let guiaOcupado = false;
 
-document.getElementById('guia-abrir').addEventListener('click', function(){
+const botaoGuia = document.getElementById('guia-abrir');
+const fecharGuia = document.getElementById('guia-fechar');
+
+botaoGuia.addEventListener('click', function(){
   guia.classList.add('on');
+  botaoGuia.setAttribute('aria-expanded', 'true');
   if(!msgs.children.length){
     falar('ia', 'Eu respondo a partir do acervo deste portal — história, memória, ' +
       'plantas, produção agrícola e educação do campo do Assentamento Lagoa do Mineiro. ' +
@@ -647,7 +651,14 @@ document.getElementById('guia-abrir').addEventListener('click', function(){
   }
   document.getElementById('guia-input').focus();
 });
-document.getElementById('guia-fechar').addEventListener('click', function(){ guia.classList.remove('on'); });
+fecharGuia.addEventListener('click', function(){
+  guia.classList.remove('on');
+  botaoGuia.setAttribute('aria-expanded', 'false');
+  botaoGuia.focus();
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && guia.classList.contains('on')) fecharGuia.click();
+});
 document.getElementById('guia-enviar').addEventListener('click', perguntarGuia);
 document.getElementById('guia-input').addEventListener('keydown', function(e){
   if(e.key === 'Enter') perguntarGuia();
