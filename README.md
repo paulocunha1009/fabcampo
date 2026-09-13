@@ -1,6 +1,6 @@
-# Portal da Comunidade | Ceará Científico
+# FabCampo — Campo Digital | Ceará Científico
 
-Portal educacional estático feito com HTML, CSS e JavaScript para GitHub Pages.
+Portal educacional do Assentamento Lagoa do Mineiro, desenvolvido pela EEMPC Francisco Araújo Barros. O frontend usa HTML, CSS e JavaScript no GitHub Pages; os recursos de IA usam um backend Node.js na Vercel.
 
 ## Produção atual
 
@@ -10,7 +10,7 @@ Portal educacional estático feito com HTML, CSS e JavaScript para GitHub Pages.
 - backend: Vercel pela branch `main`;
 - limites: Upstash Redis;
 - operação e recuperação: [OPERACAO_E_RECUPERACAO.md](OPERACAO_E_RECUPERACAO.md);
-- privacidade: [privacidade.html](privacidade.html).
+- privacidade: [privacidade.html](privacidade.html);
 - monitoramento automático: `.github/workflows/monitoramento.yml`, a cada 6 horas e sem consumir a cota Gemini.
 
 ## Estrutura
@@ -22,13 +22,17 @@ Portal educacional estático feito com HTML, CSS e JavaScript para GitHub Pages.
 │   ├── historia.html
 │   ├── memoria.html
 │   ├── agricola.html
+│   ├── expedicao.html
+│   ├── catalogo.html
 │   ├── Plantação-Nativa.html
-│   └── Plantas-Medicinaisv2.html
+│   ├── Plantas-Medicinaisv2.html
+│   └── mudas.html
 ├── css/
-│   ├── estilo.css
-│   └── responsivo.css
+│   ├── portal.css
+│   └── portal-responsivo.css
 ├── js/
-│   ├── main.js
+│   ├── app.js
+│   ├── config.js
 │   ├── components/
 │   └── services/
 ├── data/
@@ -37,8 +41,13 @@ Portal educacional estático feito com HTML, CSS e JavaScript para GitHub Pages.
 │   ├── banner/
 │   ├── galeria/
 │   └── icones/
+├── media/
+│   ├── videos/
+│   └── legendas/
 └── backend/
-    └── exemplo-openai-proxy.js
+    ├── server.js
+    ├── lib/
+    └── test/
 ```
 
 ## Como editar notícias, eventos e listas
@@ -72,14 +81,12 @@ Enquanto as imagens não forem colocadas, o portal mostra caixas com o nome do a
 
 ## Inteligência Artificial
 
-O widget de IA já aparece no portal como protótipo. Para conectar IA real, não coloque chave de API no JavaScript do site.
+O assistente, os desafios da Expedição e as atividades do Catálogo estão conectados à API oficial `https://fabcampo-api.vercel.app`. O backend usa Gemini, protege a chave no painel da Vercel e aplica limites persistentes pelo Upstash. Quando a API ou a cota gratuita não está disponível, o portal mantém atividades locais de contingência.
 
-Use um backend seguro como o exemplo em `backend/exemplo-openai-proxy.js`, publique em uma plataforma serverless e configure o endpoint conforme `js/config.example.js`.
+Nenhuma chave deve ser colocada no JavaScript, no GitHub ou na documentação. Consulte [backend/DEPLOY_VERCEL.md](backend/DEPLOY_VERCEL.md) para configuração e [OPERACAO_E_RECUPERACAO.md](OPERACAO_E_RECUPERACAO.md) para manutenção.
 
-Referência oficial usada: Responses API da OpenAI.
+## Documentação da implantação
 
-## Plano do backend de IA
+As decisões executadas estão em [DECISOES_IMPLANTACAO_VERCEL.md](DECISOES_IMPLANTACAO_VERCEL.md). A configuração atual está em [backend/DEPLOY_VERCEL.md](backend/DEPLOY_VERCEL.md).
 
-O diagnóstico do serviço atual, a arquitetura proposta com `api.fabcampo.com.br`, os passos de implantação, testes e plano de reversão estão documentados em [PLANO_BACKEND_RAILWAY.md](PLANO_BACKEND_RAILWAY.md).
-
-As decisões mais recentes substituem a proposta de continuar no Railway: consulte [DECISOES_IMPLANTACAO_VERCEL.md](DECISOES_IMPLANTACAO_VERCEL.md) e [backend/DEPLOY_VERCEL.md](backend/DEPLOY_VERCEL.md).
+O arquivo [PLANO_BACKEND_RAILWAY.md](PLANO_BACKEND_RAILWAY.md) é mantido somente como registro histórico da proposta substituída.

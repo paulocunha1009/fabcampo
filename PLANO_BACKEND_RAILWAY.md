@@ -2,6 +2,8 @@
 
 ## Campo Digital - Portal da Comunidade
 
+> **Documento histórico e substituído.** O Railway não faz parte da produção atual. A decisão executada usa GitHub Pages, Vercel e Upstash. Consulte `DECISOES_IMPLANTACAO_VERCEL.md`, `backend/DEPLOY_VERCEL.md` e `OPERACAO_E_RECUPERACAO.md`. Não execute os passos deste plano como procedimento atual.
+
 Este documento registra o problema atual, a solução proposta e as decisões que a equipe precisa estudar antes de reativar os recursos de inteligência artificial do portal.
 
 > Estado do documento: proposta para discussão da equipe. As configurações no Railway e no Registro.br ainda não foram executadas.

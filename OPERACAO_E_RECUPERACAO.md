@@ -165,6 +165,12 @@ npm.cmd --prefix backend test
 - `codex/backup-before-contact-validation-20260913`
 - `codex/backup-before-class-load-test-20260913`
 - `codex/backup-before-privacy-policy-20260913`
+- `codex/backup-before-operations-manual-20260913`
+- `codex/backup-before-automatic-monitor-20260913`
+- `codex/backup-before-memory-video-20260913`
+- `codex/backup-before-expedition-flow-20260913`
+- `codex/backup-before-focused-challenges-20260913`
+- `codex/backup-before-memory-captions-20260913`
 
 ## 7. Variáveis do backend
 

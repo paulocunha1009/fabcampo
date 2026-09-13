@@ -1,6 +1,6 @@
-# Implantação de teste na Vercel
+# Implantação e manutenção da API na Vercel
 
-Este procedimento cria a API de teste sem alterar o endereço usado pelo portal público.
+Este procedimento documenta a API oficial usada pelo portal público.
 
 ## Decisões registradas
 
@@ -14,7 +14,7 @@ Este procedimento cria a API de teste sem alterar o endereço usado pelo portal 
 - planos gratuitos, sem aumento automático pago;
 - Upstash Redis para limites persistentes;
 - conversas não são armazenadas;
-- o portal só muda de API depois de aprovação final.
+- o portal está conectado à API após testes, backup e aprovação final.
 
 ## 1. Importar o projeto
 
@@ -57,7 +57,7 @@ ALLOWED_ORIGINS=https://fabcampo.com.br,https://www.fabcampo.com.br
 
 Não habilite upgrade automático ou plano pago.
 
-## 4. Testes antes de conectar o portal
+## 4. Testes de implantação e manutenção
 
 - `/health` responde `200`, com `ok: true`, `aiConfigured: true` e `limiter: "upstash"`;
 - origem não autorizada é bloqueada;
@@ -68,10 +68,10 @@ Não habilite upgrade automático ou plano pago.
 - a 11ª solicitação no mesmo minuto recebe `429`;
 - o portal usa atividades locais quando a API retorna `429` ou `503`.
 
-## 5. Troca futura, somente após aprovação
+## 5. Endereço usado pelo portal
 
-Depois dos testes e de um novo backup, altere apenas `js/config.js` para o endereço de teste aprovado. O domínio `api.fabcampo.com.br` fica para uma etapa posterior e não é necessário para operar gratuitamente.
+O arquivo `js/config.js` aponta para `https://fabcampo-api.vercel.app/api/assistente`. O domínio `api.fabcampo.com.br` é uma melhoria futura opcional e não é necessário para operar gratuitamente.
 
 ## Reversão
 
-Enquanto `js/config.js` não for alterado, a nova API não afeta o site. Depois da conexão, basta restaurar a URL anterior nesse arquivo e publicar novamente os branches `main` e `master`.
+Se uma nova versão da API apresentar problema, restaure o commit estável ou a URL anterior em `js/config.js` e publique novamente os branches `main` e `master`. O portal continuará oferecendo a contingência local enquanto a API estiver indisponível.

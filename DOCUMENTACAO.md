@@ -2,9 +2,9 @@
 
 > **Estado atual:** o frontend está no GitHub Pages e o backend oficial está no projeto Vercel `fabcampo-api`, com limites no Upstash. As referências abaixo a backend “opcional”, Render, Railway ou outros provedores são históricas. Para a operação vigente, consulte `OPERACAO_E_RECUPERACAO.md` e `backend/DEPLOY_VERCEL.md`.
 
-Projeto educacional desenvolvido para o Ceará Científico, com foco em memória comunitária, educação do campo, produção agrícola, biodiversidade, plantas medicinais, reportagens escolares e integração futura com inteligência artificial.
+Projeto educacional desenvolvido para o Ceará Científico, com foco em memória comunitária, educação do campo, produção agrícola, biodiversidade, plantas medicinais, reportagens escolares e uso responsável de inteligência artificial.
 
-O portal é um site estático em HTML, CSS e JavaScript, preparado para publicação no GitHub Pages. Também possui um backend Node.js opcional para conectar um assistente educacional com API de IA sem expor chaves no navegador.
+O portal combina um frontend estático em HTML, CSS e JavaScript publicado no GitHub Pages com um backend Node.js publicado na Vercel. O backend conecta o assistente ao Gemini sem expor chaves no navegador e usa Upstash para proteger a cota gratuita.
 
 ---
 
@@ -23,7 +23,7 @@ Criar uma plataforma digital escolar para:
 - organizar conteúdos sobre agricultura, plantas nativas e plantas medicinais;
 - publicar reportagens educativas;
 - oferecer recursos interativos para estudantes e professores;
-- preparar uma integração segura com inteligência artificial.
+- oferecer assistência e atividades educativas com IA, sempre com contingência local.
 
 ### Público-alvo
 
@@ -47,18 +47,21 @@ Criar uma plataforma digital escolar para:
 - acessibilidade com ARIA, foco visível e mensagens acessíveis;
 - layout responsivo para desktop, tablet e celular.
 
-### Backend opcional
+### Backend em produção
 
 - Node.js;
 - Express;
 - CORS;
 - Dotenv;
-- Google Gemini API via `@google/generative-ai`.
+- Google Gemini API via `@google/genai`;
+- Upstash Redis para limites persistentes;
+- testes automatizados com Node Test Runner.
 
 ### Hospedagem
 
-- GitHub Pages para o frontend;
-- Render, Railway, Vercel, Fly.io ou serviço similar para o backend de IA.
+- GitHub Pages pela branch `master` para o frontend;
+- Vercel pela branch `main` para o backend de IA;
+- domínio oficial `https://fabcampo.com.br`.
 
 ---
 
@@ -386,7 +389,7 @@ O projeto possui recursos importantes de acessibilidade:
 
 ## 11. Assistente de IA
 
-O portal está preparado para um assistente educacional inteligente.
+O assistente educacional está ativo em produção e atende também às atividades do Catálogo e da Expedição.
 
 ### No frontend
 
@@ -432,10 +435,10 @@ Esse arquivo não deve ser enviado ao GitHub.
 ### Endpoint esperado pelo frontend
 
 ```js
-window.PORTAL_AI_ENDPOINT = "https://seu-backend.com/api/assistente";
+window.PORTAL_AI_ENDPOINT = "https://fabcampo-api.vercel.app/api/assistente";
 ```
 
-Quando o endpoint não está configurado, o portal usa respostas locais de fallback.
+Quando o endpoint, a chave ou a cota gratuita não está disponível, o portal usa respostas e atividades locais de contingência. As conversas não são armazenadas pelo projeto.
 
 ---
 
@@ -490,20 +493,21 @@ O projeto é compatível com GitHub Pages porque:
 - usa caminhos relativos;
 - mantém CSS e JS dentro da própria pasta do projeto.
 
-### Passos gerais
+### Configuração oficial
 
-1. Enviar o projeto para um repositório no GitHub.
-2. Abrir `Settings`.
-3. Entrar em `Pages`.
-4. Selecionar branch principal.
-5. Selecionar pasta raiz `/`.
-6. Salvar.
+1. Repositório: `paulocunha1009/fabcampo`.
+2. Em **Settings > Pages**, publicar a branch `master` e a pasta `/ (root)`.
+3. Manter o arquivo `CNAME` com `fabcampo.com.br`.
+4. Sincronizar `main` e `master` após cada publicação validada.
+5. Confirmar o deploy na aba **Actions** e testar o domínio oficial.
 
 URL esperada:
 
 ```text
-https://SEU-USUARIO.github.io/NOME-DO-REPOSITORIO/
+https://fabcampo.com.br
 ```
+
+O processo completo de backup, publicação e reversão está em `OPERACAO_E_RECUPERACAO.md`.
 
 ---
 
@@ -599,11 +603,10 @@ img/galeria/rolo-01.jpg
 
 ### Curto prazo
 
-- revisar acentuação dos arquivos Markdown antigos;
-- padronizar nomes de arquivos sem espaços e acentos;
 - criar imagens reais para todos os placeholders;
 - revisar todos os textos finais com professores e estudantes;
-- testar no GitHub Pages após cada alteração.
+- revisar com participantes as legendas automáticas do vídeo de memória;
+- manter os testes no GitHub Pages após cada alteração.
 
 ### Médio prazo
 
@@ -616,9 +619,7 @@ img/galeria/rolo-01.jpg
 
 ### Longo prazo
 
-- integrar IA com backend publicado;
 - criar assistente que recomende conteúdos do próprio portal;
-- gerar quizzes automáticos por tema;
 - criar dashboard do projeto científico;
 - registrar métricas de participação;
 - criar versão PWA para acesso offline.
@@ -627,7 +628,7 @@ img/galeria/rolo-01.jpg
 
 ## 18. Resumo para Apresentação
 
-O Portal da Comunidade é uma plataforma educacional do Ceará Científico construída com HTML, CSS e JavaScript. O projeto valoriza a cultura regional, a educação do campo, a memória comunitária e a inovação tecnológica. Ele possui páginas informativas, reportagens, galerias, conteúdo dinâmico em JSON, assistente de IA em preparação e arquitetura compatível com GitHub Pages.
+O FabCampo — Campo Digital é uma plataforma educacional do Ceará Científico construída com HTML, CSS e JavaScript, com backend Node.js seguro. O projeto valoriza a cultura regional, a educação do campo, a memória comunitária e a inovação tecnológica. Ele possui páginas informativas, reportagens, galerias, conteúdo dinâmico em JSON, Expedição interativa, Catálogo do Território e assistente de IA ativo com contingência local.
 
 Além de ser um site, o portal funciona como produto pedagógico: estudantes podem alimentar o conteúdo, registrar saberes locais, produzir reportagens, organizar dados científicos e aprender práticas modernas de desenvolvimento web.
 
