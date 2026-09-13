@@ -59,8 +59,13 @@
       <!-- BANNER ATUALIZADO -->
       <div class="hero__imagem" data-image-placeholder="Imagem de capa do Campo Digital">
         <picture>
-          <source srcset="img/banner/campo-digital-banner-oficial.webp" type="image/webp">
-          <img src="img/banner/campo-digital-banner-oficial.jpg" alt="Banner Campo Digital: Laboratório de Tecnologia, Memória e Território, Ceará Científico 2026, pesquisa, memória, território e inovação" data-fallback-hidden>
+          <source type="image/webp" media="(max-width: 640px)" srcset="img/banner/campo-digital-banner-640.webp">
+          <source type="image/webp" media="(max-width: 960px)" srcset="img/banner/campo-digital-banner-960.webp">
+          <source
+            type="image/webp"
+            srcset="img/banner/campo-digital-banner-1280.webp 1280w, img/banner/campo-digital-banner-1774.webp 1774w"
+            sizes="100vw">
+          <img src="img/banner/campo-digital-banner-fallback.jpg" width="1774" height="887" fetchpriority="high" decoding="async" alt="Banner Campo Digital: Laboratório de Tecnologia, Memória e Território, Ceará Científico 2026, pesquisa, memória, território e inovação" data-fallback-hidden>
         </picture>
       </div>
       <div class="container hero__conteudo sr-only">
