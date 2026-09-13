@@ -15,7 +15,8 @@ export function iniciarFormularioContato() {
     evento.preventDefault();
 
     const campos = ['nome', 'email', 'assunto', 'mensagem', 'link-arquivos', 'autorizacao'];
-    const valido = campos.every((campo) => validarCampo(formulario, campo));
+    const resultados = campos.map((campo) => validarCampo(formulario, campo));
+    const valido = resultados.every(Boolean);
 
     if (!valido) {
       const primeiroInvalido = formulario.querySelector('[aria-invalid="true"]');

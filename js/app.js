@@ -1,5 +1,5 @@
 import { iniciarMenu } from './components/menu.js';
-import { iniciarFormularioContato } from './components/formulario.js';
+import { iniciarFormularioContato } from './components/formulario.js?v=20260913-1';
 import { iniciarCarrosseis } from './components/carrossel.js';
 import { prepararImagens } from './components/imagens.js';
 import { carregarConteudo } from './components/conteudo.js';
