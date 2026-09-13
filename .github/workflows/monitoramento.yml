@@ -1,0 +1,49 @@
+name: Monitoramento do FabCampo
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monitoramento-fabcampo
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Verificar portal e API
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Consultar serviços públicos
+        shell: bash
+        run: |
+          set -euo pipefail
+          monitor_dir="$(mktemp -d)"
+          trap 'rm -rf "$monitor_dir"' EXIT
+
+          fetch() {
+            local url="$1"
+            local output="$2"
+            curl --fail --silent --show-error --location \
+              --retry 2 --retry-all-errors --max-time 20 \
+              "$url" --output "$output"
+          }
+
+          fetch "https://fabcampo.com.br/" "$monitor_dir/home.html"
+          fetch "https://fabcampo.com.br/privacidade.html" "$monitor_dir/privacidade.html"
+          fetch "https://fabcampo.com.br/sitemap.xml" "$monitor_dir/sitemap.xml"
+          fetch "https://fabcampo-api.vercel.app/health" "$monitor_dir/health.json"
+
+          grep -Fq "Campo Digital" "$monitor_dir/home.html"
+          grep -Fq "Privacidade e Uso da IA" "$monitor_dir/privacidade.html"
+          grep -Fq "https://fabcampo.com.br/pages/expedicao.html" "$monitor_dir/sitemap.xml"
+          grep -Eq '"ok"[[:space:]]*:[[:space:]]*true' "$monitor_dir/health.json"
+          grep -Eq '"aiConfigured"[[:space:]]*:[[:space:]]*true' "$monitor_dir/health.json"
+          grep -Eq '"limiter"[[:space:]]*:[[:space:]]*"upstash"' "$monitor_dir/health.json"
+
+          echo "Portal, política, sitemap e API estão disponíveis."

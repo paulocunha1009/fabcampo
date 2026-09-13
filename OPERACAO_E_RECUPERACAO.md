@@ -30,6 +30,19 @@ O Railway e o Render não fazem parte da arquitetura atual.
 
 ## 3. Rotina gratuita de monitoramento
 
+### Verificação automática
+
+O workflow `.github/workflows/monitoramento.yml` executa a cada 6 horas e também pode ser iniciado manualmente em **GitHub > Actions > Monitoramento do FabCampo > Run workflow**. Ele verifica:
+
+- página inicial;
+- Política de Privacidade;
+- sitemap;
+- API `/health`, incluindo Gemini configurado e Upstash ativo.
+
+O monitor não envia perguntas à IA, não usa segredos e não consome a cota Gemini. Se uma verificação falhar, a execução fica vermelha na aba **Actions**. As notificações de falha dependem das configurações de notificação da conta GitHub responsável pelo repositório.
+
+O GitHub pode desativar workflows agendados de repositórios públicos após longos períodos sem atividade. Por isso, a rotina semanal abaixo continua necessária.
+
 ### Toda semana
 
 1. Abrir a página inicial no celular e no computador.

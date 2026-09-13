@@ -11,6 +11,7 @@ Portal educacional estático feito com HTML, CSS e JavaScript para GitHub Pages.
 - limites: Upstash Redis;
 - operação e recuperação: [OPERACAO_E_RECUPERACAO.md](OPERACAO_E_RECUPERACAO.md);
 - privacidade: [privacidade.html](privacidade.html).
+- monitoramento automático: `.github/workflows/monitoramento.yml`, a cada 6 horas e sem consumir a cota Gemini.
 
 ## Estrutura
 
