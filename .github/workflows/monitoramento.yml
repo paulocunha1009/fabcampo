@@ -1,6 +1,10 @@
 name: Monitoramento do FabCampo
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/monitoramento.yml"
   schedule:
     - cron: "17 */6 * * *"
   workflow_dispatch:
