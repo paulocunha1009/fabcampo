@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Catálogo do Território | Campo Digital</title>
 <meta name="description" content="Fichas das espécies nativas e medicinais documentadas por estudantes no Assentamento Lagoa do Mineiro, Itarema, Ceará.">
+<link rel="canonical" href="https://fabcampo.com.br/pages/catalogo.html">
 <link rel="icon" type="image/png" href="../img/logo/favicon-campo-digital.png">
-<link rel="stylesheet" href="../css/portal.css?v=20260909-1">
-<link rel="stylesheet" href="../css/portal-responsivo.css?v=20260909-1">
+<link rel="stylesheet" href="../css/portal.css?v=20260913-1">
+<link rel="stylesheet" href="../css/portal-responsivo.css?v=20260913-1">
 <style>
 :root{
   --verde:var(--cor-primaria); --verde-esc:var(--cor-primaria-escura); --verde-cl:#5fae73; --verde-bg:var(--cor-superficie-suave);
@@ -166,7 +167,10 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
     <button class="filtro" data-f="ambas" aria-pressed="false">Nativa e medicinal</button>
   </div>
 
-  <div class="fichas" id="fichas"></div>
+  <section aria-labelledby="titulo-fichas">
+    <h2 class="sr-only" id="titulo-fichas">Fichas das espécies documentadas</h2>
+    <div class="fichas" id="fichas"></div>
+  </section>
 
   <div class="aviso-fixo">
     <b>O que este catálogo é.</b> Um registro do uso cultural das plantas nesta região,
