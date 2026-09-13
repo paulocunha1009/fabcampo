@@ -82,6 +82,9 @@ main a{color:var(--terra)}
 /* ---------- tela de estação ---------- */
 .tela{display:none}
 .tela.on{display:block}
+.expedicao-em-etapa .topo{display:none}
+.expedicao-em-etapa .painel{display:none}
+.expedicao-em-etapa main{padding-top:1.5rem;padding-bottom:3rem}
 .btn{font-family:inherit;font-weight:800;font-size:.92rem;border:none;border-radius:999px;
   padding:.8rem 1.6rem;cursor:pointer;background:var(--verde);color:#fff}
 .btn:hover{background:var(--verde-esc)}
@@ -189,7 +192,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
         <h1>Expedição no Território</h1>
         <p>Sete marcos da história do Assentamento Lagoa do Mineiro, de 1986 a hoje.
            Em cada um, você lê uma reportagem do nosso acervo e enfrenta desafios que
-           o assistente monta a partir daquele texto — nunca os mesmos duas vezes.</p>
+           o assistente monta a partir daquele texto — com novas possibilidades a cada visita.</p>
         <div class="topo__chips" aria-label="Características da experiência">
           <span>7 marcos históricos</span>
           <span>Acervo da comunidade</span>
@@ -394,8 +397,15 @@ function pintarTrilha(){
 
 function mostrar(tela){
   document.querySelectorAll('.tela').forEach(function(t){ t.classList.remove('on'); });
-  document.getElementById(tela).classList.add('on');
-  window.scrollTo({ top:0, behavior:'smooth' });
+  const destino = document.getElementById(tela);
+  destino.classList.add('on');
+  document.body.classList.toggle('expedicao-em-etapa', tela !== 'tela-trilha');
+  const titulo = destino.querySelector('h2');
+  if(titulo){
+    titulo.setAttribute('tabindex', '-1');
+    titulo.focus({ preventScroll:true });
+  }
+  requestAnimationFrame(function(){ window.scrollTo({ top:0, behavior:'auto' }); });
 }
 
 /* =====================================================================
