@@ -516,8 +516,15 @@ async function prepararDesafio(){
     const acervo = await lerAcervo(atual.pagina);
     botao.textContent = 'Montando os desafios...';
     const pedido =
+      'MARCO ATUAL DA EXPEDIÇÃO:\n' +
+      'Data: ' + atual.local + '\n' +
+      'Título: ' + atual.titulo + '\n' +
+      'Eixo: ' + atual.eixo + '\n' +
+      'Resumo: ' + atual.ancora + '\n\n' +
       'TEXTO DO ACERVO:\n' + acervo + '\n\n' +
-      'Monte 3 questões de múltipla escolha e 1 pergunta aberta sobre esse texto. ' +
+      'Monte 3 questões de múltipla escolha e 1 pergunta aberta prioritariamente sobre o MARCO ATUAL. ' +
+      'Use o restante do texto somente para contextualizar ou relacionar esse marco à trajetória da comunidade. ' +
+      'Não faça uma questão centrada exclusivamente em outro período da linha do tempo. ' +
       'As questões devem cobrar compreensão, não decoreba de número solto. ' +
       'A pergunta aberta deve ligar o texto à vida do estudante no assentamento. ' +
       'Responda SOMENTE com JSON válido, sem markdown, neste formato: ' +
