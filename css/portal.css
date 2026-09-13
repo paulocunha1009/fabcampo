@@ -2277,6 +2277,13 @@ body.menu-aberto .cabecalho {
   font-size: 1.08rem;
 }
 
+.video-relato__acessibilidade {
+  margin-top: 5px;
+  padding-top: 10px;
+  border-top: 1px solid var(--cor-borda);
+  font-size: 0.88rem;
+}
+
 .bbl {
   color: var(--cor-primaria-escura);
   border-left: 4px solid var(--cor-secundaria);
