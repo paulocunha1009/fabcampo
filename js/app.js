@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   iniciarCarrosseis();
   carregarConteudo();
   if (document.body.dataset.page !== 'expedicao') iniciarChatEducacional();
+  adicionarLinkPrivacidade();
   atualizarAno();
 });
 
@@ -19,4 +20,16 @@ function atualizarAno() {
   document.querySelectorAll('[data-current-year]').forEach((elemento) => {
     elemento.textContent = String(new Date().getFullYear());
   });
+}
+
+function adicionarLinkPrivacidade() {
+  const navegacao = document.querySelector('.rodape__nav');
+  if (!navegacao || navegacao.querySelector('a[href$="privacidade.html"]')) return;
+
+  const link = document.createElement('a');
+  link.href = document.body.closest('html') && window.location.pathname.includes('/pages/')
+    ? '../privacidade.html'
+    : 'privacidade.html';
+  link.textContent = 'Privacidade e uso da IA';
+  navegacao.appendChild(link);
 }
