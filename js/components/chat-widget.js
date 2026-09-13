@@ -51,7 +51,7 @@ function criarElemento() {
   secao.innerHTML = `
     <!-- Botão flutuante -->
     <button class="ai-chat__toggle" type="button"
-            aria-expanded="false" aria-controls="ai-chat-painel">
+            aria-label="Abrir assistente educacional" aria-expanded="false" aria-controls="ai-chat-painel">
       <span aria-hidden="true">🤖</span>
       <span>Assistente IA</span>
     </button>

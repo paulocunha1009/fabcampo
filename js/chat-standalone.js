@@ -49,7 +49,7 @@
     secao.setAttribute('aria-label', 'Assistente educacional com IA');
 
     secao.innerHTML = [
-      '<button class="ai-chat__toggle" type="button" aria-expanded="false" aria-controls="ai-chat-painel">',
+      '<button class="ai-chat__toggle" type="button" aria-label="Abrir assistente educacional" aria-expanded="false" aria-controls="ai-chat-painel">',
       '  <span aria-hidden="true">🤖</span>',
       '  <span>Assistente IA</span>',
       '</button>',

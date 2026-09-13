@@ -346,19 +346,36 @@
   }
 
   .ai-chat {
-    left: 12px;
+    left: auto;
     right: 12px;
-    bottom: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: 52px;
   }
 
   .ai-chat__toggle {
-    width: 100%;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border-radius: 50%;
     justify-content: center;
+    font-size: 1.05rem;
+  }
+
+  .ai-chat__toggle span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .ai-chat__painel {
-    left: 0;
+    left: auto;
     right: 0;
-    width: 100%;
+    width: calc(100vw - 24px);
   }
 }
