@@ -1,5 +1,7 @@
 # Documentação Técnica — Portal da Comunidade
 
+> **Estado atual:** o frontend está no GitHub Pages e o backend oficial está no projeto Vercel `fabcampo-api`, com limites no Upstash. As referências abaixo a backend “opcional”, Render, Railway ou outros provedores são históricas. Para a operação vigente, consulte `OPERACAO_E_RECUPERACAO.md` e `backend/DEPLOY_VERCEL.md`.
+
 Projeto educacional desenvolvido para o Ceará Científico, com foco em memória comunitária, educação do campo, produção agrícola, biodiversidade, plantas medicinais, reportagens escolares e integração futura com inteligência artificial.
 
 O portal é um site estático em HTML, CSS e JavaScript, preparado para publicação no GitHub Pages. Também possui um backend Node.js opcional para conectar um assistente educacional com API de IA sem expor chaves no navegador.

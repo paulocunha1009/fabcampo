@@ -2,6 +2,16 @@
 
 Portal educacional estático feito com HTML, CSS e JavaScript para GitHub Pages.
 
+## Produção atual
+
+- portal: `https://fabcampo.com.br`;
+- API: `https://fabcampo-api.vercel.app`;
+- frontend: GitHub Pages pela branch `master`;
+- backend: Vercel pela branch `main`;
+- limites: Upstash Redis;
+- operação e recuperação: [OPERACAO_E_RECUPERACAO.md](OPERACAO_E_RECUPERACAO.md);
+- privacidade: [privacidade.html](privacidade.html).
+
 ## Estrutura
 
 ```text

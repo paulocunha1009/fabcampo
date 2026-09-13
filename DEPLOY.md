@@ -1,6 +1,8 @@
 # Guia de Deploy — Portal da Comunidade
 **EEMPC Francisco Araújo Barros · Ceará Científico 2026**
 
+> **Aviso:** este arquivo descreve a implantação histórica no Render e não representa mais a produção. A arquitetura atual usa GitHub Pages, Vercel e Upstash. Para operar, publicar ou recuperar o portal, consulte `OPERACAO_E_RECUPERACAO.md` e `backend/DEPLOY_VERCEL.md`.
+
 ---
 
 ## Arquitetura de segurança
