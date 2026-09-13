@@ -221,8 +221,11 @@ fetch('../data/plantas.json')
     BASE = d;
     contar();
     pintar();
+    const nativasPendentes = (d.pendentes_nativas || []).join(' · ');
+    const medicinaisPendentes = typeof d.pendentes_medicinais === 'string'
+      ? d.pendentes_medicinais : '';
     document.getElementById('lista-pendentes').textContent =
-      (d.pendentes_nativas || []).join(' · ');
+      nativasPendentes + (medicinaisPendentes ? '. Medicinais: ' + medicinaisPendentes : '');
   })
   .catch(function(e){
     document.getElementById('fichas').innerHTML =
@@ -232,9 +235,13 @@ fetch('../data/plantas.json')
 function contar(){
   const t = BASE.especies.length;
   const m = BASE.especies.filter(function(p){ return p.medicinal; }).length;
+  const textoMedicinais = typeof BASE.pendentes_medicinais === 'string'
+    ? BASE.pendentes_medicinais : '';
+  const quantidadeMedicinais = Number((textoMedicinais.match(/\d+/) || [0])[0]);
   document.getElementById('c-total').textContent = t;
   document.getElementById('c-med').textContent   = m;
-  document.getElementById('c-falta').textContent = (BASE.pendentes_nativas || []).length;
+  document.getElementById('c-falta').textContent =
+    (BASE.pendentes_nativas || []).length + quantidadeMedicinais;
 }
 
 /* ---------- fichas ---------- */
@@ -258,18 +265,18 @@ function pintar(){
   }
   alvo.innerHTML = lista.map(function(p){
     const tags = (p.usos || []).map(function(u){
-      return '<span class="tag' + (p.medicinal ? ' med' : '') + '">' + u + '</span>';
+      return '<span class="tag' + (p.medicinal ? ' med' : '') + '">' + escaparHTML(u) + '</span>';
     }).join('');
     const onde = (p.comunidades && p.comunidades.length)
-      ? '<span class="onde">' + p.ambiente + ' &middot; ' + p.comunidades.join(', ') + '</span>'
-      : '<span class="onde">' + p.ambiente + '</span>';
+      ? '<span class="onde">' + escaparHTML(p.ambiente) + ' &middot; ' + p.comunidades.map(escaparHTML).join(', ') + '</span>'
+      : '<span class="onde">' + escaparHTML(p.ambiente) + '</span>';
     const nota = p.medicinal
       ? '<p class="nota-med">Uso registrado pela comunidade. Não substitui atendimento de saúde.</p>'
       : '';
     return '<article class="ficha' + (p.medicinal ? ' med' : '') + '">' +
-      '<h3>' + p.nome + '</h3>' +
-      (p.cientifico ? '<span class="cient">' + p.cientifico + '</span>' : '') +
-      '<p>' + p.texto + '</p>' + '<div class="tags">' + tags + '</div>' + onde + nota +
+      '<h3>' + escaparHTML(p.nome) + '</h3>' +
+      (p.cientifico ? '<span class="cient">' + escaparHTML(p.cientifico) + '</span>' : '') +
+      '<p>' + escaparHTML(p.texto) + '</p>' + '<div class="tags">' + tags + '</div>' + onde + nota +
     '</article>';
   }).join('');
 }
