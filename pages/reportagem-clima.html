@@ -21,13 +21,14 @@
       margin: 2rem 0;
     }
     .dado-card {
-      background: var(--cor-superficie);
-      border: 1px solid var(--cor-borda);
-      border-radius: var(--raio);
+      background: linear-gradient(145deg, #fff, #f7faf5);
+      border: 1px solid rgba(36, 107, 58, 0.14);
+      border-radius: 18px;
       padding: 1.5rem 1rem;
       text-align: center;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
     }
     .dado-card::before {
       content: '';
@@ -67,16 +68,18 @@
       margin: 1.5rem 0;
     }
     .cultivo-card {
-      background: var(--cor-superficie);
-      border: 1px solid var(--cor-borda);
-      border-radius: var(--raio);
+      background: linear-gradient(145deg, #fff, #f7faf5);
+      border: 1px solid rgba(36, 107, 58, 0.14);
+      border-radius: 16px;
       padding: 1rem 0.75rem;
       text-align: center;
-      transition: border-color 0.2s, transform 0.2s;
+      box-shadow: 0 7px 18px rgba(21, 65, 45, 0.06);
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
     .cultivo-card:hover {
       border-color: var(--cor-primaria);
-      transform: translateY(-2px);
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px rgba(21, 65, 45, 0.12);
     }
     .cultivo-card__emoji {
       font-size: 1.75rem;
@@ -145,13 +148,15 @@
     .solucao-card {
       background: linear-gradient(135deg, #eef7ef, #fff);
       border: 1px solid rgba(36,107,58,0.2);
-      border-radius: var(--raio);
+      border-radius: 18px;
       padding: 1.25rem;
-      transition: border-color 0.2s, transform 0.2s;
+      box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
     .solucao-card:hover {
       border-color: var(--cor-primaria);
-      transform: translateY(-2px);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 34px rgba(21, 65, 45, 0.13);
     }
     .solucao-card__icone {
       font-size: 1.5rem;

@@ -21,12 +21,18 @@
       margin: 1.5rem 0;
     }
     .pilar-card {
-      background: var(--cor-superficie);
-      border: 1px solid var(--cor-borda);
+      background: linear-gradient(145deg, #fff, #f7faf5);
+      border: 1px solid rgba(36, 107, 58, 0.14);
       border-top: 4px solid var(--cor-primaria);
-      border-radius: var(--raio);
+      border-radius: 18px;
       padding: 1.25rem 1rem;
       text-align: center;
+      box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .pilar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 34px rgba(21, 65, 45, 0.13);
     }
     .pilar-card__icone {
       font-size: 2rem;
@@ -99,11 +105,17 @@
       margin: 1.5rem 0;
     }
     .mistica-card {
-      background: var(--cor-superficie);
-      border: 1px solid var(--cor-borda);
-      border-radius: var(--raio);
+      background: linear-gradient(145deg, #fff, #f7faf5);
+      border: 1px solid rgba(36, 107, 58, 0.14);
+      border-radius: 18px;
       overflow: hidden;
       padding: 0;
+      box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .mistica-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 34px rgba(21, 65, 45, 0.13);
     }
     .mistica-card__topo {
       background: linear-gradient(135deg, var(--cor-primaria), var(--cor-acento));
@@ -724,7 +736,7 @@
 
         <div class="destaque-verde">
           <p>
-            <strong>ðŸ““ O Plano de Estudo</strong><br>
+            <strong>📓 O Plano de Estudo</strong><br>
             O principal instrumento do Tempo Comunidade é o <em>Plano de Estudo</em> — um
             roteiro de pesquisa elaborado coletivamente por estudantes e professores no final
             do Tempo Escola. Cada Plano de Estudo parte de uma <em>problematização da
@@ -784,7 +796,7 @@
         <div class="grade-misticas" aria-label="Tipos de mística">
           <div class="mistica-card">
             <div class="mistica-card__topo">
-              <span class="mistica-card__emoji">ðŸŒ…</span>
+              <span class="mistica-card__emoji">🌅</span>
               <h3 class="mistica-card__nome">Mística de Abertura</h3>
             </div>
             <div class="mistica-card__corpo">
