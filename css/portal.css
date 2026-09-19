@@ -2048,6 +2048,13 @@ body.menu-aberto .cabecalho {
 /* Não expõe ao visitante os espaços técnicos ainda sem fotografia. */
 .bloco-imagem-texto:has(img[src*="placeholder/acervo-em-documentacao"]) {
   grid-template-columns: 1fr;
+  padding: clamp(22px, 4vw, 34px);
+  border: 1px solid rgba(36, 107, 58, 0.12);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(22, 119, 184, 0.07) 0 96px, transparent 97px),
+    linear-gradient(145deg, #fff, #f5faf5);
+  box-shadow: var(--sombra-suave);
 }
 
 .bloco-imagem-texto img[src*="placeholder/acervo-em-documentacao"],
@@ -2064,6 +2071,45 @@ body.menu-aberto .cabecalho {
   text-align: justify;
   text-justify: inter-word;
   hyphens: auto;
+}
+
+.lista-check--cards {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.lista-check--cards li {
+  min-height: 100px;
+  overflow: hidden;
+  border: 1px solid rgba(36, 107, 58, 0.12);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(22, 119, 184, 0.07) 0 50px, transparent 51px),
+    linear-gradient(145deg, #fff, #f7faf5);
+  padding: 22px 18px 18px 54px;
+  box-shadow: 0 7px 20px rgba(21, 65, 45, 0.06);
+  color: var(--cor-primaria-escura);
+  font-weight: 700;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.lista-check--cards li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(21, 65, 45, 0.12);
+}
+
+.lista-check--cards li::before {
+  left: 18px;
+  top: 20px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e3f1fb;
+  color: #126ca8;
+  font-size: 0.82rem;
 }
 
 /* Pull quote */
