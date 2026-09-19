@@ -619,6 +619,8 @@ body.menu-aberto .cabecalho {
 
 .card-link {
   display: block;
+  position: relative;
+  overflow: hidden;
   min-height: 190px;
   padding: 22px;
   color: var(--cor-texto);
@@ -677,6 +679,22 @@ body.menu-aberto .cabecalho {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   position: relative;
+}
+
+.grade-cards .card-link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 4px;
+  background: var(--cor-primaria);
+}
+
+.grade-cards .card-link:nth-child(3n + 2)::after {
+  background: #1677b8;
+}
+
+.grade-cards .card-link:nth-child(3n)::after {
+  background: var(--cor-secundaria);
 }
 
 .campo-digital__item {
@@ -2284,12 +2302,31 @@ body.menu-aberto .cabecalho {
 }
 
 .card-personagem {
+  display: flex;
+  flex-direction: column;
+  position: relative;
   background: var(--cor-superficie);
   border: 1px solid rgba(36, 107, 58, 0.12);
   border-radius: 18px;
   box-shadow: var(--sombra-suave);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-personagem::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 4px;
+  background: var(--cor-primaria);
+}
+
+.card-personagem:nth-child(3n + 2)::after {
+  background: #1677b8;
+}
+
+.card-personagem:nth-child(3n)::after {
+  background: var(--cor-secundaria);
 }
 
 .card-personagem:hover {
@@ -2312,6 +2349,7 @@ body.menu-aberto .cabecalho {
 }
 
 .card-personagem__info {
+  flex: 1;
   padding: 16px;
 }
 
