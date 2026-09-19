@@ -33,7 +33,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
 .voltar{display:inline-block;color:rgba(255,255,255,.82);font-size:.85rem;font-weight:700;text-decoration:none;margin-bottom:1.5rem}
 .voltar:hover{color:#fff}
 
-.contador{background:var(--branco);border:1px solid var(--borda);border-radius:calc(var(--raio) + 4px);
+.contador{background:linear-gradient(145deg,#fff,#f7faf5);border:1px solid rgba(36,107,58,.14);border-radius:18px;
   margin:-2rem auto 1.6rem;position:relative;padding:1.25rem 1.5rem;
   display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;box-shadow:var(--sombra)}
 .n{font-size:1.7rem;color:var(--verde);line-height:1;font-weight:800}
@@ -48,10 +48,11 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
 .filtro[aria-pressed="true"]{background:var(--verde);border-color:var(--verde);color:#fff}
 
 .fichas{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
-.ficha{background:var(--branco);border:1px solid var(--borda);border-left:6px solid var(--verde-cl);
-  border-radius:var(--raio);padding:1.25rem;box-shadow:var(--sombra-suave);transition:transform .18s ease,box-shadow .18s ease}
-.ficha:hover{transform:translateY(-2px);box-shadow:var(--sombra)}
-.ficha.med{border-left-color:var(--terra)}
+.ficha{position:relative;overflow:hidden;background:linear-gradient(145deg,#fff,#f7faf5);border:1px solid rgba(36,107,58,.14);
+  border-radius:18px;padding:1.25rem 1.25rem 1.5rem;box-shadow:0 8px 22px rgba(21,65,45,.07);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.ficha::after{content:"";position:absolute;inset:auto 0 0;height:5px;background:var(--verde)}
+.ficha:hover{transform:translateY(-5px);border-color:rgba(22,119,184,.28);box-shadow:0 17px 36px rgba(21,65,45,.13)}
+.ficha.med::after{background:var(--terra)}
 .ficha h3{font-size:1.15rem;font-weight:800;color:var(--verde-esc)}
 .ficha .cient{font-style:italic;font-size:.85rem;color:var(--muted);display:block;margin-bottom:.5rem}
 .ficha p{font-size:.87rem;color:var(--muted)}
@@ -64,7 +65,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
   background:var(--creme-esc);border-left:3px solid var(--terra);padding:.5rem .65rem;border-radius:8px}
 .vazio{grid-column:1/-1;text-align:center;padding:2.5rem;color:var(--muted);font-weight:700}
 
-.desafio{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--verde-bg),#f8fbf7);border:1px solid #b8d8bf;border-radius:calc(var(--raio) + 4px);padding:1.6rem;margin:2rem 0;box-shadow:var(--sombra-suave)}
+.desafio{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--verde-bg),#fff);border:1px solid rgba(36,107,58,.18);border-radius:18px;padding:1.6rem;margin:2rem 0;box-shadow:0 10px 28px rgba(21,65,45,.08)}
 .desafio::after{content:"?";position:absolute;right:1.2rem;top:-1.5rem;color:rgba(31,111,59,.08);font-size:8rem;font-weight:900;line-height:1}
 .desafio h2{position:relative;font-size:1.35rem;font-weight:800;color:var(--verde-esc);margin-bottom:.3rem}
 .desafio p{font-size:.92rem;color:var(--muted)}
