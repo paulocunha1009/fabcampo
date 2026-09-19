@@ -275,6 +275,14 @@
 }
 
 @media screen and (max-width: 520px) {
+  .artigo-corpo > p,
+  .conteudo-texto > p,
+  .bloco-imagem-texto__texto p,
+  .card-personagem__info p {
+    text-align: left;
+    hyphens: none;
+  }
+
   .cabecalho__conteudo {
     gap: 8px;
   }

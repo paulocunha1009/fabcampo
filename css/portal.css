@@ -1988,6 +1988,41 @@ body.menu-aberto .cabecalho {
 
 .bloco-imagem-texto__texto p {
   margin-top: 0 !important;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
+.bloco-imagem-texto--somente-texto {
+  display: block;
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid rgba(36, 107, 58, 0.12);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(36, 107, 58, 0.08) 0 110px, transparent 111px),
+    linear-gradient(145deg, #fff, #f6faf4);
+  box-shadow: var(--sombra-suave);
+}
+
+/* Não expõe ao visitante os espaços técnicos ainda sem fotografia. */
+.bloco-imagem-texto:has(img[src*="placeholder/acervo-em-documentacao"]) {
+  grid-template-columns: 1fr;
+}
+
+.bloco-imagem-texto img[src*="placeholder/acervo-em-documentacao"],
+.bloco-imagem-texto figure:has(img[src*="placeholder/acervo-em-documentacao"]),
+.bloco-imagem-texto__imagem:has(img[src*="placeholder/acervo-em-documentacao"]),
+.grade-imagens figure:has(img[src*="placeholder/acervo-em-documentacao"]),
+.galeria-historica figure:has(img[src*="placeholder/acervo-em-documentacao"]),
+.imagem-destaque:has(img[src*="placeholder/acervo-em-documentacao"]) {
+  display: none;
+}
+
+.artigo-corpo > p,
+.conteudo-texto > p {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
 }
 
 /* Pull quote */
@@ -2055,11 +2090,20 @@ body.menu-aberto .cabecalho {
   box-shadow: 0 0 0 2px var(--cor-secundaria);
 }
 
-.linha-do-tempo--visual li strong {
+.linha-do-tempo--visual li > strong {
   color: var(--cor-secundaria);
   font-size: 1.05rem;
   display: block;
   margin-bottom: 2px;
+}
+
+.linha-do-tempo--visual li > span {
+  min-width: 0;
+}
+
+.linha-do-tempo--visual li > span strong {
+  color: var(--cor-secundaria);
+  font-weight: 800;
 }
 
 /* Imagem destaque (full-width dentro do artigo) */
@@ -2147,15 +2191,15 @@ body.menu-aberto .cabecalho {
 /* Cards de personagens */
 .grade-personagens {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
   margin-block: 24px;
 }
 
 .card-personagem {
   background: var(--cor-superficie);
   border: 1px solid rgba(36, 107, 58, 0.12);
-  border-radius: var(--raio);
+  border-radius: 18px;
   box-shadow: var(--sombra-suave);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -2205,6 +2249,17 @@ body.menu-aberto .cabecalho {
   color: var(--cor-texto-suave);
   font-size: 0.9rem;
   line-height: 1.55;
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
+.credito-imagem {
+  margin: -12px 0 32px;
+  color: #77827d;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  text-align: right;
 }
 
 /* Sidebar do artigo */
@@ -2373,10 +2428,4 @@ body.menu-aberto .cabecalho {
   padding-top: 10px;
   border-top: 1px solid var(--cor-borda);
   font-size: 0.88rem;
-}
-
-.bbl {
-  color: var(--cor-primaria-escura);
-  border-left: 4px solid var(--cor-secundaria);
-  padding: 5px 10px;
 }
