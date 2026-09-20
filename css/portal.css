@@ -2584,51 +2584,19 @@ body:is([data-page="reportagem-educacao"], [data-page="plantacao-nativa"], [data
 }
 
 /* Reportagem especial: IA na Educacao */
-body[data-page="materia-ia"] .titulo-pagina {
-  isolation: isolate;
-  padding-block: clamp(42px, 6vw, 70px);
-  background:
-    radial-gradient(circle at 78% 48%, rgba(107, 210, 226, 0.2), transparent 21%),
-    radial-gradient(circle at 88% 36%, rgba(243, 181, 27, 0.2), transparent 15%),
-    linear-gradient(118deg, #0b3c25 0%, #17683d 52%, #0d5276 100%);
+body[data-page="materia-ia"] .hero {
+  min-height: 500px;
 }
 
-body[data-page="materia-ia"] .titulo-pagina::after {
-  content: "IA";
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  right: max(5vw, calc((100vw - 1200px) / 2));
-  display: grid;
-  width: clamp(150px, 18vw, 235px);
-  aspect-ratio: 1;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 42% 58% 60% 40% / 44% 43% 57% 56%;
-  background:
-    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.25), transparent 25%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
-  box-shadow: 0 22px 70px rgba(2, 25, 34, 0.25);
-  color: rgba(255, 255, 255, 0.88);
-  font-size: clamp(3rem, 7vw, 6.8rem);
-  font-weight: 900;
-  letter-spacing: -0.08em;
-  transform: translateY(-50%) rotate(7deg);
+body[data-page="materia-ia"] .hero__conteudo {
+  padding-block: 72px 64px;
 }
 
-body[data-page="materia-ia"] .titulo-pagina .container {
-  padding-right: min(30vw, 330px);
-}
-
-body[data-page="materia-ia"] .titulo-pagina h1 {
-  margin-top: 9px;
-  font-size: clamp(2.7rem, 6vw, 4.8rem);
-  letter-spacing: -0.045em;
-}
-
-body[data-page="materia-ia"] .titulo-pagina p:not(.trilha):not(.selo) {
+body[data-page="materia-ia"] .hero__titulo {
   max-width: 720px;
-  font-size: clamp(1rem, 1.6vw, 1.18rem);
+}
+
+body[data-page="materia-ia"] .hero__subtitulo {
   line-height: 1.65;
 }
 
@@ -2820,8 +2788,6 @@ body[data-page="materia-ia"] .grade-cards .card-link p {
 }
 
 @media (max-width: 900px) {
-  body[data-page="materia-ia"] .titulo-pagina .container { padding-right: 190px; }
-  body[data-page="materia-ia"] .titulo-pagina::after { right: 28px; width: 145px; }
   body[data-page="materia-ia"] .artigo-layout { grid-template-columns: 1fr; }
   body[data-page="materia-ia"] .artigo-sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   body[data-page="materia-ia"] .grade-dados { grid-template-columns: 1fr; }
@@ -2829,10 +2795,8 @@ body[data-page="materia-ia"] .grade-cards .card-link p {
 }
 
 @media (max-width: 720px) {
-  body[data-page="materia-ia"] .titulo-pagina { padding-block: 34px 38px; }
-  body[data-page="materia-ia"] .titulo-pagina .container { padding-right: 24px; }
-  body[data-page="materia-ia"] .titulo-pagina::after { right: -42px; opacity: 0.18; width: 180px; }
-  body[data-page="materia-ia"] .titulo-pagina h1 { font-size: clamp(2.45rem, 13vw, 3.45rem); }
+  body[data-page="materia-ia"] .hero { min-height: 0; }
+  body[data-page="materia-ia"] .hero__conteudo { padding-block: 54px 46px; }
   body[data-page="materia-ia"] .secao__cabecalho { display: grid; align-items: start; }
   body[data-page="materia-ia"] .secao__cabecalho > p { padding: 0; border: 0; }
   body[data-page="materia-ia"] .artigo-corpo { padding: 20px; border-radius: 16px; }
