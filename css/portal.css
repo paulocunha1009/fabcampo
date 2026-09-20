@@ -2086,28 +2086,34 @@ body.menu-aberto .cabecalho {
 
 /* Nas reportagens longas, o texto acompanha a fotografia em vez de deixar
    uma coluna vazia quando os dois conteúdos têm alturas diferentes. */
-body[data-page="reportagem-educacao"] .bloco-imagem-texto {
+body[data-page="reportagem-educacao"] .bloco-imagem-texto,
+body[data-page="plantacao-nativa"] .bloco-imagem-texto {
   display: flow-root;
 }
 
-body[data-page="reportagem-educacao"] .bloco-imagem-texto__figura {
+body[data-page="reportagem-educacao"] .bloco-imagem-texto__figura,
+body[data-page="plantacao-nativa"] .bloco-imagem-texto__figura {
   float: left;
   width: min(48%, 360px);
   margin: 0 28px 14px 0;
 }
 
-body[data-page="reportagem-educacao"] .bloco-imagem-texto--invertido .bloco-imagem-texto__figura {
+body[data-page="reportagem-educacao"] .bloco-imagem-texto--invertido .bloco-imagem-texto__figura,
+body[data-page="plantacao-nativa"] .bloco-imagem-texto--invertido .bloco-imagem-texto__figura {
   float: right;
   margin: 0 0 14px 28px;
 }
 
-body[data-page="reportagem-educacao"] .bloco-imagem-texto__texto {
+body[data-page="reportagem-educacao"] .bloco-imagem-texto__texto,
+body[data-page="plantacao-nativa"] .bloco-imagem-texto__texto {
   display: block;
 }
 
 @media (max-width: 720px) {
   body[data-page="reportagem-educacao"] .bloco-imagem-texto__figura,
-  body[data-page="reportagem-educacao"] .bloco-imagem-texto--invertido .bloco-imagem-texto__figura {
+  body[data-page="reportagem-educacao"] .bloco-imagem-texto--invertido .bloco-imagem-texto__figura,
+  body[data-page="plantacao-nativa"] .bloco-imagem-texto__figura,
+  body[data-page="plantacao-nativa"] .bloco-imagem-texto--invertido .bloco-imagem-texto__figura {
     float: none;
     width: 100%;
     margin: 0 0 20px;
