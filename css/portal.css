@@ -1999,6 +1999,21 @@ body.menu-aberto .cabecalho {
   color: var(--cor-texto);
 }
 
+/* Protege a legibilidade de citações e chamadas sobre fundos escuros.
+   A especificidade evita que a regra genérica dos parágrafos do artigo
+   substitua as cores claras definidas para esses componentes. */
+.artigo-corpo .frase-final,
+.artigo-corpo .frase-final p,
+.artigo-corpo .frase-final .frase-final__texto,
+.artigo-corpo .frase-final strong {
+  color: #fff;
+}
+
+.artigo-corpo .frase-final cite,
+.artigo-corpo .frase-final .frase-final__autor {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .artigo-corpo p:first-of-type {
   margin-top: 0;
 }
