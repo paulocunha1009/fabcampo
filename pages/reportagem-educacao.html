@@ -100,46 +100,79 @@
     /* Cards de místicas */
     .grade-misticas {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-      margin: 1.5rem 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0 2rem;
     }
     .mistica-card {
-      background: linear-gradient(145deg, #fff, #f7faf5);
+      --mistica-cor: #1f7a47;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+      background:
+        radial-gradient(circle at 100% 0, color-mix(in srgb, var(--mistica-cor) 13%, transparent) 0 86px, transparent 87px),
+        linear-gradient(145deg, #fff, #f7faf5);
       border: 1px solid rgba(36, 107, 58, 0.14);
+      border-bottom: 5px solid var(--mistica-cor);
       border-radius: 18px;
       overflow: hidden;
       padding: 0;
       box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
+    .mistica-card:nth-child(2) { --mistica-cor: #1677b8; }
+    .mistica-card:nth-child(3) { --mistica-cor: #e7a915; }
+    .mistica-card:nth-child(4) { --mistica-cor: #0f7467; }
     .mistica-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 16px 34px rgba(21, 65, 45, 0.13);
     }
     .mistica-card__topo {
-      background: linear-gradient(135deg, var(--cor-primaria), var(--cor-acento));
-      padding: 1rem 1.25rem 0.85rem;
+      position: relative;
+      z-index: 1;
+      padding: 1.25rem 1.35rem 0.65rem;
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
+    .mistica-card__topo::after {
+      content: "VIVÊNCIA";
+      margin-left: auto;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--mistica-cor);
+      padding: 0.3rem 0.55rem;
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
     .mistica-card__emoji {
-      font-size: 1.75rem;
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--mistica-cor) 13%, white);
+      font-size: 1.55rem;
       line-height: 1;
     }
     .mistica-card__nome {
-      font-size: 0.92rem;
-      font-weight: 700;
-      color: #fff;
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--cor-primaria-escura);
       margin: 0;
       line-height: 1.3;
     }
     .mistica-card__corpo {
-      padding: 1rem 1.25rem;
-      font-size: 0.85rem;
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      padding: 0.35rem 1.35rem 1.35rem;
+      font-size: 0.88rem;
       color: var(--cor-texto-suave);
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     /* Bloco número grande */
