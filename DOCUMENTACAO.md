@@ -632,3 +632,151 @@ O FabCampo — Campo Digital é uma plataforma educacional do Ceará Científico
 
 Além de ser um site, o portal funciona como produto pedagógico: estudantes podem alimentar o conteúdo, registrar saberes locais, produzir reportagens, organizar dados científicos e aprender práticas modernas de desenvolvimento web.
 
+---
+
+## 19. SEO Técnico
+
+Implementação de SEO técnico realizada em setembro de 2026 em todas as páginas públicas do portal.
+
+### 19.1 O que foi feito
+
+#### Título (`<title>`)
+
+Todas as páginas seguem o padrão:
+
+```
+[Tema da Página] | EEMPC Francisco Araújo Barros
+```
+
+Exemplos:
+- `EEMPC Francisco Araújo Barros | Escola do Campo em Itarema-CE` (homepage)
+- `História da Comunidade | EEMPC Francisco Araújo Barros`
+- `Produção Agrícola | EEMPC Francisco Araújo Barros`
+
+#### Meta description
+
+Cada página tem uma descrição única de até ~160 caracteres que menciona o nome da escola, a localização (Assentamento Lagoa do Mineiro, Itarema – CE) e o tema da página.
+
+#### Meta robots
+
+Adicionada em todas as páginas:
+
+```html
+<meta name="robots" content="index, follow">
+```
+
+#### Open Graph
+
+Tags adicionadas em todas as páginas públicas:
+
+```html
+<meta property="og:type" content="website">         <!-- ou "article" para reportagens -->
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="...">
+<meta property="og:description" content="...">
+<meta property="og:url" content="https://fabcampo.com.br/...">
+<meta property="og:image" content="https://fabcampo.com.br/img/banner/campo-digital-banner-1280.webp">
+<meta property="og:site_name" content="Campo Digital – EEMPC Francisco Araújo Barros">
+```
+
+Isso garante que ao compartilhar links nas redes sociais (WhatsApp, Instagram, Facebook, Twitter/X) a prévia do link mostre título, descrição e imagem corretos.
+
+#### Schema.org JSON-LD (homepage)
+
+Adicionado apenas na `index.html`, tipo `School`:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "School",
+  "name": "EEMPC Francisco Araújo Barros",
+  "url": "https://fabcampo.com.br/",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Assentamento Lagoa do Mineiro, S/N",
+    "addressLocality": "Itarema",
+    "addressRegion": "CE",
+    "addressCountry": "BR"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -3.025485,
+    "longitude": -39.7533477
+  },
+  "telephone": "+55 88 99324-1011",
+  "email": "franciscoaraujo@escola.ce.gov.br",
+  "sameAs": [
+    "https://www.instagram.com/francisco_barros_escola/",
+    "https://www.google.com/maps/place/E.E.M.+Francisco+Araújo+Barros/..."
+  ]
+}
+```
+
+#### Google Analytics 4 (GA4)
+
+Snippet adicionado em todas as páginas com placeholder `G-XXXXXXXXXX`. Para ativar o monitoramento real:
+
+1. Acesse [analytics.google.com](https://analytics.google.com)
+2. Crie uma propriedade GA4 para `fabcampo.com.br`
+3. O sistema gera o ID no formato `G-XXXXXXXXXX`
+4. Substitua **todas** as ocorrências de `G-XXXXXXXXXX` pelo ID real — são 2 por arquivo (no `src` do script e no `gtag('config', ...)`)
+
+#### robots.txt
+
+Já existia e estava correto. Referencia o sitemap e libera todos os bots:
+
+```
+User-agent: *
+Allow: /
+Sitemap: https://fabcampo.com.br/sitemap.xml
+```
+
+#### sitemap.xml
+
+Atualizado com `<changefreq>` e `<priority>` em todas as 14 URLs. `lastmod` da homepage atualizado para a data mais recente.
+
+### 19.2 Páginas com SEO implementado
+
+| Arquivo | Title | Description | robots | Open Graph | GA4 |
+|---|:---:|:---:|:---:|:---:|:---:|
+| `index.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `contato.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/historia.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/memoria.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/agricola.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/reportagem-educacao.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/reportagem-clima.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/expedicao.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `pages/materia_ia_educacao_v2.html` | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+### 19.3 O que não foi alterado
+
+- identidade visual, cores e estrutura HTML/CSS intactos;
+- nenhum keyword stuffing introduzido;
+- nenhum ID de medição inventado — GA4 usa placeholder explícito;
+- nenhum endereço, telefone ou coordenada inventado — todos os dados vêm do próprio site;
+- o `canonical` que já existia foi mantido.
+
+### 19.4 Google Analytics 4 — configuração concluída (20/09/2026)
+
+- Propriedade GA4 criada em [analytics.google.com](https://analytics.google.com) com nome **Campo Digital – EEMPC Francisco Araújo Barros**
+- Domínio: `fabcampo.com.br` | Stream ID: `15811898372`
+- ID de medição real obtido: **`G-D56GE991YS`**
+- Substituído em todos os 9 arquivos HTML (27 ocorrências no total)
+- Branch `master` sincronizado com `main` para que o deploy no GitHub Pages refletisse as mudanças
+
+### 19.5 Google Search Console — configuração concluída (20/09/2026)
+
+- Propriedade adicionada: `https://fabcampo.com.br/`
+- Método de verificação: **Google Analytics** (aproveitou o código GA4 já presente nas páginas)
+- Status: **Propriedade verificada** com sucesso
+- Sitemap submetido: `https://fabcampo.com.br/sitemap.xml`
+- Resultado imediato: **14 páginas encontradas e processadas**
+- O Google vai rastrear e indexar as páginas progressivamente; primeiros resultados esperados em dias a semanas
+
+### 19.6 Próximos passos de SEO
+
+- **Google Business Profile**: criar perfil em [business.google.com](https://business.google.com) com nome `EEMPC Francisco Araújo Barros`, endereço Assentamento Lagoa do Mineiro, Itarema – CE, telefone (88) 99324-1011 e site `https://fabcampo.com.br`;
+- **ALT das fotos da galeria**: melhorar os `alt` das imagens `rolo-01.jpg` a `rolo-05.jpg` quando o conteúdo fotográfico real estiver definido;
+- **Schema.org nas páginas internas**: considerar adicionar tipo `Article` nas reportagens quando houver data de publicação e autoria definidos.
+
