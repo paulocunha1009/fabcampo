@@ -90,9 +90,15 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
 .secao-titulo{font-size:1.45rem;font-weight:800;color:var(--verde-esc);margin:2rem 0 .5rem}
 .secao-apoio-catalogo{font-size:.92rem;color:var(--muted)}
 .lista-pendentes{margin-top:.7rem;font-weight:700;color:var(--terra)}
+.catalogo-hero{min-height:500px}
+.catalogo-hero .hero__conteudo{padding-block:72px 64px}
+.catalogo-hero .hero__titulo{max-width:720px}
+.catalogo-hero .hero__subtitulo{line-height:1.65}
+.catalogo-hero .hero__meta{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:14px;color:rgba(255,255,255,.9);font-size:.9rem}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media(max-width:760px){.topo::after{right:-90px;opacity:.28}.topo__grade{grid-template-columns:1fr;gap:1.4rem}.topo__resumo{max-width:34rem}.contador{grid-template-columns:repeat(3,1fr)}.n{padding-inline:.65rem}}
-@media(max-width:520px){.topo-in{padding:1.8rem 0 3.5rem}.voltar{margin-bottom:1rem}.topo h1{font-size:clamp(2.55rem,13vw,3.45rem)}.topo__grade{gap:1rem}.topo__resumo{display:grid;grid-template-columns:42px 1fr;gap:.8rem;align-items:center;padding:1rem 1.1rem}.topo__resumo::before{width:42px;height:42px;margin:0}.topo__resumo p{display:none}.topo__resumo strong{margin:0}.contador{grid-template-columns:1fr;margin-top:-2rem;gap:0;padding-block:.65rem}.n{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;padding:.75rem}.n+.n{border-left:0;border-top:1px solid var(--borda)}.n small{display:inline;margin:0}.ferramentas{margin-top:1.2rem}.busca{min-width:100%}.filtro{flex:1 1 calc(50% - .65rem)}.fichas{grid-template-columns:1fr}.ficha{min-height:0}.desafio{padding:1.3rem}}
+@media(max-width:720px){.catalogo-hero{min-height:0}.catalogo-hero .hero__conteudo{padding-block:54px 46px}}
+@media(max-width:520px){.contador{grid-template-columns:1fr;margin-top:-2rem;gap:0;padding-block:.65rem}.n{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;padding:.75rem}.n+.n{border-left:0;border-top:1px solid var(--borda)}.n small{display:inline;margin:0}.ferramentas{margin-top:1.2rem}.busca{min-width:100%}.filtro{flex:1 1 calc(50% - .65rem)}.fichas{grid-template-columns:1fr}.ficha{min-height:0}.desafio{padding:1.3rem}}
 </style>
 </head>
 <body data-page="catalogo">
@@ -138,24 +144,22 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
      indisponível, o desafio usa os dados locais do próprio catálogo.
 ===================================================================== -->
 
-<header class="topo">
-  <div class="topo-in">
-    <a class="voltar" href="../index.html">&larr; Voltar ao portal</a>
-    <div class="topo__grade">
-      <div>
-        <span class="topo__kicker">Saberes e biodiversidade</span>
-        <h1>Catálogo do Território</h1>
-        <p>Fichas das espécies documentadas pelos estudantes nas comunidades do
-           Assentamento Lagoa do Mineiro. Nativas e medicinais no mesmo lugar —
-           porque boa parte delas é as duas coisas.</p>
-      </div>
-      <aside class="topo__resumo" aria-label="Sobre o catálogo">
-        <strong>Acervo vivo da comunidade</strong>
-        <p>Pesquise as espécies, conheça os usos registrados e ajude a documentar os saberes do território.</p>
-      </aside>
+<section class="hero catalogo-hero">
+  <div class="hero__imagem" data-image-placeholder="Marca Campo Digital">
+    <img src="../img/logo/campo-digital-logo-header.png" alt="" data-fallback-hidden loading="eager">
+  </div>
+  <div class="hero__conteudo container">
+    <p class="trilha"><a href="../index.html">Início</a> &rsaquo; Plantas &rsaquo; Catálogo</p>
+    <p class="hero__categoria">Saberes e biodiversidade</p>
+    <h1 class="hero__titulo">Catálogo do Território</h1>
+    <p class="hero__subtitulo">Fichas das espécies documentadas pelos estudantes nas comunidades do Assentamento Lagoa do Mineiro. Nativas e medicinais no mesmo lugar — porque boa parte delas é as duas coisas.</p>
+    <div class="hero__meta" aria-label="Características do catálogo">
+      <span>🌿 Acervo vivo</span>
+      <span>📍 Itarema, CE</span>
+      <span>🔎 Pesquisa estudantil</span>
     </div>
   </div>
-</header>
+</section>
 
 <main class="wrap" id="conteudo">
 
