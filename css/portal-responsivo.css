@@ -1,4 +1,4 @@
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 1180px) {
   .cabecalho__conteudo {
     flex-wrap: wrap;
     gap: 10px 14px;
@@ -7,12 +7,20 @@
 
   .botao-menu {
     display: inline-flex;
+    margin-left: 0;
+    order: 3;
+  }
+
+  .busca-global__abrir {
     margin-left: auto;
+    order: 2;
   }
 
   .menu {
     display: none;
     width: 100%;
+    margin-left: 0;
+    order: 4;
   }
 
   .menu[data-open="true"] {

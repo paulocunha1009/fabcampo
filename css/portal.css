@@ -117,7 +117,7 @@ body.menu-aberto .cabecalho {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
   min-height: 82px;
 }
 
@@ -127,6 +127,8 @@ body.menu-aberto .cabecalho {
   gap: 10px;
   color: #fff;
   min-width: 272px;
+  flex: 0 0 auto;
+  order: 1;
 }
 
 .logo__imagem {
@@ -178,11 +180,17 @@ body.menu-aberto .cabecalho {
   text-transform: uppercase;
 }
 
+.menu {
+  min-width: 0;
+  margin-left: auto;
+  order: 2;
+}
+
 .menu ul {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 2px;
   list-style: none;
 }
 
@@ -197,8 +205,8 @@ body.menu-aberto .cabecalho {
   min-height: 38px;
   border-radius: 999px;
   color: #fff;
-  font-size: 0.9rem;
-  padding: 6px 12px;
+  font-size: 0.86rem;
+  padding: 6px 10px;
 }
 
 .menu__botao-submenu {
@@ -266,6 +274,7 @@ body.menu-aberto .cabecalho {
   color: #fff;
   cursor: pointer;
   padding: 8px 12px;
+  order: 4;
 }
 
 .hero {
@@ -2622,6 +2631,8 @@ body[data-page="reportagem-educacao"] .bloco-imagem-texto__texto {
   font-size: .82rem;
   font-weight: 700;
   cursor: pointer;
+  flex: 0 0 auto;
+  order: 3;
 }
 
 .busca-global__abrir:hover { background: rgba(255,255,255,.18); }
