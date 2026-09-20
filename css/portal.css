@@ -2014,6 +2014,14 @@ body.menu-aberto .cabecalho {
   color: rgba(255, 255, 255, 0.9);
 }
 
+.artigo-corpo .planta-card__cientifico {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.artigo-corpo .planta-card__populares {
+  color: rgba(255, 255, 255, 0.88);
+}
+
 .artigo-corpo p:first-of-type {
   margin-top: 0;
 }
