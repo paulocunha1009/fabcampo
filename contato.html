@@ -23,15 +23,22 @@
     }
 
     .contato-formulario {
-      background: #fff;
-      border: 1px solid var(--cor-borda);
-      border-radius: var(--raio);
+      background:
+        radial-gradient(circle at 100% 0, rgba(22,119,184,.07) 0 110px, transparent 111px),
+        linear-gradient(145deg, #fff, #f7faf5);
+      border: 1px solid rgba(36,107,58,.14);
+      border-radius: 18px;
       padding: 2rem 2.25rem;
+      box-shadow: 0 10px 28px rgba(21,65,45,.08);
     }
 
     .contato-info {
       display: grid;
       gap: 1.5rem;
+    }
+
+    @media (max-width: 520px) {
+      .contato-formulario { padding: 1.35rem; }
     }
   </style>
 </head>
@@ -229,7 +236,7 @@
   </footer>
 
   <script src="js/config.js"></script>
-  <script type="module" src="js/app.js?v=20260913-3"></script>
+  <script type="module" src="js/app.js?v=20260919-2"></script>
   <script src="js/chat-standalone.js?v=20260913-1"></script>
   <script src="js/security/security-img.js"></script>
 </body>

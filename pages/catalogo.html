@@ -220,6 +220,8 @@ fetch('../data/plantas.json')
   .then(function(r){ if(!r.ok) throw new Error('não achei data/plantas.json'); return r.json(); })
   .then(function(d){
     BASE = d;
+    const buscaInicial = new URLSearchParams(window.location.search).get('busca');
+    if(buscaInicial) document.getElementById('busca').value = buscaInicial;
     contar();
     pintar();
     const nativasPendentes = (d.pendentes_nativas || []).join(' · ');
@@ -368,7 +370,7 @@ async function chamarIA(instrucao, pergunta){
   return texto;
 }
 </script>
-<script type="module" src="../js/app.js?v=20260913-3"></script>
+<script type="module" src="../js/app.js?v=20260919-2"></script>
   <script src="../js/security/security-img.js"></script>
 </body>
 </html>

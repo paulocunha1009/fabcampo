@@ -4,6 +4,7 @@ import { iniciarCarrosseis } from './components/carrossel.js';
 import { prepararImagens } from './components/imagens.js';
 import { carregarConteudo } from './components/conteudo.js';
 import { iniciarChatEducacional } from './components/chat-widget.js';
+import { iniciarBuscaGlobal } from './components/busca-global.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   prepararImagens();
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   iniciarCarrosseis();
   carregarConteudo();
   if (document.body.dataset.page !== 'expedicao') iniciarChatEducacional();
+  iniciarBuscaGlobal();
   adicionarLinkPrivacidade();
   atualizarAno();
 });

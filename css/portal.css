@@ -2576,3 +2576,41 @@ body.menu-aberto .cabecalho {
   border-top: 1px solid var(--cor-borda);
   font-size: 0.88rem;
 }
+
+/* Busca global */
+.busca-global__abrir {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  padding: 7px 12px;
+  font: inherit;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.busca-global__abrir:hover { background: rgba(255,255,255,.18); }
+.busca-global { width: min(640px, calc(100% - 28px)); max-height: min(720px, calc(100dvh - 32px)); margin: auto; border: 0; border-radius: 18px; padding: 0; box-shadow: 0 26px 70px rgba(0,0,0,.28); }
+.busca-global::backdrop { background: rgba(5,35,20,.72); backdrop-filter: blur(3px); }
+.busca-global__painel { position: relative; padding: 30px; background: linear-gradient(145deg,#fff,#f7faf5); }
+.busca-global__painel h2 { margin: 3px 0 18px; color: var(--cor-primaria-escura); }
+.busca-global__painel label { display: block; color: var(--cor-texto); font-weight: 700; }
+.busca-global__painel input { width: 100%; min-height: 48px; margin-top: 7px; border: 1px solid var(--cor-borda); border-radius: 999px; padding: 11px 16px; background: #fff; color: var(--cor-texto); font: inherit; }
+.busca-global__painel input:focus { outline: 3px solid rgba(22,119,184,.2); border-color: #1677b8; }
+.busca-global__fechar { position: absolute; right: 14px; top: 10px; border: 0; background: none; color: var(--cor-texto-suave); font-size: 1.8rem; cursor: pointer; }
+.busca-global__status { min-height: 30px; padding-top: 9px; color: var(--cor-texto-suave); font-size: .88rem; }
+.busca-global__resultados { display: grid; gap: 8px; max-height: 360px; overflow-y: auto; }
+.busca-global__resultado { display: block; position: relative; border: 1px solid rgba(36,107,58,.12); border-radius: 14px; background: #fff; color: var(--cor-texto); padding: 12px 44px 12px 14px; font-weight: 700; text-decoration: none; }
+.busca-global__resultado::after { content: "→"; position: absolute; right: 16px; color: #1677b8; }
+.busca-global__resultado:hover { background: var(--cor-superficie-suave); color: var(--cor-primaria-escura); text-decoration: none; transform: translateY(-2px); }
+
+@media (max-width: 720px) {
+  .busca-global__texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .busca-global__abrir { margin-left: auto; padding-inline: 12px; }
+  .busca-global__painel { padding: 26px 18px 20px; }
+}
