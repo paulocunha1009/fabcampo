@@ -757,11 +757,26 @@ Atualizado com `<changefreq>` e `<priority>` em todas as 14 URLs. `lastmod` da h
 - nenhum endereço, telefone ou coordenada inventado — todos os dados vêm do próprio site;
 - o `canonical` que já existia foi mantido.
 
-### 19.4 Próximos passos de SEO
+### 19.4 Google Analytics 4 — configuração concluída (20/09/2026)
+
+- Propriedade GA4 criada em [analytics.google.com](https://analytics.google.com) com nome **Campo Digital – EEMPC Francisco Araújo Barros**
+- Domínio: `fabcampo.com.br` | Stream ID: `15811898372`
+- ID de medição real obtido: **`G-D56GE991YS`**
+- Substituído em todos os 9 arquivos HTML (27 ocorrências no total)
+- Branch `master` sincronizado com `main` para que o deploy no GitHub Pages refletisse as mudanças
+
+### 19.5 Google Search Console — configuração concluída (20/09/2026)
+
+- Propriedade adicionada: `https://fabcampo.com.br/`
+- Método de verificação: **Google Analytics** (aproveitou o código GA4 já presente nas páginas)
+- Status: **Propriedade verificada** com sucesso
+- Sitemap submetido: `https://fabcampo.com.br/sitemap.xml`
+- Resultado imediato: **14 páginas encontradas e processadas**
+- O Google vai rastrear e indexar as páginas progressivamente; primeiros resultados esperados em dias a semanas
+
+### 19.6 Próximos passos de SEO
 
 - **Google Business Profile**: criar perfil em [business.google.com](https://business.google.com) com nome `EEMPC Francisco Araújo Barros`, endereço Assentamento Lagoa do Mineiro, Itarema – CE, telefone (88) 99324-1011 e site `https://fabcampo.com.br`;
-- **Google Search Console**: submeter o sitemap em [search.google.com/search-console](https://search.google.com/search-console) após publicar as mudanças de SEO;
-- **GA4**: substituir o placeholder `G-XXXXXXXXXX` pelo ID real assim que a propriedade for criada;
 - **ALT das fotos da galeria**: melhorar os `alt` das imagens `rolo-01.jpg` a `rolo-05.jpg` quando o conteúdo fotográfico real estiver definido;
 - **Schema.org nas páginas internas**: considerar adicionar tipo `Article` nas reportagens quando houver data de publicação e autoria definidos.
 
