@@ -35,9 +35,9 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
 .voltar{display:inline-block;color:rgba(255,255,255,.84);font-size:.85rem;font-weight:700;text-decoration:none;margin-bottom:1.35rem}
 .voltar:hover{color:#fff}
 
-.contador{background:linear-gradient(145deg,#fff,#f7faf5);border:1px solid rgba(36,107,58,.14);border-radius:20px;
-  margin:-2.25rem auto 1.8rem;position:relative;padding:1.25rem 1.5rem;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:0;box-shadow:0 16px 38px rgba(21,65,45,.13)}
+.contador{background:#fff;border:1px solid rgba(36,107,58,.16);border-radius:20px;
+  margin:1.5rem auto 1.8rem;position:relative;z-index:2;padding:1.35rem 1.5rem;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;box-shadow:0 12px 30px rgba(21,65,45,.1)}
 .n{position:relative;padding:.15rem 1.35rem;font-size:2rem;color:var(--verde);line-height:1;font-weight:850;text-align:center}
 .n+.n{border-left:1px solid var(--borda)}
 .n small{display:block;margin-top:.4rem;font-size:.75rem;color:var(--muted);font-weight:750;letter-spacing:.02em}
@@ -98,7 +98,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media(max-width:760px){.topo::after{right:-90px;opacity:.28}.topo__grade{grid-template-columns:1fr;gap:1.4rem}.topo__resumo{max-width:34rem}.contador{grid-template-columns:repeat(3,1fr)}.n{padding-inline:.65rem}}
 @media(max-width:720px){.catalogo-hero{min-height:0}.catalogo-hero .hero__conteudo{padding-block:54px 46px}}
-@media(max-width:520px){.contador{grid-template-columns:1fr;margin-top:-2rem;gap:0;padding-block:.65rem}.n{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;padding:.75rem}.n+.n{border-left:0;border-top:1px solid var(--borda)}.n small{display:inline;margin:0}.ferramentas{margin-top:1.2rem}.busca{min-width:100%}.filtro{flex:1 1 calc(50% - .65rem)}.fichas{grid-template-columns:1fr}.ficha{min-height:0}.desafio{padding:1.3rem}}
+@media(max-width:520px){.contador{grid-template-columns:1fr;margin-top:1.25rem;gap:0;padding-block:.65rem}.n{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;padding:.75rem}.n+.n{border-left:0;border-top:1px solid var(--borda)}.n small{display:inline;margin:0}.ferramentas{margin-top:1.2rem}.busca{min-width:100%}.filtro{flex:1 1 calc(50% - .65rem)}.fichas{grid-template-columns:1fr}.ficha{min-height:0}.desafio{padding:1.3rem}}
 </style>
 </head>
 <body data-page="catalogo">
