@@ -251,32 +251,70 @@
     /* Guia de registro */
     .guia-registro {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 0.85rem;
-      margin: 1.5rem 0;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.1rem;
+      margin: 1.5rem 0 2rem;
     }
     .guia-item {
-      background: var(--cor-superficie);
-      border: 1px solid var(--cor-borda);
-      border-radius: var(--raio);
-      padding: 1rem;
+      --guia-cor: #1f7a47;
+      --guia-etapa: "ETAPA 01";
+      position: relative;
+      min-height: 210px;
+      padding: 1.25rem;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 100% 0, color-mix(in srgb, var(--guia-cor) 13%, transparent) 0 76px, transparent 77px),
+        linear-gradient(145deg, #fff, #f7faf5);
+      border: 1px solid rgba(36, 107, 58, 0.14);
+      border-bottom: 5px solid var(--guia-cor);
+      border-radius: 18px;
+      box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .guia-item:nth-child(2) { --guia-cor: #1677b8; --guia-etapa: "ETAPA 02"; }
+    .guia-item:nth-child(3) { --guia-cor: #e7a915; --guia-etapa: "ETAPA 03"; }
+    .guia-item:nth-child(4) { --guia-cor: #0f7467; --guia-etapa: "ETAPA 04"; }
+    .guia-item:nth-child(5) { --guia-cor: #c76b1d; --guia-etapa: "ETAPA 05"; }
+    .guia-item:nth-child(6) { --guia-cor: #5967a8; --guia-etapa: "ETAPA 06"; }
+    .guia-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 34px rgba(21, 65, 45, 0.13);
+    }
+    .guia-item::after {
+      content: var(--guia-etapa);
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--guia-cor);
+      padding: 0.3rem 0.55rem;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
     }
     .guia-item__icone {
-      font-size: 1.5rem;
-      display: block;
-      margin-bottom: 0.4rem;
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0.9rem;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--guia-cor) 13%, white);
+      font-size: 1.45rem;
     }
     .guia-item strong {
       display: block;
       color: var(--cor-primaria-escura);
-      font-size: 0.85rem;
-      margin-bottom: 0.3rem;
+      font-size: 0.92rem;
+      line-height: 1.35;
+      margin-bottom: 0.55rem;
     }
     .guia-item p {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--cor-texto-suave);
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
     /* Pesquisadores */
@@ -298,6 +336,7 @@
 
     /* Responsividade */
     @media (max-width: 720px) {
+      .guia-registro { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .planta-card__corpo { grid-template-columns: 1fr; }
       .planta-info--alerta,
       .planta-info--full { grid-column: 1; }
@@ -307,7 +346,7 @@
     }
     @media (max-width: 520px) {
       .indice-plantas { grid-template-columns: repeat(2, 1fr); }
-      .guia-registro { grid-template-columns: 1fr 1fr; }
+      .guia-registro { grid-template-columns: 1fr; }
       .planta-card__corpo { padding: 1rem; }
     }
 
