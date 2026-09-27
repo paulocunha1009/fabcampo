@@ -1065,3 +1065,143 @@ Validação executada em 27 de setembro de 2026:
 
 Nesta etapa, as alterações permanecem para validação visual local antes da publicação nas branches e da promoção do backend no Vercel.
 
+### 21.9 Texto oficial de apresentação
+
+Apresentação geral exibida ao abrir o painel:
+
+> 🐦 Olá! Eu sou o SabIA.<br>
+> Estou aqui para ajudar você a aprender, pesquisar e descobrir os saberes do nosso território.<br>
+> Uma inteligência que aprende com o território para ajudar a aprender, pesquisar e transformar.
+
+O texto contextual substitui apenas a segunda frase. O nome, o símbolo e o lema permanecem constantes para fortalecer o reconhecimento da identidade.
+
+No celular, o botão mostra apenas o símbolo para economizar espaço. O nome completo permanece disponível no rótulo acessível e aparece no cabeçalho quando o painel é aberto.
+
+### 21.10 Funcionamento dos modos
+
+**Perguntar**
+
+- envia a pergunta digitada sem acrescentar instruções invisíveis;
+- atende dúvidas sobre o acervo e perguntas educacionais gerais;
+- mantém no máximo as 30 últimas mensagens no navegador e envia ao backend somente as 20 últimas entradas válidas.
+
+**Aprender**
+
+- acrescenta ao pedido a orientação para explicar de forma simples;
+- solicita exemplo ligado ao território sempre que isso fizer sentido;
+- foi pensado para estudantes e visitantes que precisam de uma explicação inicial.
+
+**Quiz**
+
+- transforma o tema digitado em pedido de três perguntas;
+- oferece cinco temas rápidos: História, Plantas Medicinais, Produção Agrícola, Educação e Plantas Nativas;
+- aceita de duas a cinco questões retornadas pelo backend;
+- mostra resposta correta, explicação e pontuação ao final;
+- possui questionários locais para os temas principais caso a API esteja indisponível.
+
+**Explorar**
+
+- transforma a busca em recomendação de páginas internas;
+- restringe os links exibidos à mesma origem e a caminhos terminados em `.html`;
+- impede que uma resposta externa crie links para destinos não autorizados.
+
+### 21.11 Fluxo técnico
+
+```text
+Visitante abre uma página
+        ↓
+chat-standalone.js identifica somente o caminho público da página
+        ↓
+SabIA apresenta texto e três atalhos relacionados ao conteúdo
+        ↓
+Visitante escolhe um atalho ou digita uma pergunta
+        ↓
+Frontend envia mensagem e histórico limitado para /api/assistente
+        ↓
+Backend aplica CORS, tamanho máximo e limitador persistente no Redis
+        ↓
+Gemini recebe a personalidade do SabIA e o contexto editorial do portal
+        ↓
+Resposta JSON é validada e exibida como mensagem, quiz ou recomendação
+        ↓
+Se a API falhar, o acervo local assume a resposta
+```
+
+A chave do Gemini permanece exclusivamente no Vercel. O navegador conhece apenas o endereço público da API.
+
+### 21.12 Acessibilidade e experiência móvel
+
+- nomes acessíveis atualizados para **SabIA, assistente educacional do Campo Digital**;
+- botão flutuante com `aria-expanded` e vínculo com o painel;
+- painel identificado como diálogo;
+- mensagens novas anunciadas por `aria-live="polite"`;
+- abas com papéis e estados de seleção;
+- fechamento por botão e tecla `Esc`;
+- foco direcionado ao campo quando o painel é aberto;
+- botões rápidos utilizáveis pelo teclado;
+- largura móvel limitada à área visível;
+- aviso de privacidade mantido no rodapé do painel.
+
+### 21.13 Cache e páginas alcançadas
+
+Para evitar que o navegador continue mostrando a identidade antiga, as referências foram atualizadas para:
+
+```text
+css/portal.css?v=20260927-1
+js/chat-standalone.js?v=20260927-1
+```
+
+A atualização foi aplicada à página inicial, Contato, Privacidade e páginas temáticas que utilizam `portal.css` ou o widget. Páginas que não carregam o widget também receberam a versão atual da folha de estilos para preservar consistência visual e facilitar manutenção.
+
+### 21.14 Publicação segura
+
+Sequência recomendada depois da aprovação visual:
+
+1. confirmar que a API pública atual continua saudável;
+2. enviar o commit aprovado para `main`;
+3. aguardar o Vercel concluir o novo deploy com estado **Ready**;
+4. testar `/health` no endereço temporário do deploy;
+5. promover o deploy para `fabcampo-api.vercel.app` somente após o teste;
+6. conferir o nome `SabIA` e o lema retornados por `/health`;
+7. testar uma pergunta real pelo domínio oficial;
+8. sincronizar o mesmo conteúdo na branch `master`;
+9. conferir os logs do Vercel e a ausência de erros;
+10. registrar os commits publicados nesta seção.
+
+O deploy do frontend e a promoção do backend devem ser tratados como uma única entrega, pois o novo comportamento depende tanto do widget quanto do prompt do servidor.
+
+### 21.15 Plano de retorno
+
+Se surgir problema após a publicação:
+
+1. manter o portal acessível — o fallback local continuará respondendo aos temas principais;
+2. verificar `/health` e os logs do Vercel;
+3. promover novamente o último deploy estável no painel do Vercel;
+4. reverter somente o commit do SabIA se o problema estiver no frontend;
+5. não apagar chaves, Redis ou domínios durante o diagnóstico;
+6. repetir os testes antes de uma nova promoção.
+
+O ponto estável anterior à personalização é o commit `134e4e0`, que contém a correção de capacidade da IA para a apresentação. A implementação local do SabIA está registrada no commit `d347103`.
+
+### 21.16 Estado atual e próximos passos
+
+Estado em 27 de setembro de 2026:
+
+- implementação funcional concluída localmente;
+- documentação funcional e técnica concluída;
+- commit local: `d347103` — `feat: apresentar SabIA inteligencia do territorio`;
+- servidor local disponível em `http://127.0.0.1:4173/index.html` durante a sessão de validação;
+- alterações ainda não enviadas às branches remotas;
+- Vercel ainda executando a personalidade anterior até a aprovação e publicação.
+
+Melhorias futuras que não bloqueiam a primeira versão:
+
+- substituir o emoji por avatar masculino autoral do SabIA;
+- produzir variações reduzida e monocromática do avatar;
+- adicionar perguntas rápidas específicas para mais páginas;
+- criar testes automatizados de interface para abertura, abas e atalhos;
+- medir apenas eventos anônimos de uso, caso a escola aprove essa coleta;
+- revisar periodicamente os dados do acervo usados no prompt.
+
+O avatar futuro deve manter o pássaro como assinatura visual, usar as cores verde, azul e amarelo do Campo Digital e evitar aparência de fotografia real. A ilustração precisa funcionar em 24 px no botão, 42 px no cabeçalho e em tamanhos maiores para materiais de apresentação.
+
