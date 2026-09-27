@@ -1181,18 +1181,20 @@ Se surgir problema após a publicação:
 5. não apagar chaves, Redis ou domínios durante o diagnóstico;
 6. repetir os testes antes de uma nova promoção.
 
-O ponto estável anterior à personalização é o commit `134e4e0`, que contém a correção de capacidade da IA para a apresentação. A implementação local do SabIA está registrada no commit `d347103`.
+O ponto estável anterior à personalização é o commit `134e4e0`, que contém a correção de capacidade da IA para a apresentação. A implementação do SabIA está registrada no commit `d347103` em `main` e no commit equivalente `6cc3805` em `master`.
 
 ### 21.16 Estado atual e próximos passos
 
 Estado em 27 de setembro de 2026:
 
-- implementação funcional concluída localmente;
-- documentação funcional e técnica concluída;
-- commit local: `d347103` — `feat: apresentar SabIA inteligencia do territorio`;
-- servidor local disponível em `http://127.0.0.1:4173/index.html` durante a sessão de validação;
-- alterações ainda não enviadas às branches remotas;
-- Vercel ainda executando a personalidade anterior até a aprovação e publicação.
+- implementação funcional, documentação e validação visual concluídas;
+- `main`: implementação `d347103` e documentação `8e0c1d2`;
+- `master`: implementação `6cc3805` e documentação `1c09339`;
+- deploy Vercel `FoMAtssFz4Zv2ZFwP8G6gNrqtfPf`, referente ao commit `8e0c1d2`, promovido para produção;
+- `/health` público validado com `assistant.name` igual a `SabIA`, lema correto, Gemini configurado e limitador Upstash ativo;
+- requisição real validada em `/api/assistente` com origem `https://fabcampo.com.br`;
+- widget online validado em `https://fabcampo.com.br/`, incluindo abertura, apresentação, quatro modos, atalhos, aviso de privacidade e resposta contextual sobre a história da comunidade;
+- publicação concluída sem alteração das variáveis, domínios ou serviços externos existentes.
 
 Melhorias futuras que não bloqueiam a primeira versão:
 
