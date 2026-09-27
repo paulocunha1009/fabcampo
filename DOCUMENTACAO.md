@@ -780,3 +780,181 @@ Atualizado com `<changefreq>` e `<priority>` em todas as 14 URLs. `lastmod` da h
 - **ALT das fotos da galeria**: melhorar os `alt` das imagens `rolo-01.jpg` a `rolo-05.jpg` quando o conteúdo fotográfico real estiver definido;
 - **Schema.org nas páginas internas**: considerar adicionar tipo `Article` nas reportagens quando houver data de publicação e autoria definidos.
 
+---
+
+## 20. Organização Financeira Rural
+
+Implementação concluída em 27 de setembro de 2026 para ampliar a pesquisa **Mudanças Climáticas Ameaçam o Futuro do Campo** com uma ferramenta educativa prática. A solução foi criada para famílias produtoras, estudantes e educadores, priorizando pessoas com pouca familiaridade com planilhas e o uso pelo celular.
+
+### 20.1 Objetivos
+
+- organizar entradas, despesas e valores reservados;
+- relacionar custos e receitas com as culturas registradas;
+- registrar produção esperada, produção realizada e perdas climáticas;
+- apoiar a criação de reserva de emergência e metas da família ou da produção;
+- apresentar os resultados em indicadores e gráficos automáticos;
+- permitir o uso no Microsoft Excel e a importação no Google Planilhas;
+- oferecer orientação visual suficiente para reduzir a necessidade de treinamento presencial.
+
+### 20.2 Integração no portal
+
+A seção principal foi adicionada a:
+
+```text
+pages/reportagem-clima.html#organizacao-financeira-rural
+```
+
+Ela contém:
+
+- apresentação da ferramenta;
+- imagem do painel financeiro;
+- três passos resumidos: baixar, preencher e acompanhar;
+- botão para baixar a planilha;
+- botão para abrir o manual;
+- aviso de uso responsável e proteção de dados pessoais.
+
+A página `pages/agricola.html` recebeu um card de acesso que encaminha o visitante diretamente para essa seção. Os cards de dados, cultivos e soluções da reportagem também foram reorganizados para melhorar alinhamento, distribuição e leitura em telas grandes e pequenas.
+
+### 20.3 Arquivos publicados
+
+Arquivos disponíveis para o visitante:
+
+```text
+downloads/organizacao-financeira/
+├── Planilha_Organizacao_Financeira_Rural_Campo_Digital_2026.xlsx
+├── Manual_Planilha_Organizacao_Financeira_Rural_Campo_Digital.pdf
+└── preview-painel-planilha.png
+```
+
+Cópias de preservação usadas pela equipe:
+
+```text
+materiais/organizacao-financeira/
+├── Planilha_Organizacao_Financeira_Rural_Campo_Digital_2026.xlsx
+└── Manual_Planilha_Organizacao_Financeira_Rural_Campo_Digital.pdf
+```
+
+As cópias de `downloads/` e `materiais/` devem permanecer idênticas. A pasta `downloads/` é a origem dos links públicos; `materiais/` mantém uma cópia organizada para preservação e manutenção.
+
+### 20.4 Estrutura da planilha
+
+A planilha possui seis abas:
+
+1. `Painel` — indicadores e gráficos automáticos;
+2. `Comece aqui` — identificação e instruções iniciais;
+3. `Lançamentos` — receitas, despesas e reservas;
+4. `Safra e clima` — produção esperada, realizada e perdas;
+5. `Metas e reserva` — reserva de emergência e objetivos;
+6. `Sobre o projeto` — identificação, finalidade educativa e créditos da ferramenta.
+
+Características técnicas:
+
+- quatro gráficos interativos;
+- fórmulas para totais, saldos, custos, perdas e metas;
+- listas de seleção para reduzir erros de digitação;
+- campos amarelos destinados ao preenchimento;
+- campos calculados identificados por outra cor;
+- proteção aplicada nas seis abas;
+- fórmulas e células críticas bloqueadas para impedir alterações acidentais;
+- campos necessários ao usuário mantidos editáveis.
+
+A proteção existe para evitar que o usuário apague fórmulas e interrompa os cálculos, o Painel ou os gráficos. Ela não substitui uma cópia de segurança. A informação administrativa usada para manutenção não deve ser colocada no manual público.
+
+### 20.5 Compatibilidade com Google Planilhas
+
+O arquivo `.xlsx` pode ser aberto no aplicativo Google Planilhas. O fluxo recomendado é:
+
+1. instalar o Google Planilhas pela loja oficial do celular;
+2. baixar o arquivo pelo portal;
+3. abrir o arquivo no aplicativo;
+4. salvar uma cópia antes do primeiro preenchimento;
+5. preencher somente os campos amarelos;
+6. consultar o Painel e os gráficos;
+7. manter uma cópia separada para cada período de uso.
+
+Importante: a proteção de células do Excel pode não ser preservada da mesma maneira após a conversão para o formato nativo do Google Planilhas. A equipe responsável deve configurar uma vez, pelo computador, as opções **Dados > Proteger páginas e intervalos**, definindo quais pessoas podem alterar as fórmulas e os campos críticos. O aplicativo de celular é o meio principal de preenchimento, mas não oferece toda a configuração administrativa de proteção.
+
+### 20.6 Manual visual
+
+O manual foi redesenhado com a identidade visual do Campo Digital e possui 12 páginas. A linguagem foi simplificada sem retirar as informações necessárias.
+
+Conteúdo abordado:
+
+- visão geral do caminho completo;
+- instalação do Google Planilhas;
+- download pelo portal;
+- abertura do arquivo e criação de uma cópia;
+- significado das cores e das abas;
+- preenchimento pelo celular;
+- registro de entradas e saídas;
+- registro de safra e impactos climáticos;
+- leitura do Painel e dos gráficos;
+- criação de reserva e meta;
+- explicação dos campos bloqueados;
+- cuidados diante de erros e orientação para voltar ao arquivo original.
+
+Foram usados prints reais das principais abas da planilha e telas ilustrativas de celular. O manual orienta o usuário a preencher somente os campos amarelos e explica que os demais campos estão bloqueados para preservar o funcionamento da ferramenta. Informações administrativas de senha não são apresentadas ao usuário.
+
+### 20.7 Scripts de manutenção
+
+Os materiais podem ser atualizados pelos seguintes arquivos:
+
+```text
+tools/build_finance_materials.py
+tools/build_finance_manual.py
+tools/update_finance_workbook.mjs
+tools/render_finance_workbook.mjs
+```
+
+Responsabilidade de cada arquivo:
+
+- `build_finance_materials.py`: gera a estrutura, fórmulas, estilos e gráficos da planilha;
+- `build_finance_manual.py`: gera o manual visual em PDF e copia a versão pública;
+- `update_finance_workbook.mjs`: aplica a proteção das abas sem remover gráficos e outros recursos nativos;
+- `render_finance_workbook.mjs`: renderiza as abas para inspeção visual e verifica erros de fórmula.
+
+Ao modificar a planilha, conferir se o processo de geração não remove gráficos, validações ou proteções. Depois de gerar os arquivos, comparar as cópias de `downloads/` e `materiais/` por hash ou tamanho e conteúdo.
+
+### 20.8 Testes realizados
+
+Antes da publicação foram executadas as seguintes verificações:
+
+- renderização e inspeção visual das 12 páginas do manual;
+- confirmação de que não existem páginas vazias, textos cortados ou conteúdo sobreposto;
+- verificação das seis abas protegidas;
+- confirmação dos quatro gráficos no arquivo XLSX;
+- busca por erros de fórmulas conhecidos;
+- verificação de todos os caminhos `href` e `src` nas páginas alteradas;
+- teste responsivo em viewport de 390 px;
+- confirmação de ausência de rolagem horizontal no celular;
+- confirmação de cards e botões em uma coluna no celular;
+- teste dos três arquivos públicos com resposta HTTP 200;
+- download da planilha e do manual no domínio oficial;
+- comparação SHA-256 entre os arquivos publicados e os arquivos locais;
+- execução dos cinco testes automatizados do backend, todos aprovados.
+
+### 20.9 Cuidados com Git
+
+O arquivo `.gitattributes` classifica os formatos abaixo como binários:
+
+```gitattributes
+*.pdf binary
+*.xlsx binary
+*.png binary
+```
+
+Essa configuração evita conversões de quebra de linha que poderiam corromper o PDF, a planilha ou a imagem durante operações do Git.
+
+Publicação realizada em:
+
+- `main`: commit `0025587` — `feat: publicar organizacao financeira rural`;
+- `master`: commit `4b2f1d4` — conteúdo equivalente aplicado sobre o histórico próprio da branch.
+
+As árvores publicadas nas duas branches foram comparadas antes do envio e estavam idênticas.
+
+### 20.10 Atualizações de autoria
+
+Nas páginas e no contexto usado pelo assistente, o nome **Alana dos Santos Felix** foi substituído por **Ana Clara Nascimento Alves**. A alteração foi aplicada nas referências da reportagem, nos créditos, no texto narrativo e no contexto do backend.
+
+Para alterações futuras de nomes, pesquisar primeiro em todo o repositório e revisar páginas, créditos, dados estruturados e conteúdo usado pelo assistente.
+
