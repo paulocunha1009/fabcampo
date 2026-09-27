@@ -1,5 +1,5 @@
 /**
- * Assistente Educacional — Widget Standalone
+ * SabIA — Inteligência do Território
  * Portal da Comunidade · EEMPC Francisco Araújo Barros · Ceará Científico 2026
  *
  * Script auto-contido: não usa import/export, funciona via file:// e http://
@@ -33,6 +33,82 @@
     }
   }
 
+  function contextoDaPagina() {
+    var caminho = decodeURIComponent(window.location.pathname || '').toLowerCase();
+    var padrao = {
+      texto: 'Estou aqui para ajudar você a aprender, pesquisar e descobrir os saberes do nosso território.',
+      acoes: [
+        ['📖 Conhecer nossa história', 'Conte de forma simples a história do Assentamento Lagoa do Mineiro.'],
+        ['🌿 Explorar plantas', 'Recomende páginas do portal sobre plantas nativas e medicinais.'],
+        ['🧠 Fazer um quiz', 'Gere 3 perguntas de quiz sobre os principais temas do Campo Digital.']
+      ]
+    };
+
+    if (caminho.includes('reportagem-clima')) return {
+      texto: 'Vejo que você está pesquisando clima e agricultura. Posso explicar os impactos, os dados da pesquisa ou ajudar a estudar o tema.',
+      acoes: [
+        ['🌦️ Entender os impactos', 'Explique de forma simples os impactos das mudanças climáticas apresentados nesta pesquisa.'],
+        ['📊 Conhecer os dados', 'Resuma os principais dados da pesquisa sobre clima e agricultura familiar.'],
+        ['🧠 Fazer um quiz', 'Gere 3 perguntas de quiz sobre mudanças climáticas e agricultura familiar.']
+      ]
+    };
+    if (caminho.includes('agricola')) return {
+      texto: 'Estamos no território da produção agrícola. Posso explicar os cultivos, a COPAGLAM e as práticas sustentáveis.',
+      acoes: [
+        ['🌾 Ver os cultivos', 'Explique quais são os principais cultivos do assentamento.'],
+        ['🤝 Conhecer a COPAGLAM', 'Explique de forma simples o que é a COPAGLAM e sua importância.'],
+        ['💰 Organização financeira', 'Explique como a organização financeira pode ajudar as famílias agricultoras.']
+      ]
+    };
+    if (caminho.includes('medicinais')) return {
+      texto: 'Você está conhecendo as plantas medicinais. Posso ajudar a pesquisar espécies, usos tradicionais e cuidados importantes.',
+      acoes: [
+        ['🌿 Conhecer as plantas', 'Apresente as plantas medicinais documentadas no portal.'],
+        ['⚕️ Ver os cuidados', 'Quais cuidados devo ter ao pesquisar usos de plantas medicinais?'],
+        ['🧠 Fazer um quiz', 'Gere 3 perguntas de quiz sobre plantas medicinais da Caatinga.']
+      ]
+    };
+    if (caminho.includes('plantação-nativa') || caminho.includes('catalogo') || caminho.includes('mudas')) return {
+      texto: 'Este espaço reúne a biodiversidade do território. Posso apresentar espécies, biomas e caminhos para continuar a pesquisa.',
+      acoes: [
+        ['🌳 Conhecer espécies', 'Apresente as principais espécies nativas documentadas no portal.'],
+        ['🗺️ Entender os biomas', 'Explique de forma simples os biomas presentes no território.'],
+        ['🔎 Explorar o catálogo', 'Recomende páginas do portal sobre plantas nativas e biodiversidade.']
+      ]
+    };
+    if (caminho.includes('historia') || caminho.includes('memoria')) return {
+      texto: 'Aqui vivem as memórias e as lutas da comunidade. Posso explicar a linha do tempo, os personagens e os acontecimentos históricos.',
+      acoes: [
+        ['📜 Ouvir a história', 'Conte de forma simples a história do Assentamento Lagoa do Mineiro.'],
+        ['🕰️ Ver a linha do tempo', 'Resuma os principais marcos históricos do assentamento em ordem.'],
+        ['🧠 Fazer um quiz', 'Gere 3 perguntas de quiz sobre a história do assentamento.']
+      ]
+    };
+    if (caminho.includes('reportagem-educacao')) return {
+      texto: 'Você está conhecendo a Educação do Campo. Posso explicar a Alternância, as Místicas e a relação entre escola e comunidade.',
+      acoes: [
+        ['📚 Entender a Alternância', 'Explique de forma simples a Pedagogia da Alternância.'],
+        ['🎭 Conhecer as Místicas', 'Explique o que são as Místicas na Educação do Campo.'],
+        ['🧠 Fazer um quiz', 'Gere 3 perguntas de quiz sobre Educação do Campo.']
+      ]
+    };
+    if (caminho.includes('expedicao')) return {
+      texto: 'Vamos percorrer o território? Posso ajudar você a escolher um marco, compreender o acervo e seguir os desafios.',
+      acoes: [
+        ['🧭 Começar a expedição', 'Explique como funciona a Expedição no Território.'],
+        ['📍 Conhecer os marcos', 'Apresente os principais marcos históricos do território.'],
+        ['🔎 Explorar o portal', 'Recomende páginas para conhecer o Assentamento Lagoa do Mineiro.']
+      ]
+    };
+    return padrao;
+  }
+
+  function htmlAcoes(acoes) {
+    return acoes.map(function (acao) {
+      return '<button class="ai-atalho" type="button" data-pergunta="' + escaparHTML(acao[1]) + '">' + escaparHTML(acao[0]) + '</button>';
+    }).join('');
+  }
+
   // ── Bootstrap ────────────────────────────────────────────────────────────────
   function iniciar() {
     if (document.querySelector('.ai-chat')) return;
@@ -43,30 +119,34 @@
 
   // ── HTML do widget ───────────────────────────────────────────────────────────
   function criarElemento() {
+    var contexto = contextoDaPagina();
     var secao = document.createElement('section');
     secao.className = 'ai-chat';
     secao.dataset.open = 'false';
-    secao.setAttribute('aria-label', 'Assistente educacional com IA');
+    secao.setAttribute('aria-label', 'SabIA, assistente educacional do Campo Digital');
 
     secao.innerHTML = [
-      '<button class="ai-chat__toggle" type="button" aria-label="Abrir assistente educacional" aria-expanded="false" aria-controls="ai-chat-painel">',
-      '  <span aria-hidden="true">🤖</span>',
-      '  <span>Assistente IA</span>',
+      '<button class="ai-chat__toggle" type="button" aria-label="Falar com o SabIA" aria-expanded="false" aria-controls="ai-chat-painel">',
+      '  <span aria-hidden="true">🐦</span>',
+      '  <span>Fale com o SabIA</span>',
       '</button>',
 
       '<div class="ai-chat__painel" id="ai-chat-painel"',
       '     role="dialog" aria-labelledby="ai-chat-titulo" aria-modal="true">',
 
       '  <div class="ai-chat__cabecalho">',
-      '    <div>',
-      '      <strong id="ai-chat-titulo">Assistente Educacional</strong>',
-      '      <small>Portal da Comunidade · Ceará Científico</small>',
+      '    <div class="ai-chat__identidade">',
+      '      <span class="ai-chat__avatar" aria-hidden="true">🐦</span>',
+      '      <span><strong id="ai-chat-titulo">SabIA</strong>',
+      '      <small>Inteligência do Território</small>',
+      '      <span class="ai-chat__status">Disponível para ajudar</span></span>',
       '    </div>',
       '    <button class="ai-chat__fechar" type="button" aria-label="Fechar assistente">✕</button>',
       '  </div>',
 
       '  <div class="ai-chat__tabs" role="tablist" aria-label="Modos do assistente">',
-      '    <button class="ai-chat__tab ai-chat__tab--ativo" type="button" data-modo="chat" role="tab" aria-selected="true">💬 Chat</button>',
+      '    <button class="ai-chat__tab ai-chat__tab--ativo" type="button" data-modo="chat" role="tab" aria-selected="true">💬 Perguntar</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="aprender" role="tab" aria-selected="false">📖 Aprender</button>',
       '    <button class="ai-chat__tab" type="button" data-modo="quiz" role="tab" aria-selected="false">🧠 Quiz</button>',
       '    <button class="ai-chat__tab" type="button" data-modo="explorar" role="tab" aria-selected="false">🔍 Explorar</button>',
       '  </div>',
@@ -80,12 +160,11 @@
       '  </div>',
 
       '  <div class="ai-chat__mensagens" id="ai-chat-msgs" aria-live="polite" aria-label="Conversa com o assistente">',
-      '    <div class="ai-msg ai-msg--bot">',
-      '      Olá! Sou o assistente educacional do Portal da Comunidade.<br>',
-      '      Posso responder dúvidas, gerar quizzes e recomendar páginas. 🌱<br>',
-      '      <small style="color:var(--cor-texto-suave,#6b7280);font-size:0.75rem;">',
-      '        Use as abas acima para mudar de modo.',
-      '      </small>',
+      '    <div class="ai-msg ai-msg--bot ai-boas-vindas">',
+      '      <strong>🐦 Olá! Eu sou o SabIA.</strong>',
+      '      <span>' + escaparHTML(contexto.texto) + '</span>',
+      '      <small>Uma inteligência que aprende com o território para ajudar a aprender, pesquisar e transformar.</small>',
+      '      <div class="ai-atalhos" aria-label="Sugestões para começar">' + htmlAcoes(contexto.acoes) + '</div>',
       '    </div>',
       '  </div>',
 
@@ -104,10 +183,13 @@
 
   // ── Eventos ──────────────────────────────────────────────────────────────────
   function vincularEventos(chat) {
+    if (chat.dataset.eventsBound === 'true') return;
+    chat.dataset.eventsBound = 'true';
     var toggle    = chat.querySelector('.ai-chat__toggle');
     var fechar    = chat.querySelector('.ai-chat__fechar');
     var tabs      = chat.querySelectorAll('.ai-chat__tab');
     var topicos   = chat.querySelectorAll('.ai-topico');
+    var atalhos   = chat.querySelectorAll('.ai-atalho');
     var areaTop   = chat.querySelector('[data-topicos]');
     var mensagens = chat.querySelector('.ai-chat__mensagens');
     var formulario= chat.querySelector('.ai-chat__form');
@@ -129,6 +211,7 @@
         });
         areaTop.style.display = modoAtivo === 'quiz' ? 'flex' : 'none';
         campo.placeholder = modoAtivo === 'quiz'     ? 'Ex: quiz sobre plantas medicinais...'
+                          : modoAtivo === 'aprender' ? 'Ex: explique a Pedagogia da Alternância...'
                           : modoAtivo === 'explorar' ? 'Ex: onde leio sobre a história?'
                           :                            'Digite sua dúvida...';
         campo.focus();
@@ -141,6 +224,12 @@
       });
     });
 
+    atalhos.forEach(function (atalho) {
+      atalho.addEventListener('click', function () {
+        enviar(atalho.dataset.pergunta, mensagens, campo, atalho.textContent.trim());
+      });
+    });
+
     formulario.addEventListener('submit', function (e) {
       e.preventDefault();
       var texto = campo.value.trim();
@@ -150,6 +239,8 @@
       var mensagemReal = texto;
       if (modoAtivo === 'quiz' && !texto.toLowerCase().includes('quiz') && !texto.toLowerCase().includes('pergunta')) {
         mensagemReal = 'Gere 3 perguntas de quiz sobre: ' + texto;
+      } else if (modoAtivo === 'aprender') {
+        mensagemReal = 'Explique de forma simples, com um exemplo ligado ao território: ' + texto;
       } else if (modoAtivo === 'explorar') {
         mensagemReal = 'Recomende páginas do portal sobre: ' + texto;
       }
@@ -272,7 +363,7 @@
     // ── 4. MODO CHAT — perguntas gerais (sem backend disponível) ─────────────
     return {
       type: 'message',
-      content: '⏳ Estou reconectando com o assistente de IA... Tente novamente em alguns segundos!\n\n**Enquanto isso, posso te ajudar com:**\n• 📜 História do Assentamento Lagoa do Mineiro\n• 🌿 Plantas Medicinais da Caatinga\n• 🌳 Plantas Nativas (Caatinga, Restinga, Manguezal)\n• 🌾 Produção Agrícola e COPAGLAM\n• 📚 Educação do Campo e Alternância\n\nOu clique em **🔍 Explorar** para navegar pelas páginas do portal!'
+        content: '🐦 O SabIA está usando o acervo local enquanto recupera a conexão. Posso ajudar com história do assentamento, plantas medicinais, plantas nativas, produção agrícola, mudanças climáticas e Educação do Campo. Você também pode usar a opção Explorar para encontrar páginas do portal.'
     };
   }
 

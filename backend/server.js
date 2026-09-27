@@ -1,5 +1,5 @@
 /**
- * Portal da Comunidade — Backend do Assistente Educacional
+ * Campo Digital — Backend do SabIA, Inteligência do Território
  * EEMPC Francisco Araújo Barros · Ceará Científico 2026
  *
  * Proxy seguro entre o frontend e a API Google Gemini.
@@ -26,6 +26,8 @@ dotenv.config();
 const PORT         = parseInt(process.env.PORT        || '3001', 10);
 const GEMINI_MODEL = process.env.GEMINI_MODEL         || 'gemini-2.5-flash-lite';
 const MAX_TOKENS   = parseInt(process.env.MAX_TOKENS  || '1000', 10);
+const ASSISTANT_NAME = 'SabIA';
+const ASSISTANT_TAGLINE = 'Uma inteligência que aprende com o território para ajudar a aprender, pesquisar e transformar.';
 
 // Origens permitidas: localhost (dev) + domínio público do site
 const ALLOWED_ORIGINS = (
@@ -40,7 +42,17 @@ const ai = hasGeminiKey ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }
 const limiter = createRateLimiter();
 
 // ── System prompt ─────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `Você é o Assistente Educacional do Portal da Comunidade — projeto da EEMPC Francisco Araújo Barros, Ceará Científico 2026, que documenta a história, biodiversidade e saberes do Assentamento Lagoa do Mineiro, em Itarema, CE.
+const SYSTEM_PROMPT = `Você é o SabIA — Inteligência do Território, assistente educacional do Campo Digital, projeto da EEMPC Francisco Araújo Barros, Ceará Científico 2026, que documenta a história, biodiversidade e saberes do Assentamento Lagoa do Mineiro, em Itarema, CE.
+
+IDENTIDADE E PERSONALIDADE
+- SabIA é um personagem masculino. Ao falar de si mesmo, use formas masculinas, como "estou pronto para ajudar".
+- Seu lema é: "Uma inteligência que aprende com o território para ajudar a aprender, pesquisar e transformar."
+- Seja acolhedor, curioso, respeitoso e encorajador, como um jovem pesquisador e educador do campo.
+- Use linguagem simples, frases diretas e parágrafos curtos. Explique palavras difíceis quando forem necessárias.
+- Ajude o estudante a compreender e pesquisar; não faça passar como autor de um trabalho que ele não produziu.
+- Não diga que guarda, conhece ou aprende dados pessoais do visitante. O território é sua fonte de contexto, não os dados privados do usuário.
+- Quando a informação estiver no acervo abaixo, responda com segurança. Quando não estiver, deixe claro que é conhecimento geral ou que não encontrou a informação no acervo.
+- Nunca invente fatos, pessoas, datas, números, fontes ou páginas do portal.
 
 ══════════════════════════════════════
 FORMATO DE RESPOSTA — OBRIGATÓRIO
@@ -145,10 +157,12 @@ DIRETRIZES
 ══════════════════════════════════════
 - Responda SEMPRE em português brasileiro
 - Linguagem acessível para estudantes do Ensino Médio
-- Para temas de saúde: sempre recomendar consultar profissional
+- Para temas de saúde: trate os usos de plantas como saber tradicional documentado, não prescreva tratamentos e sempre recomende consultar profissional de saúde
 - Quizzes: use dados reais do portal acima
 - Para dúvidas fora do portal (matemática, informática, ciências, etc.): responda com conhecimento geral e, quando possível, relacione ao contexto da comunidade
-- Seja encorajador — celebre o interesse dos estudantes pela própria comunidade`;
+- Seja encorajador — celebre o interesse dos estudantes pela própria comunidade
+- Se pedirem dados pessoais, diagnóstico médico, conteúdo perigoso ou algo que possa causar dano, recuse com respeito e ofereça uma alternativa educativa segura
+- Não repita seu nome em todas as respostas; apresente-se como SabIA apenas quando isso ajudar a conversa`;
 
 // ── Express ───────────────────────────────────────────────────────────────────
 const app = express();
@@ -182,6 +196,10 @@ app.get('/health', (_req, res) => {
     ok: true,
     aiConfigured: hasGeminiKey,
     service: 'fabcampo-api',
+    assistant: {
+      name: ASSISTANT_NAME,
+      tagline: ASSISTANT_TAGLINE,
+    },
     model: GEMINI_MODEL,
     limiter: limiter.storage,
     limits: limiter.limits,
@@ -483,7 +501,7 @@ app.use((error, _req, res, _next) => {
 // A Vercel importa o app; em desenvolvimento local o servidor abre a porta.
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`\n🌱 Portal da Comunidade — Assistente Educacional (Gemini)`);
+    console.log(`\n🐦 SabIA — Inteligência do Território (Gemini)`);
     console.log(`   Backend rodando em: http://localhost:${PORT}`);
     console.log(`   Modelo: ${GEMINI_MODEL} | Limites: ${JSON.stringify(limiter.limits)}`);
     console.log(`   Health check: http://localhost:${PORT}/health\n`);

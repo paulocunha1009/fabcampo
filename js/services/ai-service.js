@@ -1,5 +1,5 @@
 /**
- * Serviço de comunicação com o Assistente Educacional
+ * Serviço de comunicação com o SabIA — Inteligência do Território
  * O endpoint é configurado via window.PORTAL_AI_ENDPOINT.
  * Se não configurado, aponta para localhost:3001 (desenvolvimento local).
  */
@@ -44,7 +44,7 @@ function respostaLocal(pergunta) {
   if (t.includes('quiz') || t.includes('me test') || t.includes('pergunta sobre')) {
     return {
       type: 'message',
-      content: 'A IA está temporariamente indisponível, então continuaremos com os conteúdos e atividades locais do portal. Escolha História, Plantas Medicinais, Produção Agrícola, Educação ou Plantas Nativas. 🧠',
+      content: 'O SabIA está usando o acervo local enquanto recupera a conexão. Escolha História, Plantas Medicinais, Produção Agrícola, Educação ou Plantas Nativas. 🧠',
     };
   }
 

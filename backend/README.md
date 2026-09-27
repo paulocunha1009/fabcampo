@@ -1,6 +1,6 @@
 # API do Portal da Comunidade
 
-Backend Express para o Assistente Educacional, atividades da Expedição e do Catálogo e notícias externas. A API usa Google Gemini e foi preparada para execução local e na Vercel.
+Backend Express para o **SabIA — Inteligência do Território**, atividades da Expedição e do Catálogo e notícias externas. A API usa Google Gemini e foi preparada para execução local e na Vercel.
 
 ## Rotas
 
