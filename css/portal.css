@@ -1482,6 +1482,13 @@ body.menu-aberto .cabecalho {
   font-weight: 800;
   padding: 12px 16px;
   box-shadow: var(--sombra);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.ai-chat__toggle:hover {
+  transform: translateY(-2px);
+  background: #0a5130;
+  box-shadow: 0 12px 30px rgba(5, 61, 35, 0.26);
 }
 
 .ai-chat__painel {
@@ -1510,6 +1517,24 @@ body.menu-aberto .cabecalho {
   padding: 14px 16px;
 }
 
+.ai-chat__identidade {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-chat__avatar {
+  display: grid;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 1.35rem;
+}
+
 .ai-chat__cabecalho strong,
 .ai-chat__cabecalho small {
   display: block;
@@ -1517,6 +1542,24 @@ body.menu-aberto .cabecalho {
 
 .ai-chat__cabecalho small {
   color: rgba(255, 255, 255, 0.78);
+}
+
+.ai-chat__status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.65rem;
+}
+
+.ai-chat__status::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #86efac;
+  box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.15);
+  content: '';
 }
 
 .ai-chat__mensagens {
@@ -1540,6 +1583,56 @@ body.menu-aberto .cabecalho {
 .ai-msg--user {
   justify-self: end;
   background: #f7ead7;
+}
+
+.ai-boas-vindas {
+  display: grid;
+  gap: 7px;
+  border: 1px solid #d7e8db;
+  background: linear-gradient(145deg, #f2faf3, #fffdf5);
+}
+
+.ai-boas-vindas > strong {
+  color: var(--cor-primaria-escura);
+  font-size: 0.96rem;
+}
+
+.ai-boas-vindas > span {
+  color: var(--cor-texto);
+}
+
+.ai-boas-vindas > small {
+  color: var(--cor-texto-suave);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.ai-atalhos {
+  display: grid;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.ai-atalho {
+  width: 100%;
+  border: 1px solid var(--cor-borda);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--cor-primaria-escura);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.3;
+  padding: 8px 10px;
+  text-align: left;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+
+.ai-atalho:hover,
+.ai-atalho:focus-visible {
+  border-color: var(--cor-primaria);
+  background: #f0f8f2;
+  transform: translateX(2px);
 }
 
 .ai-chat form {
@@ -1599,7 +1692,7 @@ body.menu-aberto .cabecalho {
   border: none;
   background: none;
   padding: 9px 4px;
-  font-size: 0.73rem;
+  font-size: 0.69rem;
   font-weight: 600;
   color: var(--cor-texto-suave);
   cursor: pointer;

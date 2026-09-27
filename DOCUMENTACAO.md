@@ -958,3 +958,110 @@ Nas páginas e no contexto usado pelo assistente, o nome **Alana dos Santos Feli
 
 Para alterações futuras de nomes, pesquisar primeiro em todo o repositório e revisar páginas, créditos, dados estruturados e conteúdo usado pelo assistente.
 
+## 21. SabIA — Inteligência do Território
+
+### 21.1 Objetivo
+
+O assistente do Campo Digital recebeu uma identidade própria: **SabIA — Inteligência do Território**.
+
+Lema oficial:
+
+> Uma inteligência que aprende com o território para ajudar a aprender, pesquisar e transformar.
+
+SabIA é apresentado como um personagem masculino, acolhedor e ligado à pesquisa escolar, à Educação do Campo e aos saberes do Assentamento Lagoa do Mineiro. O símbolo inicial é o pássaro `🐦`, escolhido pela relação direta com o nome sabiá, com a voz e com o território. O emoji poderá ser substituído futuramente por uma ilustração autoral sem alterar o nome ou o comportamento do assistente.
+
+### 21.2 Sprint 1 — Identidade e interface
+
+Alterações implementadas:
+
+- botão flutuante renomeado para **Fale com o SabIA**;
+- símbolo do robô substituído pelo pássaro `🐦`;
+- cabeçalho com nome, subtítulo **Inteligência do Território** e estado **Disponível para ajudar**;
+- apresentação inicial com o lema oficial;
+- abas reorganizadas em **Perguntar**, **Aprender**, **Quiz** e **Explorar**;
+- inclusão de botões rápidos para ajudar quem não sabe o que perguntar;
+- identidade visual integrada às cores verdes, aos cartões e aos cantos arredondados do portal;
+- manutenção dos avisos de privacidade e da navegação por teclado.
+
+### 21.3 Sprint 2 — Apresentação dinâmica por página
+
+O widget lê apenas o caminho público da página atual e adapta a mensagem inicial. Nenhum dado pessoal do visitante é usado ou armazenado.
+
+Contextos previstos:
+
+- início: apresentação geral do Campo Digital;
+- História e Memória: linha do tempo, personagens e luta da comunidade;
+- Produção Agrícola: cultivos, COPAGLAM e organização financeira;
+- Mudanças Climáticas: impactos, dados da pesquisa e quiz;
+- Plantas Medicinais: espécies, usos tradicionais e cuidados;
+- Plantação Nativa, Catálogo e Mudas: espécies, biomas e biodiversidade;
+- Educação do Campo: Alternância, Místicas e relação escola-comunidade;
+- Expedição: marcos históricos e orientação da experiência.
+
+Cada contexto oferece três ações iniciais relacionadas ao conteúdo aberto. As ações enviam perguntas completas ao SabIA, mas mostram ao visitante apenas rótulos simples e objetivos.
+
+### 21.4 Sprint 3 — Personalidade e segurança no backend
+
+O prompt principal do backend determina que o SabIA:
+
+- fale em português brasileiro e com linguagem acessível;
+- use formas masculinas ao falar de si mesmo;
+- seja acolhedor, curioso, respeitoso e encorajador;
+- diferencie informações do acervo de conhecimento geral;
+- não invente fatos, pessoas, datas, números, fontes ou páginas;
+- ajude o estudante a compreender e pesquisar, sem assumir autoria indevida de trabalhos;
+- não afirme que aprende ou guarda dados pessoais do visitante;
+- trate plantas medicinais como saber tradicional documentado, sem prescrever tratamentos;
+- recuse pedidos perigosos ou envolvendo dados pessoais e ofereça alternativa educativa segura.
+
+O endpoint `/health` passa a informar também o nome e o lema públicos do assistente. Nenhuma chave ou configuração secreta é exposta.
+
+### 21.5 Sprint 4 — Continuidade sem conexão
+
+O acervo local continua disponível quando a API ou a cota externa estiver temporariamente indisponível. A mensagem de contingência foi reescrita na identidade do SabIA e orienta o visitante para História, Plantas, Produção Agrícola, Clima, Educação e navegação no portal.
+
+Essa estratégia evita que uma falha externa deixe o widget sem resposta durante aulas ou apresentações.
+
+### 21.6 Arquivos principais
+
+```text
+js/chat-standalone.js
+css/portal.css
+backend/server.js
+backend/test/api.test.js
+js/components/chat-widget.js
+js/services/ai-service.js
+```
+
+O arquivo `chat-standalone.js` é o widget efetivamente carregado pelas páginas atuais. O componente modular foi atualizado na identidade textual para impedir que uma futura reutilização recupere o nome antigo.
+
+### 21.7 Validação prevista antes da publicação
+
+- validar sintaxe dos arquivos JavaScript;
+- executar todos os testes automatizados do backend;
+- conferir apresentação na página inicial e em páginas temáticas;
+- testar os quatro modos do widget;
+- testar os botões rápidos;
+- testar teclado, fechamento por `Esc` e foco do campo;
+- verificar visual em desktop e celular;
+- confirmar que não existe rolagem horizontal;
+- testar resposta real da API e fallback local;
+- publicar primeiro em ambiente de validação e somente depois promover à produção.
+
+### 21.8 Resultado da validação local da sprint
+
+Validação executada em 27 de setembro de 2026:
+
+- sintaxe aprovada em `chat-standalone.js`, `chat-widget.js`, `ai-service.js` e `server.js`;
+- cinco testes automatizados do backend aprovados;
+- apresentação geral conferida na página inicial;
+- apresentação contextual conferida na reportagem de mudanças climáticas;
+- atalho **Entender os impactos** enviou a pergunta e recebeu resposta válida da API;
+- modos **Perguntar**, **Aprender**, **Quiz** e **Explorar** exibidos corretamente;
+- viewport móvel validado sem rolagem horizontal (`scrollWidth` igual à largura útil);
+- cache dos arquivos `portal.css` e `chat-standalone.js` atualizado nas páginas para a versão `20260927-1`;
+- fallback local preservado;
+- nenhum segredo foi adicionado ao código ou à documentação.
+
+Nesta etapa, as alterações permanecem para validação visual local antes da publicação nas branches e da promoção do backend no Vercel.
+

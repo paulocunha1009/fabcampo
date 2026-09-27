@@ -1,7 +1,7 @@
 {
   "name": "fabcampo-api",
   "version": "2.0.0",
-  "description": "Backend seguro do Assistente Educacional — Portal da Comunidade · Ceará Científico 2026",
+  "description": "Backend seguro do SabIA — Inteligência do Território · Campo Digital",
   "type": "module",
   "main": "server.js",
   "scripts": {

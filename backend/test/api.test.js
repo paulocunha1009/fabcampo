@@ -34,6 +34,8 @@ test('health informa serviço, modelo e limites sem expor segredos', async () =>
   const body = await response.json();
   assert.equal(body.ok, true);
   assert.equal(body.service, 'fabcampo-api');
+  assert.equal(body.assistant.name, 'SabIA');
+  assert.match(body.assistant.tagline, /território/);
   assert.equal(body.limits.globalDay, 200);
   assert.equal('apiKey' in body, false);
 });

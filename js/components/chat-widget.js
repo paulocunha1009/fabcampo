@@ -1,5 +1,5 @@
 /**
- * Assistente Educacional — Widget de Chat
+ * SabIA — Inteligência do Território (componente modular legado)
  * Portal da Comunidade · EEMPC Francisco Araújo Barros · Ceará Científico 2026
  *
  * Modos:
@@ -46,14 +46,14 @@ function criarElemento() {
   const secao = document.createElement('section');
   secao.className = 'ai-chat';
   secao.dataset.open = 'false';
-  secao.setAttribute('aria-label', 'Assistente educacional com IA');
+  secao.setAttribute('aria-label', 'SabIA, assistente educacional do Campo Digital');
 
   secao.innerHTML = `
     <!-- Botão flutuante -->
     <button class="ai-chat__toggle" type="button"
-            aria-label="Abrir assistente educacional" aria-expanded="false" aria-controls="ai-chat-painel">
-      <span aria-hidden="true">🤖</span>
-      <span>Assistente IA</span>
+            aria-label="Falar com o SabIA" aria-expanded="false" aria-controls="ai-chat-painel">
+      <span aria-hidden="true">🐦</span>
+      <span>Fale com o SabIA</span>
     </button>
 
     <!-- Painel principal -->
@@ -63,8 +63,8 @@ function criarElemento() {
       <!-- Cabeçalho -->
       <div class="ai-chat__cabecalho">
         <div>
-          <strong id="ai-chat-titulo">Assistente Educacional</strong>
-          <small>Portal da Comunidade · Ceará Científico</small>
+          <strong id="ai-chat-titulo">SabIA</strong>
+          <small>Inteligência do Território</small>
         </div>
         <button class="ai-chat__fechar" type="button" aria-label="Fechar assistente">✕</button>
       </div>
@@ -72,7 +72,7 @@ function criarElemento() {
       <!-- Abas de modo -->
       <div class="ai-chat__tabs" role="tablist" aria-label="Modos do assistente">
         <button class="ai-chat__tab ai-chat__tab--ativo" type="button"
-                data-modo="chat" role="tab" aria-selected="true">💬 Chat</button>
+                data-modo="chat" role="tab" aria-selected="true">💬 Perguntar</button>
         <button class="ai-chat__tab" type="button"
                 data-modo="quiz" role="tab" aria-selected="false">🧠 Quiz</button>
         <button class="ai-chat__tab" type="button"
@@ -93,10 +93,10 @@ function criarElemento() {
       <div class="ai-chat__mensagens" id="ai-chat-msgs"
            aria-live="polite" aria-label="Conversa com o assistente">
         <div class="ai-msg ai-msg--bot">
-          Olá! Sou o assistente educacional do Portal da Comunidade.<br>
-          Posso responder dúvidas, gerar quizzes e recomendar páginas. 🌱<br>
+          🐦 Olá! Eu sou o SabIA.<br>
+          Estou aqui para ajudar você a aprender, pesquisar e descobrir os saberes do nosso território.<br>
           <small style="color:var(--cor-texto-suave);font-size:0.75rem;">
-            Use as abas acima para mudar de modo.
+            Uma inteligência que aprende com o território para ajudar a aprender, pesquisar e transformar.
           </small>
         </div>
       </div>
