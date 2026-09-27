@@ -85,6 +85,15 @@ O assistente, os desafios da Expedição e as atividades do Catálogo estão con
 
 Nenhuma chave deve ser colocada no JavaScript, no GitHub ou na documentação. Consulte [backend/DEPLOY_VERCEL.md](backend/DEPLOY_VERCEL.md) para configuração e [OPERACAO_E_RECUPERACAO.md](OPERACAO_E_RECUPERACAO.md) para manutenção.
 
+## Organização Financeira Rural
+
+A reportagem sobre mudanças climáticas oferece uma planilha educativa para famílias produtoras registrarem receitas, despesas, perdas climáticas, reservas e metas. O recurso inclui gráficos, campos críticos protegidos e um manual visual voltado ao uso pelo celular com Google Planilhas.
+
+- acesso: `pages/reportagem-clima.html#organizacao-financeira-rural`;
+- arquivos públicos: `downloads/organizacao-financeira/`;
+- cópias de preservação: `materiais/organizacao-financeira/`;
+- documentação técnica e manutenção: seção 20 de [DOCUMENTACAO.md](DOCUMENTACAO.md).
+
 ## Documentação da implantação
 
 As decisões executadas estão em [DECISOES_IMPLANTACAO_VERCEL.md](DECISOES_IMPLANTACAO_VERCEL.md). A configuração atual está em [backend/DEPLOY_VERCEL.md](backend/DEPLOY_VERCEL.md).
