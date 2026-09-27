@@ -83,17 +83,23 @@
     /* Grid de cultivos */
     .grade-cultivos {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: 1fr;
+      gap: 16px;
       margin: 1.5rem 0;
     }
     .cultivo-card {
+      display: flex;
+      min-height: 124px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       background: linear-gradient(145deg, #fff, #f7faf5);
       border: 1px solid rgba(36, 107, 58, 0.14);
-      border-radius: 16px;
-      padding: 1rem 0.75rem;
+      border-radius: 18px;
+      padding: 18px 12px;
       text-align: center;
-      box-shadow: 0 7px 18px rgba(21, 65, 45, 0.06);
+      box-shadow: 0 10px 24px rgba(15, 63, 37, 0.09);
       transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
     .cultivo-card:hover {
@@ -161,16 +167,20 @@
     /* Grid de soluções futuras */
     .grade-solucoes {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: 1fr;
+      gap: 20px;
       margin: 1.5rem 0;
     }
     .solucao-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 178px;
       background: linear-gradient(135deg, #eef7ef, #fff);
       border: 1px solid rgba(36,107,58,0.2);
       border-radius: 18px;
-      padding: 1.25rem;
-      box-shadow: 0 8px 22px rgba(21, 65, 45, 0.07);
+      padding: 24px;
+      box-shadow: 0 10px 24px rgba(15,63,37,0.1);
       transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
     .solucao-card:hover {
@@ -179,21 +189,26 @@
       box-shadow: 0 16px 34px rgba(21, 65, 45, 0.13);
     }
     .solucao-card__icone {
-      font-size: 1.5rem;
-      display: block;
-      margin-bottom: 0.5rem;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 0.75rem;
+      border-radius: 13px;
+      background: rgba(36,107,58,0.09);
+      font-size: 1.4rem;
     }
     .solucao-card strong {
       display: block;
       color: var(--cor-primaria-escura);
       margin-bottom: 0.4rem;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
     .solucao-card p {
       color: var(--cor-texto-suave);
-      font-size: 0.82rem;
+      font-size: 0.86rem;
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     /* Bloco de dado destacado (número grande com contexto) */
@@ -310,18 +325,97 @@
       background: var(--cor-borda);
     }
 
+    .grade-dados-pesquisa {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+    .grade-dados-pesquisa .card-personagem { min-width: 0; }
+    .grade-dados-pesquisa .card-personagem__foto {
+      aspect-ratio: auto;
+      height: 104px;
+      font-size: 2rem !important;
+    }
+    .grade-dados-pesquisa .card-personagem__info {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      padding: 18px 18px 22px;
+    }
+    .grade-dados-pesquisa .card-personagem__info p {
+      margin-bottom: 0;
+      text-align: left;
+      hyphens: none;
+    }
+
+    .recurso-financeiro { scroll-margin-top:110px; margin:2.5rem 0; padding:clamp(1.25rem,3vw,2rem); border:1px solid rgba(36,107,58,.2); border-radius:22px; background:linear-gradient(145deg,#fff 0%,#f3f8ef 62%,#eef6fa 100%); box-shadow:0 16px 38px rgba(18,65,43,.1); overflow:hidden; }
+    .recurso-financeiro__cabecalho { max-width:760px; }
+    .recurso-financeiro__cabecalho h2 { margin:.55rem 0 .65rem; color:#0b4b31; font-size:clamp(1.65rem,3vw,2.25rem); line-height:1.12; }
+    .recurso-financeiro__cabecalho p { margin:0; }
+    .recurso-financeiro__selo { display:inline-flex; padding:.4rem .7rem; border-radius:999px; color:#075e91; background:#e1f2ff; font-size:.72rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .recurso-financeiro__preview { margin:1.5rem 0; padding:.65rem; border-radius:18px; background:#fff; box-shadow:0 10px 24px rgba(18,65,43,.08); }
+    .recurso-financeiro__preview img { display:block; width:100%; height:auto; border-radius:12px; }
+    .recurso-financeiro__preview figcaption { padding:.7rem .4rem .2rem; color:#52645a; font-size:.82rem; text-align:center; }
+    .recurso-financeiro__passos { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin:1.5rem 0; align-items:stretch; }
+    .recurso-passo { position:relative; display:flex; gap:.9rem; align-items:flex-start; min-height:164px; padding:24px 24px 27px; border:1px solid rgba(36,107,58,.14); border-radius:18px; background:radial-gradient(circle at 100% 0,rgba(31,111,59,.13) 0,rgba(31,111,59,.13) 68px,transparent 69px),linear-gradient(145deg,#fff 0%,#f5faf5 100%); box-shadow:0 10px 24px rgba(15,63,37,.1); overflow:hidden; transition:transform 180ms ease,box-shadow 180ms ease; }
+    .recurso-passo::after { content:''; position:absolute; right:0; bottom:0; left:0; height:4px; background:#24753f; }
+    .recurso-passo:nth-child(2)::after { background:#1678b3; }
+    .recurso-passo:nth-child(3)::after { background:#efb51c; }
+    .recurso-passo:hover { transform:translateY(-4px); box-shadow:0 12px 26px rgba(18,65,43,.11); }
+    .recurso-passo > span { display:grid; place-items:center; flex:0 0 38px; min-height:38px; border-radius:12px; color:#fff; background:linear-gradient(145deg,#17733f,#0d567a); font-size:.72rem; font-weight:900; }
+    .recurso-passo strong { display:block; color:#0b4b31; font-size:1rem; }
+    .recurso-passo p { margin:.35rem 0 0; color:#45594d; font-size:.88rem; line-height:1.55; }
+    .recurso-financeiro__downloads { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; align-items:stretch; }
+    .recurso-download { display:flex; gap:1rem; align-items:center; min-height:122px; padding:24px; border-radius:18px; color:#fff; text-decoration:none; box-shadow:0 18px 45px rgba(15,63,37,.14); transition:transform 180ms ease,box-shadow 180ms ease; }
+    .recurso-download:hover { transform:translateY(-4px); box-shadow:0 15px 30px rgba(11,75,49,.22); }
+    .recurso-download--planilha { background:linear-gradient(135deg,#176d39,#0c5135); }
+    .recurso-download--manual { background:linear-gradient(135deg,#126b91,#0b4775); }
+    .recurso-download__icone { display:grid; place-items:center; flex:0 0 52px; height:52px; border-radius:15px; background:rgba(255,255,255,.14); font-size:1.55rem; }
+    .recurso-download small,.recurso-download strong,.recurso-download__meta { display:block; }
+    .recurso-download small { margin-bottom:.1rem; color:rgba(255,255,255,.78); font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; }
+    .recurso-download strong { color:#fff; font-size:1.05rem; }
+    .recurso-download__meta { margin-top:.25rem; color:rgba(255,255,255,.78); font-size:.75rem; }
+    .recurso-financeiro__aviso { margin:1rem 0 0; padding:.85rem 1rem; border-left:4px solid #f2b51d; border-radius:0 12px 12px 0; color:#4b4b36; background:#fff9df; font-size:.84rem; }
+
     /* Responsividade adicional */
+    @media (max-width: 900px) {
+      .grade-dados-pesquisa { grid-template-columns: 1fr; }
+      .grade-dados-pesquisa .card-personagem {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+      }
+      .grade-dados-pesquisa .card-personagem__foto {
+        width: 96px;
+        height: 100%;
+        min-height: 142px;
+      }
+      .recurso-financeiro__passos { grid-template-columns:1fr; }
+      .recurso-passo { min-height:auto; }
+    }
     @media (max-width: 720px) {
       .dados-economicos { grid-template-columns: repeat(2, 1fr); }
+      .grade-cultivos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .grade-solucoes { grid-template-columns: 1fr; }
       .creditos-grid { grid-template-columns: 1fr; }
       .bloco-numero { flex-direction: column; text-align: center; gap: 0.75rem; }
       .bloco-numero__valor { font-size: 2.75rem; }
       .frase-final p { font-size: 1.1rem; }
+      .recurso-financeiro__downloads { grid-template-columns:1fr; }
+      .recurso-financeiro { padding:1rem; border-radius:18px; }
+      .recurso-download { min-height:auto; padding:20px; }
     }
     @media (max-width: 520px) {
       .dados-economicos { grid-template-columns: 1fr 1fr; }
       .dado-card__numero { font-size: 2rem; }
+      .grade-dados-pesquisa .card-personagem {
+        display: flex;
+        flex-direction: column;
+      }
+      .grade-dados-pesquisa .card-personagem__foto {
+        width: 100%;
+        height: 82px;
+        min-height: 82px;
+      }
     }
   </style>
 </head>
@@ -717,7 +811,7 @@
           <div class="bloco-imagem-texto__texto">
             <p>
               A escola rural — como a E.E.M.P.C Francisco Araújo Barros — é crucial nesse
-              contexto. Quando estudantes como Maria Ariane e Alana investigam os impactos das
+              contexto. Quando estudantes como Maria Ariane e Ana Clara investigam os impactos das
               mudanças climáticas em sua própria comunidade, fazem pesquisa participativa que
               serve diretamente àquela realidade.
             </p>
@@ -743,7 +837,7 @@
         </p>
 
         <!-- Grade de dados da pesquisa -->
-        <div class="grade-personagens">
+        <div class="grade-personagens grade-dados-pesquisa">
           <div class="card-personagem">
             <div class="card-personagem__foto" style="background:linear-gradient(135deg,#eef7ef,#d1fae5);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">🌾</div>
             <div class="card-personagem__info">
@@ -846,6 +940,54 @@
           se empoderando economicamente com ferramentas simples e acessíveis.
         </p>
 
+        <section class="recurso-financeiro" id="organizacao-financeira-rural" aria-labelledby="titulo-organizacao-financeira">
+          <div class="recurso-financeiro__cabecalho">
+            <span class="recurso-financeiro__selo">Ferramenta educativa gratuita</span>
+            <h2 id="titulo-organizacao-financeira">Organização Financeira Rural</h2>
+            <p>
+              Uma planilha criada pelo Campo Digital para ajudar famílias produtoras e
+              estudantes a registrar receitas, custos de produção, perdas climáticas,
+              reservas e metas. O arquivo funciona no Microsoft Excel e também pode ser
+              importado no Google Planilhas.
+            </p>
+          </div>
+
+          <figure class="recurso-financeiro__preview">
+            <img src="../downloads/organizacao-financeira/preview-painel-planilha.png" alt="Painel da Planilha de Organização Financeira Rural, com indicadores e gráficos de receitas, despesas e resultado" loading="lazy">
+            <figcaption>O painel transforma os registros em indicadores e gráficos fáceis de acompanhar.</figcaption>
+          </figure>
+
+          <div class="recurso-financeiro__passos" aria-label="Como utilizar a planilha">
+            <article class="recurso-passo">
+              <span>01</span>
+              <div><strong>Baixe</strong><p>Salve a planilha no computador ou envie uma cópia para o Google Drive.</p></div>
+            </article>
+            <article class="recurso-passo">
+              <span>02</span>
+              <div><strong>Preencha</strong><p>Registre as entradas, os gastos da produção, as perdas e as metas da família.</p></div>
+            </article>
+            <article class="recurso-passo">
+              <span>03</span>
+              <div><strong>Acompanhe</strong><p>Consulte o painel e os gráficos para tomar decisões com mais segurança.</p></div>
+            </article>
+          </div>
+
+          <div class="recurso-financeiro__downloads">
+            <a class="recurso-download recurso-download--planilha" href="../downloads/organizacao-financeira/Planilha_Organizacao_Financeira_Rural_Campo_Digital_2026.xlsx" download>
+              <span class="recurso-download__icone" aria-hidden="true">📊</span>
+              <span><small>Arquivo para usar</small><strong>Baixar a planilha</strong><span class="recurso-download__meta">XLSX · versão 1.0 · cerca de 37 KB</span></span>
+            </a>
+            <a class="recurso-download recurso-download--manual" href="../downloads/organizacao-financeira/Manual_Planilha_Organizacao_Financeira_Rural_Campo_Digital.pdf" target="_blank" rel="noopener">
+              <span class="recurso-download__icone" aria-hidden="true">📘</span>
+              <span><small>Guia passo a passo</small><strong>Abrir o manual</strong><span class="recurso-download__meta">PDF · versão 3.0 · 12 páginas</span></span>
+            </a>
+          </div>
+
+          <p class="recurso-financeiro__aviso">
+            <strong>Uso responsável:</strong> não registre senhas ou dados bancários e não publique uma cópia preenchida com informações pessoais da família.
+          </p>
+        </section>
+
         <div class="divisor-secao">Conclusão</div>
 
         <!-- ═══════════════════════════════════
@@ -860,7 +1002,7 @@
           </figure>
           <div class="bloco-imagem-texto__texto">
             <p>
-              Quando Maria Ariane Verissimo e Alana dos Santos Felix iniciaram sua investigação,
+              Quando Maria Ariane Verissimo e Ana Clara Nascimento Alves iniciaram sua investigação,
               provavelmente não imaginavam quanto suas descobertas iluminariam uma realidade que
               a mídia grande ignora. Mas elas fizeram mais que pesquisa acadêmica. Fizeram
               encontro com sua comunidade. Fizeram honra à sua origem.
@@ -904,7 +1046,7 @@
             </div>
             <div class="credito-item">
               <strong>Estudante pesquisadora</strong>
-              <span>Alana dos Santos Felix</span>
+              <span>Ana Clara Nascimento Alves</span>
             </div>
             <div class="credito-item">
               <strong>Educadora orientadora</strong>

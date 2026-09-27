@@ -111,7 +111,7 @@ Práticas: cobertura morta, sementes crioulas, consórcio milho+feijão, adubaç
 
 ## MUDANÇAS CLIMÁTICAS
 15 famílias do Assentamento Salgado Comprido, Itarema
-Pesquisadoras: Maria Ariane Verissimo e Alana dos Santos Felix
+Pesquisadoras: Maria Ariane Verissimo e Ana Clara Nascimento Alves
 Orientadora: Priscila Santos de Sousa (abril a outubro de 2025)
 Impactos: queimadas, temperaturas extremas, chuvas irregulares, pragas, acúmulo de lixo
 13 de 15 famílias sem orçamento formal. Renda: 50% agricultura, 20% bolsa família
