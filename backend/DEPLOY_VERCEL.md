@@ -47,7 +47,7 @@ GEMINI_API_KEY=<cadastrar diretamente no painel>
 GEMINI_MODEL=gemini-2.5-flash-lite
 MAX_TOKENS=1000
 RATE_LIMIT_PER_IP_MIN=30
-RATE_LIMIT_GLOBAL_MIN=10
+RATE_LIMIT_GLOBAL_MIN=15
 RATE_LIMIT_GLOBAL_DAY=200
 RATE_LIMIT_PREFIX=campo-digital
 RATE_LIMIT_SALT=<texto aleatório longo e privado>
@@ -65,7 +65,7 @@ Não habilite upgrade automático ou plano pago.
 - `/api/atividade` devolve texto baseado no material enviado;
 - `/api/noticias` devolve uma lista ou uma lista vazia válida;
 - nenhuma chave aparece no navegador ou no repositório;
-- a 11ª solicitação no mesmo minuto recebe `429`;
+- a 16ª solicitação no mesmo minuto recebe `429`;
 - o portal usa atividades locais quando a API retorna `429` ou `503`.
 
 ## 5. Endereço usado pelo portal

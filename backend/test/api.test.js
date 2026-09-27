@@ -66,7 +66,7 @@ test('corpo acima do limite é rejeitado', async () => {
   assert.equal((await response.json()).code, 'PAYLOAD_TOO_LARGE');
 });
 
-test('turma com 40 acessos simultâneos respeita a cota gratuita e recebe contingência', async () => {
+test('turma com 40 acessos simultâneos respeita a cota de apresentação e recebe contingência', async () => {
   const previous = {
     perIp: process.env.RATE_LIMIT_PER_IP_MIN,
     globalMinute: process.env.RATE_LIMIT_GLOBAL_MIN,
@@ -75,7 +75,7 @@ test('turma com 40 acessos simultâneos respeita a cota gratuita e recebe contin
   };
 
   process.env.RATE_LIMIT_PER_IP_MIN = '30';
-  process.env.RATE_LIMIT_GLOBAL_MIN = '10';
+  process.env.RATE_LIMIT_GLOBAL_MIN = '15';
   process.env.RATE_LIMIT_GLOBAL_DAY = '200';
   process.env.RATE_LIMIT_PREFIX = `fabcampo-test-${Date.now()}`;
 
@@ -97,8 +97,8 @@ test('turma com 40 acessos simultâneos respeita a cota gratuita e recebe contin
     return result;
   }));
 
-  assert.equal(allowed, 10);
-  assert.equal(responses.filter(item => item.statusCode === 429).length, 30);
+  assert.equal(allowed, 15);
+  assert.equal(responses.filter(item => item.statusCode === 429).length, 25);
   assert.ok(responses.filter(item => item.statusCode === 429)
     .every(item => item.body?.code === 'RATE_LIMITED' && item.headers['Retry-After'] === '60'));
 

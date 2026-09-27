@@ -31,7 +31,7 @@ export function createRateLimiter() {
   const redis = redisFromEnvironment();
   const requirePersistent = process.env.REQUIRE_PERSISTENT_RATE_LIMIT === 'true';
   const perIpMinute = numberFromEnv('RATE_LIMIT_PER_IP_MIN', 30);
-  const globalMinute = numberFromEnv('RATE_LIMIT_GLOBAL_MIN', 10);
+  const globalMinute = numberFromEnv('RATE_LIMIT_GLOBAL_MIN', 15);
   const globalDay = numberFromEnv('RATE_LIMIT_GLOBAL_DAY', 200);
   const memory = new Map();
 
