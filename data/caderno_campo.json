@@ -1,0 +1,299 @@
+{
+  "projeto": "Campo Digital - Portal Digital da Comunidade",
+  "escola": "EEMPC Francisco Araújo Barros",
+  "municipio": "Itarema/CE",
+  "orientador": "Paulo Henrique Cordeiro",
+  "atualizado_em": "05/10/2026",
+  "atualizacoes_recentes": [
+    {
+      "data": "30/09/2026",
+      "titulo": "Conclusão dos materiais impressos",
+      "descricao": "Concluímos e conferimos o folder A4 frente e verso e a folha com seis cartões de divulgação. Os materiais utilizam fotografias reais, identidade visual do Campo Digital, endereço do portal e QR Code. A verificação confirmou a importância de manter o código sobre fundo branco, com margem livre e tamanho suficiente para leitura pelo celular.",
+      "evidencia": "Folder_Campo_Digital_2026.pdf e Santinhos_Campo_Digital_6_por_A4.pdf."
+    },
+    {
+      "data": "05/10/2026",
+      "titulo": "Revisão do caderno conforme o edital",
+      "descricao": "Comparamos os registros existentes com o Anexo IX do Ceará Científico. Identificamos que o caderno precisava reunir todas as semanas, distinguir registros comprovados de reconstruções retrospectivas e apresentar com mais clareza atividades, resultados, reflexões e bases documentais.",
+      "evidencia": "Caderno_de_Campo_Semanas_28_a_32.pdf e Regulamento Ceará Científico 2026."
+    },
+    {
+      "data": "05/10/2026",
+      "titulo": "Correção do formato do material",
+      "descricao": "Uma primeira versão foi organizada como guia para preenchimento. Após a revisão do objetivo, percebemos que os alunos precisavam de uma continuação narrativa do caderno, e não apenas de orientações. O formato foi corrigido para registrar atividades efetivamente realizadas e evitar a inclusão de fatos não comprovados.",
+      "evidencia": "Revisão do material de atualização e criação da continuação narrativa de 30/09 a 05/10."
+    },
+    {
+      "data": "05/10/2026",
+      "titulo": "Criação do Caderno de Campo Mestre",
+      "descricao": "Reunimos as 33 semanas em um único documento. As semanas iniciais foram reconstruídas com base no TCC, na documentação e na metodologia; as semanas com datas verificáveis receberam identificação de registro documentado. Também criamos uma base de dados própria para permitir novas atualizações sem produzir arquivos separados.",
+      "evidencia": "data/caderno_campo.json e Caderno_de_Campo_Mestre_Campo_Digital_2026.pdf."
+    }
+  ],
+  "semanas": [
+    {
+      "numero": 1,
+      "periodo": "23/02 a 01/03/2026",
+      "fase": "Diagnóstico",
+      "atividade": "A equipe iniciou a discussão sobre problemas do território que poderiam ser investigados com apoio da tecnologia. Entre as necessidades levantadas, destacou-se a ausência de um espaço digital organizado para reunir a história, a memória, os saberes agrícolas, as plantas e as produções da escola do campo.",
+      "resultado": "Definimos como problema central a dispersão dos registros e o risco de perda de conhecimentos preservados principalmente pela oralidade e por documentos separados.",
+      "fonte": "Reconstrução retrospectiva baseada no diagnóstico e na introdução do TCC."
+    },
+    {
+      "numero": 2,
+      "periodo": "02 a 08/03/2026",
+      "fase": "Delimitação do problema",
+      "atividade": "A equipe aprofundou a discussão sobre quem seria beneficiado pelo projeto. Consideramos estudantes, professores, moradores, famílias produtoras e visitantes do Ceará Científico. Também refletimos sobre as dificuldades de acesso da comunidade rural aos meios digitais.",
+      "resultado": "O projeto passou a ser pensado como uma ferramenta pública de memória, educação e inclusão digital, e não apenas como uma atividade de programação.",
+      "fonte": "Reconstrução retrospectiva baseada na justificativa e no público-alvo documentados no TCC."
+    },
+    {
+      "numero": 3,
+      "periodo": "09 a 15/03/2026",
+      "fase": "Questão de pesquisa",
+      "atividade": "Organizamos a pergunta orientadora: como uma plataforma digital desenvolvida por estudantes poderia preservar memórias, valorizar saberes do campo e produzir conhecimento sobre o território? A equipe relacionou essa pergunta ao tema Ciência, Cidadania e Convivência Democrática.",
+      "resultado": "A pergunta de pesquisa passou a orientar tanto a investigação comunitária quanto a construção do produto tecnológico.",
+      "fonte": "Reconstrução retrospectiva baseada no problema de pesquisa apresentado no banner e no TCC."
+    },
+    {
+      "numero": 4,
+      "periodo": "16 a 22/03/2026",
+      "fase": "Objetivos",
+      "atividade": "Definimos o objetivo geral de desenvolver um portal educacional e acessível para registrar, organizar e divulgar a história e os saberes do Assentamento Lagoa do Mineiro. Os objetivos específicos incluíram pesquisa histórica, produção de páginas temáticas, acessibilidade, uso responsável de IA e validação do portal.",
+      "resultado": "A equipe obteve uma direção comum para a pesquisa e conseguiu separar o objetivo científico das funcionalidades do site.",
+      "fonte": "Reconstrução retrospectiva baseada nos objetivos geral e específicos do TCC."
+    },
+    {
+      "numero": 5,
+      "periodo": "23 a 29/03/2026",
+      "fase": "Planejamento metodológico",
+      "atividade": "Planejamos uma pesquisa qualitativa, aplicada e participativa, com características de pesquisa-ação e desenvolvimento tecnológico. Organizamos o percurso em diagnóstico, pesquisa de campo, curadoria, desenvolvimento, publicação e validação.",
+      "resultado": "O trabalho ganhou uma sequência metodológica que permitiu relacionar investigação social, fontes históricas e produção de software.",
+      "fonte": "Reconstrução retrospectiva baseada na metodologia e no fluxograma do projeto."
+    },
+    {
+      "numero": 6,
+      "periodo": "30/03 a 05/04/2026",
+      "fase": "Levantamento de fontes",
+      "atividade": "Identificamos as principais fontes que poderiam apoiar a pesquisa: arquivo histórico do assentamento, moradores, escola, COPAGLAM, legislações, fotografias, mapas, pesquisas acadêmicas e documentos sobre educação do campo.",
+      "resultado": "Criamos uma base de fontes primárias e secundárias para reduzir erros e evitar que o portal publicasse informações sem comprovação.",
+      "fonte": "Reconstrução retrospectiva baseada na metodologia e nas referências bibliográficas do TCC."
+    },
+    {
+      "numero": 7,
+      "periodo": "06 a 12/04/2026",
+      "fase": "Pesquisa histórica",
+      "atividade": "A equipe iniciou a organização de informações sobre a luta pela terra, a formação do assentamento, as sete comunidades e a trajetória de Francisco Araújo Barros. Foram separados marcos históricos que depois formariam a linha do tempo do portal.",
+      "resultado": "Percebemos que a história precisava ser apresentada com respeito aos moradores, distinção entre memória oral e documento oficial e indicação das fontes utilizadas.",
+      "fonte": "Reconstrução retrospectiva baseada na página História e na fundamentação histórica do TCC."
+    },
+    {
+      "numero": 8,
+      "periodo": "13 a 19/04/2026",
+      "fase": "Memória comunitária",
+      "atividade": "Organizamos temas relacionados a depoimentos, festas, causos, cultura, religiosidade, mística e identidade. A equipe discutiu como transformar relatos e memórias afetivas em conteúdo digital sem retirar o sentido comunitário das narrativas.",
+      "resultado": "Foi definida uma área de memória viva, com espaço para relatos, registros culturais e futuras contribuições dos moradores.",
+      "fonte": "Reconstrução retrospectiva baseada na página Memória e na descrição do acervo no TCC."
+    },
+    {
+      "numero": 9,
+      "periodo": "20 a 26/04/2026",
+      "fase": "Produção agrícola",
+      "atividade": "A equipe reuniu informações sobre agricultura familiar, cultivos, sementes crioulas, produção local, COPAGLAM e o Açude Corrente. Também foram discutidas as dificuldades provocadas pela estiagem e pelas mudanças climáticas.",
+      "resultado": "A produção agrícola passou a ser tratada como conhecimento do território e como tema científico ligado à renda, à alimentação e à permanência das famílias no campo.",
+      "fonte": "Reconstrução retrospectiva baseada nas páginas Produção Agrícola e Mudanças Climáticas."
+    },
+    {
+      "numero": 10,
+      "periodo": "27/04 a 03/05/2026",
+      "fase": "Biodiversidade",
+      "atividade": "Organizamos os dados da pesquisa sobre plantas nativas e medicinais. O acervo documentava 17 espécies nativas e 12 plantas medicinais, com conhecimentos reunidos por estudantes e moradores.",
+      "resultado": "Decidimos separar plantas nativas e medicinais em áreas próprias, com linguagem educativa e aviso de que o conteúdo medicinal não substitui orientação de saúde.",
+      "fonte": "Reconstrução retrospectiva baseada no inventário e nas páginas de plantas do portal."
+    },
+    {
+      "numero": 11,
+      "periodo": "04 a 10/05/2026",
+      "fase": "Curadoria",
+      "atividade": "A equipe comparou informações coletadas com documentos, legislações e trabalhos acadêmicos. Foram identificados conteúdos que exigiam melhor comprovação, revisão de nomes, datas e autoria.",
+      "resultado": "A curadoria tornou-se uma etapa obrigatória antes da publicação. O grupo compreendeu que preservar memória também exige responsabilidade com a veracidade das informações.",
+      "fonte": "Reconstrução retrospectiva baseada na etapa de curadoria descrita no TCC."
+    },
+    {
+      "numero": 12,
+      "periodo": "11 a 17/05/2026",
+      "fase": "Arquitetura da informação",
+      "atividade": "Planejamos a estrutura do portal, definindo páginas para início, história, memória, produção agrícola, plantas, reportagens e contato. Também organizamos os caminhos de navegação e os tipos de conteúdo que apareceriam em cada área.",
+      "resultado": "A organização por temas reduziu a mistura de assuntos e facilitou a transformação do acervo em páginas compreensíveis para diferentes públicos.",
+      "fonte": "Reconstrução retrospectiva baseada na arquitetura do portal registrada no TCC e na documentação técnica."
+    },
+    {
+      "numero": 13,
+      "periodo": "18 a 24/05/2026",
+      "fase": "Prototipação",
+      "atividade": "A equipe definiu elementos visuais ligados ao território: cores verdes, amarelas e azuis, cartões de conteúdo, fotografias, títulos e áreas de destaque. Foram pensadas formas de apresentar bastante informação sem dificultar a leitura.",
+      "resultado": "Criamos a base da identidade visual do Campo Digital e estabelecemos que o portal deveria funcionar prioritariamente também pelo celular.",
+      "fonte": "Reconstrução retrospectiva baseada na arquitetura visual documentada."
+    },
+    {
+      "numero": 14,
+      "periodo": "25 a 31/05/2026",
+      "fase": "Desenvolvimento inicial",
+      "atividade": "Iniciamos a implementação das páginas em HTML5, a criação dos estilos em CSS3 e as primeiras interações em JavaScript. O conteúdo pesquisado começou a ser transformado em seções, cartões, menus e galerias.",
+      "resultado": "A pesquisa começou a se materializar em um produto funcional. A equipe percebeu que conteúdo, programação e design precisavam evoluir juntos.",
+      "fonte": "Reconstrução retrospectiva baseada nas etapas de desenvolvimento descritas no TCC."
+    },
+    {
+      "numero": 15,
+      "periodo": "01 a 07/06/2026",
+      "fase": "Conteúdo e testes iniciais",
+      "atividade": "Foram preparados textos e espaços para história, memória, agricultura, plantas, reportagens, notícias e eventos. Também iniciamos testes de navegação e verificamos a necessidade de imagens reais, textos alternativos e melhor organização para telas pequenas.",
+      "resultado": "Os testes mostraram que um portal funcional precisava ser acessível, responsivo e preparado para receber novos conteúdos ao longo do tempo.",
+      "fonte": "Reconstrução retrospectiva baseada no TCC, na documentação e na estrutura da primeira versão."
+    },
+    {
+      "numero": 16,
+      "periodo": "08 a 14/06/2026",
+      "fase": "Primeira versão consolidada",
+      "atividade": "Consolidamos uma nova versão completa do projeto em 14 de junho. Em seguida, corrigimos ícones que apresentavam problemas de codificação, evitando símbolos quebrados nas páginas.",
+      "resultado": "O portal passou a ter uma versão organizada no repositório e uma base técnica que poderia ser revisada e ampliada nas etapas seguintes.",
+      "fonte": "Histórico do repositório em 14/06/2026."
+    },
+    {
+      "numero": 17,
+      "periodo": "15 a 21/06/2026",
+      "fase": "Revisão da primeira versão",
+      "atividade": "A equipe revisou a versão consolidada, conferindo páginas, caminhos de arquivos, ícones e conteúdos que ainda precisavam de fotografias ou informações complementares.",
+      "resultado": "Foi criada uma lista de pendências para atualização de páginas e imagens, mantendo o portal utilizável enquanto o acervo era completado.",
+      "fonte": "Reconstrução apoiada na primeira versão do repositório e na documentação de imagens pendentes."
+    },
+    {
+      "numero": 18,
+      "periodo": "22 a 28/06/2026",
+      "fase": "Atualização de páginas e imagens",
+      "atividade": "Em 25 de junho, atualizamos páginas e imagens do portal. Foram incorporados novos conteúdos visuais e corrigidos espaços que ainda apresentavam ausência de arquivos.",
+      "resultado": "O portal ficou mais completo visualmente e mais próximo do acervo real da escola e da comunidade.",
+      "fonte": "Histórico do repositório em 25/06/2026."
+    },
+    {
+      "numero": 19,
+      "periodo": "29/06 a 05/07/2026",
+      "fase": "Revisão de conteúdo",
+      "atividade": "Realizamos uma leitura geral das páginas para verificar coerência entre títulos, textos, imagens e navegação. Conteúdos históricos, agrícolas e ambientais foram comparados com a organização prevista na pesquisa.",
+      "resultado": "A revisão reforçou a necessidade de manter fontes, autoria e atualização técnica documentadas junto ao portal.",
+      "fonte": "Reconstrução baseada na documentação técnica e no conteúdo consolidado do projeto."
+    },
+    {
+      "numero": 20,
+      "periodo": "06 a 12/07/2026",
+      "fase": "Acessibilidade e responsividade",
+      "atividade": "A equipe analisou o uso do portal em telas diferentes e organizou melhorias de menu, leitura, foco visível, textos alternativos e estrutura semântica. O celular foi considerado o principal meio de acesso de muitos usuários.",
+      "resultado": "A acessibilidade e a responsividade passaram a ser critérios permanentes de validação, e não ajustes feitos somente no final.",
+      "fonte": "Reconstrução baseada nas seções de acessibilidade e arquitetura visual da documentação."
+    },
+    {
+      "numero": 21,
+      "periodo": "13 a 19/07/2026",
+      "fase": "Organização técnica",
+      "atividade": "Organizamos pastas, componentes, arquivos de estilo, scripts e dados em JSON. A equipe separou responsabilidades do menu, formulários, imagens, carrosséis e conteúdo dinâmico.",
+      "resultado": "A estrutura modular facilitou a manutenção e reduziu a repetição de código entre páginas.",
+      "fonte": "Reconstrução baseada na estrutura de pastas e componentes registrada na documentação."
+    },
+    {
+      "numero": 22,
+      "periodo": "20 a 26/07/2026",
+      "fase": "Publicação e segurança",
+      "atividade": "Planejamos a publicação do frontend no GitHub Pages e a separação do backend de inteligência artificial. Discutimos que chaves de API não poderiam ficar expostas no navegador nem no repositório.",
+      "resultado": "Foi adotada uma arquitetura com portal estático público e serviço protegido para os recursos de IA.",
+      "fonte": "Reconstrução baseada nos documentos de implantação e segurança do backend."
+    },
+    {
+      "numero": 23,
+      "periodo": "27/07 a 02/08/2026",
+      "fase": "Domínio oficial",
+      "atividade": "Em 2 de agosto, configuramos o domínio oficial fabcampo.com.br para facilitar o acesso ao portal. Foram realizados ajustes de publicação e conferência do endereço.",
+      "resultado": "O projeto passou a ter um endereço curto, público e fácil de divulgar para moradores, estudantes e avaliadores.",
+      "fonte": "Histórico do repositório e documento DOMINIO_OFICIAL.md."
+    },
+    {
+      "numero": 24,
+      "periodo": "03 a 09/08/2026",
+      "fase": "Validação da publicação",
+      "atividade": "Após a configuração do domínio, conferimos a abertura das páginas, imagens, estilos e scripts no ambiente publicado. Também observamos diferenças entre o funcionamento local e o site online.",
+      "resultado": "A validação mostrou que publicação, caminhos de arquivos e compatibilidade precisavam ser testados sempre no domínio real.",
+      "fonte": "Reconstrução baseada no processo de implantação e nas verificações registradas."
+    },
+    {
+      "numero": 25,
+      "periodo": "10 a 16/08/2026",
+      "fase": "Identidade e recursos públicos",
+      "atividade": "Atualizamos a identidade visual, corrigimos a responsividade do banner e do menu, revisamos títulos das abas e melhoramos notícias, autoria do mapa, rodapé, contatos e integração com Google Forms. Também substituímos chamadas inadequadas por convites à participação comunitária.",
+      "resultado": "O portal ganhou identidade mais consistente, navegação mais clara e meios de contato e contribuição alinhados ao caráter comunitário.",
+      "fonte": "Histórico do repositório entre 10 e 13/08/2026."
+    },
+    {
+      "numero": 26,
+      "periodo": "17 a 23/08/2026",
+      "fase": "Curadoria e preparação",
+      "atividade": "Revisamos textos, imagens e informações do portal, observando conteúdos que precisavam de confirmação ou apresentação mais segura. Também organizamos a documentação técnica e a explicação metodológica do projeto.",
+      "resultado": "A equipe fortaleceu a coerência entre o que estava publicado, o texto científico e a apresentação prevista para o Ceará Científico.",
+      "fonte": "Reconstrução baseada no TCC, na documentação e no estado do portal antes da fase escolar."
+    },
+    {
+      "numero": 27,
+      "periodo": "24 a 30/08/2026",
+      "fase": "Preparação para a fase escolar",
+      "atividade": "Concentramos a revisão nos conteúdos essenciais para apresentação: problema, objetivo, metodologia, resultados e funcionamento do portal. Conferimos o domínio, o banner, o caderno e a navegação nas páginas principais.",
+      "resultado": "O projeto ficou preparado para a fase escolar, mas a equipe identificou que ainda seria necessário completar imagens e continuar aprimorando o portal após a apresentação.",
+      "fonte": "Reconstrução baseada no checklist do TCC e nos registros que antecedem a fase escolar."
+    },
+    {
+      "numero": 28,
+      "periodo": "31/08 a 06/09/2026",
+      "fase": "Fase escolar",
+      "atividade": "A fase escolar aconteceu em 1º de setembro. Na continuidade do portal, acrescentamos imagens que estavam faltando e melhoramos a apresentação visual dos conteúdos.",
+      "resultado": "A apresentação confirmou a importância do produto e gerou uma nova etapa de aperfeiçoamento para ampliar conteúdo, navegação e estabilidade.",
+      "fonte": "Caderno de campo anterior e histórico do repositório em 01/09/2026."
+    },
+    {
+      "numero": 29,
+      "periodo": "07 a 13/09/2026",
+      "fase": "Expansão e estabilidade",
+      "atividade": "Criamos a Expedição e o Catálogo do Território, aprimoramos páginas para celular, corrigimos imagens, consolidamos páginas de plantas e adicionamos vídeo com legendas à memória. Também corrigimos o formulário, publicamos orientações de privacidade e IA, criamos monitoramento, recuperação e teste de carga para 40 acessos.",
+      "resultado": "O portal ganhou novas formas de exploração do acervo e ficou mais preparado para uso público, inclusive quando a API de IA não estivesse disponível.",
+      "fonte": "Histórico do repositório entre 09 e 13/09/2026."
+    },
+    {
+      "numero": 30,
+      "periodo": "14 a 20/09/2026",
+      "fase": "Padronização visual e alcance",
+      "atividade": "Renovamos a página inicial e padronizamos história, memória, produção agrícola, plantas, reportagens, Catálogo e Expedição. Corrigimos fluxo de imagens, contraste, menu e cards. Implementamos busca global, SEO, Google Analytics, Search Console e um novo banner otimizado.",
+      "resultado": "O portal passou a apresentar uma identidade única e melhor adaptação ao celular. As ferramentas de acompanhamento foram configuradas, sem que isso significasse ainda crescimento comprovado de público.",
+      "fonte": "Histórico do repositório entre 19 e 20/09/2026."
+    },
+    {
+      "numero": 31,
+      "periodo": "21 a 27/09/2026",
+      "fase": "Aplicação da pesquisa e SabIA",
+      "atividade": "Publicamos a Planilha de Organização Financeira Rural e seu manual, relacionando mudanças climáticas, renda, despesas, reservas e metas das famílias produtoras. Em seguida, estabilizamos o assistente e criamos a identidade SabIA - Inteligência do Território, com modos Perguntar, Aprender, Quiz e Explorar.",
+      "resultado": "A pesquisa passou a oferecer uma ferramenta prática para organização financeira, e o assistente ganhou linguagem, interface e funcionamento mais alinhados à identidade do projeto.",
+      "fonte": "Histórico do repositório e documentação de 25 a 27/09/2026."
+    },
+    {
+      "numero": 32,
+      "periodo": "28/09 a 04/10/2026",
+      "fase": "Divulgação do projeto",
+      "atividade": "Produzimos e revisamos um folder A4 frente e verso, utilizando conteúdo do banner, do portal e da documentação, com fotografias reais, metodologia, resultados, apresentação da SabIA e QR Code. Também concluímos uma folha A4 com seis cartões de divulgação, linhas de corte e QR Code testável.",
+      "resultado": "Os materiais transformaram a pesquisa em recursos de divulgação impressa. A conferência visual mostrou a necessidade de manter o QR Code sobre fundo branco, com margem livre, e preservar textos legíveis sobre as fotografias.",
+      "fonte": "Arquivos Folder_Campo_Digital_2026.pdf, Santinhos_Campo_Digital_6_por_A4.pdf e registros de 30/09/2026."
+    },
+    {
+      "numero": 33,
+      "periodo": "05 a 11/10/2026 - registro até 05/10",
+      "fase": "Preparação para a etapa estadual",
+      "atividade": "Revisamos o caderno de campo e os Anexos VII, IX, XII e XIII do edital. Corrigimos o formato do material de atualização, consolidamos as 33 semanas em um único Caderno de Campo Mestre e criamos uma base de dados para sua manutenção. Também confirmamos as exigências do vídeo: duração de um a quatro minutos, gravação horizontal, qualidade de imagem e som, participação compartilhada e postagem não listada no YouTube.",
+      "resultado": "O Caderno de Campo Mestre passou a ser o documento oficial e contínuo do projeto. As semanas reconstruídas ficaram identificadas para conferência com os estudantes. O próximo passo será validar esses registros e produzir o roteiro, dividir as falas, ensaiar e gravar o vídeo.",
+      "fonte": "Análise do edital e atividades documentadas em 05/10/2026."
+    }
+  ]
+}

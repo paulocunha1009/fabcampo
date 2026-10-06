@@ -6,6 +6,15 @@ Projeto educacional desenvolvido para o Ceará Científico, com foco em memória
 
 O portal combina um frontend estático em HTML, CSS e JavaScript publicado no GitHub Pages com um backend Node.js publicado na Vercel. O backend conecta o assistente ao Gemini sem expor chaves no navegador e usa Upstash para proteger a cota gratuita.
 
+## Planejamento da etapa estadual 2026
+
+O registro consolidado da preparação para a etapa estadual, incluindo critérios de avaliação, roteiro do vídeo, cronograma, responsabilidades, evidências e melhorias futuras, está em:
+
+- [`docs/PLANEJAMENTO_ETAPA_ESTADUAL_2026.md`](docs/PLANEJAMENTO_ETAPA_ESTADUAL_2026.md)
+- [`output/pdf/Plano_Video_e_Cronograma_Estadual_Campo_Digital_2026.pdf`](output/pdf/Plano_Video_e_Cronograma_Estadual_Campo_Digital_2026.pdf)
+
+Esse material deve ser consultado antes de alterações no vídeo, banner, caderno de campo ou narrativa de apresentação, para manter todos os produtos coerentes com o edital e com as evidências disponíveis.
+
 ---
 
 ## 1. Visão Geral
