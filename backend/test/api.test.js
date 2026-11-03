@@ -2,6 +2,13 @@ import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 
 process.env.VERCEL = '1';
+// Os testes nunca devem carregar credenciais locais ou acessar serviços pagos.
+process.env.DOTENV_CONFIG_PATH = '.env.test-not-present';
+delete process.env.GEMINI_API_KEY;
+delete process.env.UPSTASH_REDIS_REST_URL;
+delete process.env.UPSTASH_REDIS_REST_TOKEN;
+delete process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
+delete process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
 process.env.RATE_LIMIT_GLOBAL_MIN = '50';
 process.env.RATE_LIMIT_GLOBAL_DAY = '200';
 process.env.REQUIRE_PERSISTENT_RATE_LIMIT = 'false';
@@ -66,6 +73,27 @@ test('corpo acima do limite é rejeitado', async () => {
   });
   assert.equal(response.status, 413);
   assert.equal((await response.json()).code, 'PAYLOAD_TOO_LARGE');
+});
+
+test('pedidos inválidos são rejeitados antes da cota e da geração', async () => {
+  for (const path of ['/api/assistente', '/api/atividade']) {
+    for (const body of [undefined, 'null', '[]', '{', JSON.stringify({ message: '  ', system: ' ' }),
+      JSON.stringify({ message: 'Olá', history: [null], system: ' ' })]) {
+      const response = await fetch(`${baseUrl}${path}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+      });
+      assert.equal(response.status, 400);
+      assert.equal(response.headers.get('x-ratelimit-limit'), null);
+    }
+  }
+  for (const history of [[null], [{ role: 'system', content: 'instrução' }], 'inválido']) {
+    const response = await fetch(`${baseUrl}/api/assistente`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Olá', history }),
+    });
+    assert.equal(response.status, 400);
+    assert.equal((await response.json()).code, 'INVALID_REQUEST');
+  }
 });
 
 test('turma com 40 acessos simultâneos respeita a cota de apresentação e recebe contingência', async () => {

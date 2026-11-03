@@ -19,8 +19,11 @@ import cors from 'cors';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import { createRateLimiter } from './lib/rate-limit.js';
+import { validateRequest } from './lib/validate-request.js';
+import { buildAcervoContext } from './lib/acervo.js';
+import { normalizeAnswer } from './lib/assistant-answer.js';
 
-dotenv.config();
+dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
 
 // ── Configuração ─────────────────────────────────────────────────────────────
 const PORT         = parseInt(process.env.PORT        || '3001', 10);
@@ -77,80 +80,7 @@ ERRADO (não faça isso):
 CONTEÚDO DO PORTAL
 ══════════════════════════════════════
 
-## HISTÓRIA DO ASSENTAMENTO LAGOA DO MINEIRO
-Localização: Itarema, litoral oeste do Ceará
-Famílias: 214, em 7 comunidades — Saguim, Lagoa do Mineiro, Mineiro Velho, Corrente, Barbosa, Cedro, Córrego das Moças
-
-Origem: Até 1985, ~150 famílias viviam como moradores de condição nas terras de Francisco Teófilo de Andrade. Em 1985, o padre Aristides anunciou a venda das terras à empresa DUCOCO (coco).
-
-Resistência: Trabalhadores organizados pelas CEBs, apoiados pela Diocese de Itapipoca e Dom Paulo. 90 trabalhadores derrubaram a cerca da DUCOCO diante de 16 policiais. 3 mártires mortos: Francisco Araújo Barros (baleado e degolado durante trabalho de broca) e dois outros.
-
-Marcos históricos:
-- Até 1985: 150 famílias como moradores de condição
-- 1986: Derrubada da cerca; 3 mártires; Decreto nº 92.826; Posse formal 19/09/1986
-- 1987: Criação oficial — Portaria 573/MIRAD
-- 1991: Fundação da COPAGLAM com 204 membros (14/04/1991)
-- 1998: Construção do Açude Corrente — 731.250 m³
-- 03/03/2011: Início da EEMPC Francisco Araújo Barros (Decreto CE 30.493)
-- 2022-2023: Implantação dos cursos técnicos (Informática e Agropecuária)
-- 2025: 179 estudantes matriculados
-
-## PLANTAS MEDICINAIS (12 espécies — Turma Manoel Louvado, 2º Ano A Técnico, Ceará Científico 2025)
-1. Chanana (Turnera subulata) — inflamações, infecções urinárias; chá 10g/litro; evitar na gravidez
-2. Pata de Vaca (Bauhinia forficata) — diabetes tipo 2, diurético; não substituir medicação
-3. Carnaúba (Copernicia prunifera) — febre, diurético, antimicrobiano (símbolo do Ceará)
-4. Torém (Cecropia pachystachya) — tosse, bronquite, pressão alta; xarope com mel
-5. Bredo (Amaranthus deflexus) — anti-inflamatório, nutritivo (ferro e proteínas)
-6. Quebra-Pedra (Phyllanthus niruri) — cálculos renais, proteção hepática
-7. Janaguba (Himatanthus drasticus) — inflamações, úlceras; látex tóxico em dose elevada
-8. Alecrim-Pimenta (Lippia sidoides) — bactericida, antifúngico, garganta
-9. Aroeira da Praia (Eugenia punicifolia) — cicatrização, antibacteriana
-10. Batiputá (Ouratea parviflora) — óleo sagrado Tremembé, antimicrobiano
-11. Pepaconha (Pombalia calceolaria) — expectorante, antifebril
-12. Mussambê (Cleome spinosa) — cefaleia, repelente natural
-
-## PLANTAÇÃO NATIVA (17 espécies)
-Biomas: Caatinga, Restinga, Manguezal — Itarema, CE
-Áreas: Morro dos Patos, Patos, Mineiro Velho e entorno
-Destaque: Carnaúba (Copernicia prunifera), Mangue-Vermelho (Rhizophora mangle)
-
-## PRODUÇÃO AGRÍCOLA
-Agricultura: 50% da renda familiar
-Cultivos: milho, feijão, mandioca, hortaliças, coco, caju, jerimum, galinhas caipiras
-COPAGLAM: fundada 14/04/1991 com 204 membros
-Açude Corrente: 731.250 m³ (1998)
-Práticas: cobertura morta, sementes crioulas, consórcio milho+feijão, adubação orgânica, fases da lua
-
-## MUDANÇAS CLIMÁTICAS
-15 famílias do Assentamento Salgado Comprido, Itarema
-Pesquisadoras: Maria Ariane Verissimo e Ana Clara Nascimento Alves
-Orientadora: Priscila Santos de Sousa (abril a outubro de 2025)
-Impactos: queimadas, temperaturas extremas, chuvas irregulares, pragas, acúmulo de lixo
-13 de 15 famílias sem orçamento formal. Renda: 50% agricultura, 20% bolsa família
-
-## EDUCAÇÃO DO CAMPO
-EEMPC Francisco Araújo Barros: Decreto CE 30.493 (03/03/2011), Educação Profissional Integral
-Cursos: Informática e Agropecuária. 179 estudantes (2025), 7 comunidades, internato no TE
-
-Pedagogia da Alternância:
-- Origem: 1935, França — Maison Familiale Rurale de Lauzun
-- Brasil: 1969, EFA de Anchieta/ES
-- Tempo Escola (TE): aulas, técnicos, místicas, assembleias
-- Tempo Comunidade (TC): pesquisa na família, Caderno da Realidade, Plano de Estudo
-
-Místicas: ritual coletivo artístico-político de identidade (origem MST). NÃO é cerimônia religiosa.
-Tipos: Abertura, Encerramento, Luta (datas históricas), Temática (ligada ao conteúdo)
-
-## PÁGINAS DO PORTAL
-- "../index.html" — Página inicial
-- "historia.html" — História: mártires, Reforma Agrária, linha do tempo
-- "reportagem-educacao.html" — Educação do Campo, Alternância, Místicas
-- "agricola.html" — Produção agrícola, COPAGLAM
-- "reportagem-clima.html" — Mudanças climáticas e agricultura familiar
-- "Plantação-Nativa.html" — 17 espécies nativas
-- "Plantas-Medicinaisv2.html" — 12 plantas medicinais
-- "memoria.html" — Memória e depoimentos
-- "../contato.html" — Contato
+O acervo é fornecido a cada pergunta em trechos identificados pela página de origem.
 
 ══════════════════════════════════════
 DIRETRIZES
@@ -165,6 +95,7 @@ DIRETRIZES
 - Não repita seu nome em todas as respostas; apresente-se como SabIA apenas quando isso ajudar a conversa`;
 
 // ── Express ───────────────────────────────────────────────────────────────────
+export function createApp({ aiClient = ai, rateLimiter = limiter } = {}) {
 const app = express();
 
 app.disable('x-powered-by');
@@ -194,15 +125,15 @@ app.use(express.json({ limit: '20kb' }));
 app.get('/health', (_req, res) => {
   res.json({
     ok: true,
-    aiConfigured: hasGeminiKey,
+    aiConfigured: Boolean(aiClient),
     service: 'fabcampo-api',
     assistant: {
       name: ASSISTANT_NAME,
       tagline: ASSISTANT_TAGLINE,
     },
     model: GEMINI_MODEL,
-    limiter: limiter.storage,
-    limits: limiter.limits,
+    limiter: rateLimiter.storage,
+    limits: rateLimiter.limits,
     timestamp: new Date().toISOString(),
   });
 });
@@ -345,7 +276,7 @@ app.get('/api/noticias', async (_req, res) => {
 // ── Atividades pedagógicas ancoradas no acervo ───────────────────────────────
 // Usado pela Expedição e pelo Catálogo. O navegador envia apenas instruções e
 // trechos públicos do próprio portal; a chave do Gemini continua no servidor.
-app.post('/api/atividade', limiter.middleware, async (req, res) => {
+app.post('/api/atividade', validateRequest('activity'), rateLimiter.middleware, async (req, res) => {
   const { system, message } = req.body;
 
   if (!system || typeof system !== 'string' || system.length > 5000) {
@@ -355,7 +286,7 @@ app.post('/api/atividade', limiter.middleware, async (req, res) => {
     return res.status(400).json({ error: 'Campo "message" obrigatório (máximo de 16.000 caracteres).' });
   }
 
-  if (!ai) {
+  if (!aiClient) {
     return res.status(503).json({
       error: 'A IA ainda não foi configurada. Use a atividade local disponível no portal.',
       code: 'AI_NOT_CONFIGURED',
@@ -363,7 +294,7 @@ app.post('/api/atividade', limiter.middleware, async (req, res) => {
   }
 
   try {
-    const result = await ai.models.generateContent({
+    const result = await aiClient.models.generateContent({
       model: GEMINI_MODEL,
       contents: message.trim(),
       config: {
@@ -385,7 +316,7 @@ app.post('/api/atividade', limiter.middleware, async (req, res) => {
 });
 
 // ── Endpoint principal ────────────────────────────────────────────────────────
-app.post('/api/assistente', limiter.middleware, async (req, res) => {
+app.post('/api/assistente', validateRequest('assistant'), rateLimiter.middleware, async (req, res) => {
   const { message, history = [] } = req.body;
 
   if (!message || typeof message !== 'string') {
@@ -398,7 +329,7 @@ app.post('/api/assistente', limiter.middleware, async (req, res) => {
     return res.status(400).json({ error: 'Campo "history" deve ser um array.' });
   }
 
-  if (!ai) {
+  if (!aiClient) {
     return res.status(503).json({
       error: 'A IA ainda não foi configurada. O assistente local continuará disponível.',
       code: 'AI_NOT_CONFIGURED',
@@ -419,11 +350,11 @@ app.post('/api/assistente', limiter.middleware, async (req, res) => {
       ...geminiHistory,
       { role: 'user', parts: [{ text: message.trim() }] },
     ];
-    const result = await ai.models.generateContent({
+    const result = await aiClient.models.generateContent({
       model: GEMINI_MODEL,
       contents,
       config: {
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction: `${SYSTEM_PROMPT}\n\n${buildAcervoContext(message)}`,
         maxOutputTokens: MAX_TOKENS,
         temperature: 0.7,
         responseMimeType: 'application/json',
@@ -431,44 +362,15 @@ app.post('/api/assistente', limiter.middleware, async (req, res) => {
     });
     const rawText = result.text || '';
 
-    // Extrai e normaliza JSON da resposta
+    // Só entrega estruturas compatíveis com o portal; respostas inválidas ativam contingência.
     let parsed;
     try {
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : rawText);
-
-      // Corrige double-wrapping: modelo às vezes retorna JSON dentro do campo content
-      // Ex: {"type":"message","content":"{\"type\":\"message\",\"content\":\"...\"}"}
-      if (parsed && typeof parsed.content === 'string') {
-        const trimmed = parsed.content.trim();
-        if (trimmed.startsWith('{"type"')) {
-          // Tenta parse direto primeiro
-          try {
-            const inner = JSON.parse(trimmed);
-            if (inner && inner.type) {
-              parsed = inner;
-            }
-          } catch {
-            // JSON interno inválido (aspas não escapadas no content)
-            // Extrai o texto usando indexOf/lastIndexOf — funciona mesmo com aspas soltas
-            const marker = '"content":"';
-            const start = trimmed.indexOf(marker);
-            if (start !== -1) {
-              const textStart = start + marker.length;
-              const textEnd = trimmed.lastIndexOf('"}');
-              if (textEnd > textStart) {
-                const extracted = trimmed.slice(textStart, textEnd)
-                  .replace(/\\n/g, '\n')
-                  .replace(/\\"/g, '"');
-                parsed = { type: 'message', content: extracted };
-              }
-            }
-          }
-        }
-      }
+      parsed = normalizeAnswer(rawText);
     } catch {
-      // Fallback: retorna como mensagem de texto simples
-      parsed = { type: 'message', content: rawText.replace(/```json\n?|```/g, '').trim() };
+      return res.status(502).json({
+        error: 'O assistente não concluiu uma resposta válida. Tente novamente ou use o acervo local.',
+        code: 'INVALID_AI_RESPONSE',
+      });
     }
 
     res.json({ answer: parsed });
@@ -488,6 +390,9 @@ app.post('/api/assistente', limiter.middleware, async (req, res) => {
 });
 
 app.use((error, _req, res, _next) => {
+  if (error?.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'JSON inválido.', code: 'INVALID_JSON' });
+  }
   if (error?.type === 'entity.too.large') {
     return res.status(413).json({ error: 'Solicitação muito grande.', code: 'PAYLOAD_TOO_LARGE' });
   }
@@ -497,6 +402,11 @@ app.use((error, _req, res, _next) => {
   console.error('Erro não tratado:', error?.message || 'erro desconhecido');
   return res.status(500).json({ error: 'Erro interno. Tente novamente.', code: 'INTERNAL_ERROR' });
 });
+
+return app;
+}
+
+const app = createApp();
 
 // A Vercel importa o app; em desenvolvimento local o servidor abre a porta.
 if (!process.env.VERCEL) {
