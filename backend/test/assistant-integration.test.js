@@ -18,7 +18,7 @@ const aiClient = { models: { async generateContent(request) {
   return { text: providerText };
 } } };
 const rateLimiter = { middleware(_req, _res, next) { next(); }, storage: 'test', limits: {} };
-const app = createApp({ aiClient, rateLimiter });
+const app = createApp({ aiClient, rateLimiter, previewHost: 'teste-fabcampo.vercel.app' });
 let server;
 let base;
 
@@ -78,6 +78,16 @@ test('histórico inválido não chega ao provedor', async () => {
   const response = await ask({ message: 'Olá', history: [null] });
   assert.equal(response.status, 400);
   assert.equal(calls, previous);
+});
+
+test('diagnóstico só é exposto no preview e aceita apenas sua origem exata', async () => {
+  const page = await fetch(`${base}/diagnostico`);
+  assert.equal(page.status, 200);
+  assert.match(await page.text(), /Validação do SabIA/);
+  const sameOrigin = await fetch(`${base}/health`, { headers: { Origin: 'https://teste-fabcampo.vercel.app' } });
+  assert.equal(sameOrigin.status, 200);
+  const otherPreview = await fetch(`${base}/health`, { headers: { Origin: 'https://outro-fabcampo.vercel.app' } });
+  assert.equal(otherPreview.status, 403);
 });
 
 test('limite do provedor mantém resposta de contingência sem expor detalhes', async () => {
