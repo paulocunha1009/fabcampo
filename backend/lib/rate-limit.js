@@ -27,8 +27,7 @@ function redisFromEnvironment() {
   return url && token ? new Redis({ url, token }) : null;
 }
 
-export function createRateLimiter() {
-  const redis = redisFromEnvironment();
+export function createRateLimiter({ redis = redisFromEnvironment(), clock = Date.now } = {}) {
   const requirePersistent = process.env.REQUIRE_PERSISTENT_RATE_LIMIT === 'true';
   const perIpMinute = numberFromEnv('RATE_LIMIT_PER_IP_MIN', 30);
   const globalMinute = numberFromEnv('RATE_LIMIT_GLOBAL_MIN', 15);
@@ -42,7 +41,7 @@ export function createRateLimiter() {
       return count;
     }
 
-    const now = Date.now();
+    const now = clock();
     const item = memory.get(key);
     if (!item || item.expiresAt <= now) {
       memory.set(key, { count: 1, expiresAt: now + ttlSeconds * 1000 });
@@ -61,8 +60,8 @@ export function createRateLimiter() {
     }
 
     try {
-      const minuteBucket = Math.floor(Date.now() / minuteWindowMs);
-      const dayBucket = Math.floor(Date.now() / dayWindowMs);
+      const minuteBucket = Math.floor(clock() / minuteWindowMs);
+      const dayBucket = Math.floor(clock() / dayWindowMs);
       const prefix = process.env.RATE_LIMIT_PREFIX || 'campo-digital';
       const ip = addressHash(req);
       const [ipCount, minuteCount, dayCount] = await Promise.all([

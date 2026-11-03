@@ -195,6 +195,7 @@ async function enviar(mensagemReal, container, campo, textoExibido) {
 
     container.removeChild(typing);
 
+    if (resposta.local) adicionarMensagem(container, 'Modo local: a IA não respondeu agora. Você pode continuar usando o acervo do portal.', 'bot');
     if (resposta.type === 'quiz') {
       renderizarQuiz(container, resposta);
       historico.push({ role: 'assistant', content: `[Quiz sobre "${resposta.topic}" gerado com ${resposta.questions?.length} questões]` });

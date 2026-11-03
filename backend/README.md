@@ -69,8 +69,20 @@ mudanças que ainda existem somente no checkout local.
 ## Limites iniciais aprovados
 
 - 30 solicitações por minuto por IP/rede;
-- 10 solicitações por minuto no portal inteiro;
+- 15 solicitações por minuto no portal inteiro;
 - 200 solicitações por dia;
 - até 1.000 tokens de saída por resposta.
 
 Todos os valores são configuráveis sem mudança de código. Veja [DEPLOY_VERCEL.md](DEPLOY_VERCEL.md) para implantação.
+
+## Uso pela turma
+
+Os clientes do assistente aguardam até 25 segundos. Em falha de conexão, demora ou
+limite da API, exibem um aviso de modo local e oferecem o conteúdo local existente.
+Os limites de produção permanecem em 15 pedidos de IA por minuto e 200 por dia.
+
+Os testes simulam 40 pedidos HTTP simultâneos em duas instâncias, usando um contador
+compartilhado controlado, tanto na mesma rede quanto em redes diferentes. O resultado
+esperado é de 15 respostas da IA e 25 respostas de limite, sem chamadas ao provedor
+para os pedidos bloqueados. Esse teste local não é uma medição de capacidade da Vercel
+ou do Gemini em produção e não consome serviços externos.
