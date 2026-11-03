@@ -261,6 +261,7 @@
       historico.push({ role: 'user', content: mensagemReal });
       container.removeChild(typing);
 
+      if (resposta.local) adicionarMensagem(container, 'Modo local: a IA não respondeu agora. Você pode continuar usando o acervo do portal.', 'bot');
       if (resposta.type === 'quiz') {
         renderizarQuiz(container, resposta);
         historico.push({ role: 'assistant', content: '[Quiz sobre "' + (resposta.topic || '') + '" gerado]' });
@@ -286,28 +287,35 @@
   function perguntarAssistente(mensagem, hist) {
     // Se não tiver endpoint real configurado, usa fallback local imediatamente
     if (!ENDPOINT || ENDPOINT.includes('seu-backend')) {
-      return Promise.resolve(respostaLocal(mensagem));
+      return Promise.resolve(usarRespostaLocal(mensagem));
     }
 
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: mensagem, history: hist })
+      body: JSON.stringify({ message: mensagem, history: hist }),
+      signal: AbortSignal.timeout(25000)
     }).then(function (r) {
       if (!r.ok) return r.json().catch(function () { return {}; }).then(function (e) { throw new Error(e.error || ('Erro ' + r.status)); });
       return r.json();
     }).then(function (dados) {
       if (typeof dados.answer === 'string') return { type: 'message', content: dados.answer };
-      return dados.answer || { type: 'message', content: 'Resposta não reconhecida.' };
+      return dados.answer || usarRespostaLocal(mensagem);
     }).catch(function () {
       // Backend indisponível → fallback local
-      return respostaLocal(mensagem);
+      return usarRespostaLocal(mensagem);
     });
   }
 
   // ── Fallback local (sem backend) ─────────────────────────────────────────────
   // Chamado quando o backend não está disponível.
   // Recebe a mensagem já transformada pelo modo ativo.
+  function usarRespostaLocal(pergunta) {
+    var resposta = respostaLocal(pergunta);
+    resposta.local = true;
+    return resposta;
+  }
+
   function respostaLocal(pergunta) {
     var t = pergunta.toLowerCase();
 

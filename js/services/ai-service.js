@@ -15,7 +15,7 @@ const endpoint = window.PORTAL_AI_ENDPOINT || 'http://localhost:3001/api/assiste
 export async function perguntarAssistente(mensagem, historico = []) {
   // Fallback local quando o backend não está configurado
   if (!endpoint || endpoint.includes('seu-backend')) {
-    return respostaLocal(mensagem);
+    return { ...respostaLocal(mensagem), local:true };
   }
 
   try {
@@ -23,6 +23,7 @@ export async function perguntarAssistente(mensagem, historico = []) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: mensagem, history: historico }),
+      signal: AbortSignal.timeout(25000),
     });
 
     if (!resposta.ok) throw new Error(`API indisponível (${resposta.status})`);
@@ -31,9 +32,9 @@ export async function perguntarAssistente(mensagem, historico = []) {
     if (typeof dados.answer === 'string') {
       return { type: 'message', content: dados.answer };
     }
-    return dados.answer || respostaLocal(mensagem);
+    return dados.answer || { ...respostaLocal(mensagem), local:true };
   } catch {
-    return respostaLocal(mensagem);
+    return { ...respostaLocal(mensagem), local:true };
   }
 }
 
