@@ -170,7 +170,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
   </div>
 
   <div class="ferramentas">
-    <input class="busca" id="busca" type="search" aria-label="Buscar planta por nome popular" placeholder="Buscar por nome popular..." autocomplete="off">
+    <input class="busca" id="busca" type="search" aria-label="Buscar planta por nome popular ou científico" placeholder="Buscar por nome popular ou científico..." autocomplete="off">
     <button class="filtro" data-f="todas" aria-pressed="true">Todas</button>
     <button class="filtro" data-f="nativa" aria-pressed="false">Nativas</button>
     <button class="filtro" data-f="medicinal" aria-pressed="false">Medicinais</button>
@@ -213,6 +213,7 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
 </footer>
 
 <script src="../js/config.js"></script>
+<script src="../js/catalogo-core.js"></script>
 <script>
 const API_URL = (window.PORTAL_AI_ENDPOINT || 'http://localhost:3001/api/assistente').replace(/\/api\/assistente$/, '/api/atividade');
 
@@ -225,23 +226,22 @@ function escaparHTML(valor){
 }
 
 /* ---------- carregar dados ---------- */
-fetch('../data/plantas.json')
+fetch('../data/plantas.json', { signal:AbortSignal.timeout(12000) })
   .then(function(r){ if(!r.ok) throw new Error('não achei data/plantas.json'); return r.json(); })
   .then(function(d){
-    BASE = d;
+    BASE = CatalogoCore.validarBase(d);
     const buscaInicial = new URLSearchParams(window.location.search).get('busca');
     if(buscaInicial) document.getElementById('busca').value = buscaInicial;
     contar();
     pintar();
-    const nativasPendentes = (d.pendentes_nativas || []).join(' · ');
-    const medicinaisPendentes = typeof d.pendentes_medicinais === 'string'
-      ? d.pendentes_medicinais : '';
+    const nativasPendentes = BASE.pendentes_nativas.join(' · ');
+    const medicinaisPendentes = BASE.pendentes_medicinais;
     document.getElementById('lista-pendentes').textContent =
       nativasPendentes + (medicinaisPendentes ? '. Medicinais: ' + medicinaisPendentes : '');
   })
   .catch(function(e){
     document.getElementById('fichas').innerHTML =
-      '<p class="vazio">Não consegui carregar as fichas: ' + e.message + '</p>';
+      '<p class="vazio">Não consegui carregar as fichas. Recarregue a página para tentar novamente.</p>';
   });
 
 function contar(){
@@ -258,12 +258,12 @@ function contar(){
 
 /* ---------- fichas ---------- */
 function filtrar(){
-  const busca = document.getElementById('busca').value.toLowerCase().trim();
+  const busca = CatalogoCore.normalizar(document.getElementById('busca').value);
   return BASE.especies.filter(function(p){
     if(filtro === 'nativa'    && !p.nativa) return false;
     if(filtro === 'medicinal' && !p.medicinal) return false;
     if(filtro === 'ambas'     && !(p.nativa && p.medicinal)) return false;
-    if(busca && p.nome.toLowerCase().indexOf(busca) < 0) return false;
+    if(busca && !CatalogoCore.normalizar(p.nome + ' ' + p.cientifico).includes(busca)) return false;
     return true;
   });
 }
@@ -307,6 +307,7 @@ document.querySelectorAll('.filtro').forEach(function(b){
 /* ---------- desafio de identificação ---------- */
 document.getElementById('btn-desafio').addEventListener('click', async function(){
   const botao = this;
+  if(botao.disabled) return;
   const area = document.getElementById('area-desafio');
   if(BASE.especies.length < 4){
     area.innerHTML = '<div class="enigma">O desafio precisa de pelo menos 4 fichas no catálogo.</div>';
@@ -324,30 +325,27 @@ document.getElementById('btn-desafio').addEventListener('click', async function(
       'da EEMPC Francisco Araújo Barros, no Assentamento Lagoa do Mineiro, Itarema, Ceará. ' +
       'REGRA ABSOLUTA: use apenas a ficha abaixo. Não acrescente informação de fora, ' +
       'não invente característica nenhuma e NUNCA diga o nome da planta nem o nome científico.',
-      'FICHA: ' + JSON.stringify({
-        ambiente: sorteada.ambiente, usos: sorteada.usos, texto: sorteada.texto
-      }) +
+      'FICHA: ' + JSON.stringify(CatalogoCore.fichaSemNome(sorteada)) +
       '\n\nEscreva 3 frases em primeira pessoa, como se a planta se apresentasse, ' +
       'para um estudante adivinhar qual é. Não diga o nome.'
       );
+      enigma = CatalogoCore.validarEnigma(enigma, sorteada);
     } catch (erroIA) {
       modoLocal = true;
-      const usos = (sorteada.usos || []).slice(0, 2).join(' e ');
-      enigma = 'Eu vivo em ' + (sorteada.ambiente || 'um ambiente registrado no território') + '. ' +
-        (usos ? 'Sou lembrada na comunidade por ' + usos + '. ' : '') +
-        'Minha história está guardada em uma das fichas deste catálogo.';
+      enigma = CatalogoCore.enigmaLocal(sorteada);
     }
     /* as alternativas saem do próprio catálogo, nunca da IA */
-    const outras = BASE.especies.filter(function(p){ return p.id !== sorteada.id; })
-      .sort(function(){ return Math.random() - 0.5; }).slice(0,3);
-    const opcoes = outras.concat([sorteada]).sort(function(){ return Math.random() - 0.5; });
-    area.innerHTML = (modoLocal ? '<div class="nota-med">Modo local: a IA está indisponível, mas o desafio continua com a ficha do catálogo.</div>' : '') +
+    const opcoes = CatalogoCore.opcoesPara(BASE.especies, sorteada);
+    let respondido = false;
+    area.innerHTML = (modoLocal ? '<div class="nota-med">Modo local: desafio preparado com a ficha do catálogo.</div>' : '') +
       '<div class="enigma">' + escaparHTML(enigma) + '</div>' +
       opcoes.map(function(p){
         return '<button class="palpite" data-id="' + escaparHTML(p.id) + '">' + escaparHTML(p.nome) + '</button>';
       }).join('');
     area.querySelectorAll('.palpite').forEach(function(b){
       b.addEventListener('click', function(){
+        if(respondido) return;
+        respondido = true;
         area.querySelectorAll('.palpite').forEach(function(x){
           x.disabled = true;
           if(x.dataset.id === sorteada.id) x.classList.add('certa');
@@ -360,7 +358,7 @@ document.getElementById('btn-desafio').addEventListener('click', async function(
       });
     });
   }catch(e){
-    area.innerHTML = '<div class="enigma">Não deu para montar o enigma agora: ' + e.message + '</div>';
+    area.innerHTML = '<div class="enigma">Não foi possível montar este desafio. Tente sortear outra planta.</div>';
   }finally{
     botao.disabled = false; botao.textContent = 'Sortear outra planta';
   }
@@ -370,12 +368,13 @@ async function chamarIA(instrucao, pergunta){
   const r = await fetch(API_URL, {
     method:'POST',
     headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ system: instrucao, message: pergunta })
+    body: JSON.stringify({ system: instrucao, message: pergunta }),
+    signal: AbortSignal.timeout(25000)
   });
   if(!r.ok) throw new Error('o servidor respondeu com erro ' + r.status);
   const d = await r.json();
   const texto = d.text || d.texto || d.reply || d.resposta || d.message || '';
-  if(!texto) throw new Error('a resposta veio vazia.');
+  if(typeof texto !== 'string' || !texto.trim()) throw new Error('a resposta veio vazia.');
   return texto;
 }
 </script>
