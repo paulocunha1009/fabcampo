@@ -255,6 +255,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 </footer>
 
 <script src="../js/config.js"></script>
+<script src="../js/expedicao-core.js"></script>
 <script>
 /* =====================================================================
    1. CONFIGURAÇÃO
@@ -317,10 +318,13 @@ let estado = carregar();
 let atual = null;
 let desafio = null;
 let indice = 0;
+let operacao = 0;
+let respondida = false;
 
 function carregar(){
-  try { return JSON.parse(localStorage.getItem(CHAVE)) || { sementes:0, feitas:[], registro:'' }; }
-  catch(e){ return { sementes:0, feitas:[], registro:'' }; }
+  const ids = ESTACOES.map(e => e.id);
+  try { return ExpedicaoCore.normalizarEstado(JSON.parse(localStorage.getItem(CHAVE)), ids); }
+  catch(e){ return ExpedicaoCore.normalizarEstado(null, ids); }
 }
 function salvar(){
   try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e){}
@@ -339,18 +343,19 @@ async function chamarIA(instrucao, pergunta){
   const resposta = await fetch(API_URL, {
     method:'POST',
     headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ system: instrucao, message: pergunta })
+    body: JSON.stringify({ system: instrucao, message: pergunta }),
+    signal: AbortSignal.timeout(25000)
   });
   if(!resposta.ok) throw new Error('O servidor do assistente respondeu com erro ' + resposta.status);
   const dados = await resposta.json();
   const texto = dados.text || dados.texto || dados.reply || dados.resposta || dados.message || '';
-  if(!texto) throw new Error('A resposta do assistente veio vazia.');
+  if(typeof texto !== 'string' || !texto.trim()) throw new Error('A resposta do assistente veio vazia.');
   return texto;
 }
 
 /* Lê uma página do próprio portal e devolve o texto dela. */
 async function lerAcervo(arquivo){
-  const r = await fetch(arquivo);
+  const r = await fetch(arquivo, { signal:AbortSignal.timeout(12000) });
   if(!r.ok) throw new Error('Não encontrei a página ' + arquivo + ' no portal.');
   const html = await r.text();
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -372,6 +377,7 @@ function pintarPainel(){
 }
 
 function pintarTrilha(){
+  document.getElementById('fim-trilha')?.remove();
   document.getElementById('trilha').innerHTML = ESTACOES.map(function(e, i){
     const ok = estado.feitas.indexOf(e.id) >= 0;
     let marca;
@@ -387,7 +393,7 @@ function pintarTrilha(){
   }).join('');
   if(estado.feitas.length === ESTACOES.length){
     document.getElementById('trilha').insertAdjacentHTML('afterend',
-      '<div class="fim" style="margin-top:1.5rem"><h2>Linha do tempo percorrida</h2>' +
+      '<div class="fim" id="fim-trilha" style="margin-top:1.5rem"><h2>Linha do tempo percorrida</h2>' +
       '<p>Você reuniu ' + estado.sementes + ' sementes e os sete selos. ' +
       'O próximo marco desta trilha ainda não existe: ele depende de alguém ' +
       'da escola documentar. Pode ser você.</p></div>');
@@ -414,6 +420,7 @@ function mostrar(tela){
    5. ESTAÇÃO
 ===================================================================== */
 function abrirEstacao(id){
+  operacao++;
   atual = ESTACOES.filter(function(e){ return e.id === id; })[0];
   const alvo = document.getElementById('tela-estacao');
 
@@ -435,7 +442,7 @@ function abrirEstacao(id){
         '<h2>Meu registro</h2>' +
         '<p class="secao-apoio">O que você quer que fique guardado sobre a luta pela terra ' +
         'nesse território? Escreva com as suas palavras.</p>' +
-        '<textarea id="registro" placeholder="Escreva aqui...">' + (estado.registro || '') + '</textarea>' +
+        '<textarea id="registro" placeholder="Escreva aqui...">' + escaparHTML(estado.registro || '') + '</textarea>' +
         '<div class="linha-btn">' +
           '<button class="btn terra" id="salvar-registro">Guardar registro</button>' +
           '<a class="btn sec" href="../contato.html">Enviar ao portal</a>' +
@@ -472,7 +479,7 @@ function abrirEstacao(id){
   mostrar('tela-estacao');
 }
 
-function voltarTrilha(){ pintarTrilha(); mostrar('tela-trilha'); }
+function voltarTrilha(){ operacao++; pintarTrilha(); mostrar('tela-trilha'); }
 
 /* =====================================================================
    6. DESAFIO GERADO A PARTIR DO ACERVO
@@ -510,12 +517,15 @@ function desafioLocal(estacao){
 }
 
 async function prepararDesafio(){
+  const vez = ++operacao;
+  const estacao = atual;
   const botao = document.getElementById('comecar');
   const caixa = document.getElementById('aviso-erro');
   botao.disabled = true; botao.textContent = 'Lendo o acervo...';
   caixa.innerHTML = '';
   try{
-    const acervo = await lerAcervo(atual.pagina);
+    const acervo = await lerAcervo(estacao.pagina);
+    if(vez !== operacao) return;
     botao.textContent = 'Montando os desafios...';
     const pedido =
       'MARCO ATUAL DA EXPEDIÇÃO:\n' +
@@ -532,12 +542,14 @@ async function prepararDesafio(){
       'Responda SOMENTE com JSON válido, sem markdown, neste formato: ' +
       '{"questoes":[{"pergunta":"","opcoes":["","","",""],"correta":0,"porque":""}],"aberta":""}';
     const bruto = await chamarIA(REGRA, pedido);
-    desafio = JSON.parse(bruto.replace(/```json|```/g,'').trim());
+    if(vez !== operacao) return;
+    desafio = ExpedicaoCore.validarDesafio(bruto);
     indice = 0;
     pintarQuestao();
     mostrar('tela-desafio');
   }catch(e){
-    desafio = desafioLocal(atual);
+    if(vez !== operacao) return;
+    desafio = desafioLocal(estacao);
     indice = 0;
     pintarQuestao();
     mostrar('tela-desafio');
@@ -547,6 +559,7 @@ async function prepararDesafio(){
 }
 
 function pintarQuestao(){
+  respondida = false;
   const q = desafio.questoes[indice];
   const total = desafio.questoes.length;
   document.getElementById('tela-desafio').innerHTML =
@@ -569,9 +582,11 @@ function pintarQuestao(){
 }
 
 function responder(escolha){
+  if(respondida) return;
+  respondida = true;
   const q = desafio.questoes[indice];
   const acertou = escolha === q.correta;
-  if(acertou){ estado.sementes += 5; salvar(); pintarPainel(); }
+  if(acertou){ ExpedicaoCore.premiar(estado, atual.id, indice, atual.memoriaViva); salvar(); pintarPainel(); }
   document.querySelectorAll('.alt').forEach(function(b,i){
     b.disabled = true;
     if(i === q.correta) b.classList.add('certa');
@@ -593,7 +608,7 @@ function pintarAberta(){
     '<div class="bloco" style="margin-top:1rem">' +
       '<p class="contagem">' + atual.local + ' &middot; pergunta aberta</p>' +
       '<p class="pergunta">' + escaparHTML(desafio.aberta) + '</p>' +
-      '<textarea id="resp-aberta" placeholder="Responda com as suas palavras..."></textarea>' +
+      '<textarea id="resp-aberta" maxlength="4000" placeholder="Responda com as suas palavras...">' + escaparHTML(estado.respostas[atual.id] || '') + '</textarea>' +
       '<div class="linha-btn"><button class="btn" id="enviar-aberta">Enviar resposta</button></div>' +
       '<div id="retorno"></div>' +
     '</div>';
@@ -601,30 +616,41 @@ function pintarAberta(){
   document.getElementById('enviar-aberta').addEventListener('click', avaliarAberta);
 }
 
+function concluirEstacao(texto, devolutiva, modoLocal){
+  estado.respostas[atual.id] = texto;
+  ExpedicaoCore.premiar(estado, atual.id, 'aberta', atual.memoriaViva);
+  if(!estado.feitas.includes(atual.id)) estado.feitas.push(atual.id);
+  salvar(); pintarPainel();
+  document.getElementById('retorno').innerHTML =
+    '<div class="devolutiva">' + escaparHTML(devolutiva) + '</div>' +
+    '<div class="fim" style="margin-top:1.2rem"><h2>' + atual.selo + ' ' + atual.nomeSelo + '</h2>' +
+    '<p>Parada de ' + atual.local + ' concluída' + (modoLocal ? ' no modo local' : '') + '. Você tem ' + estado.sementes + ' sementes.</p>' +
+    '<div class="linha-btn" style="justify-content:center"><button class="btn" id="v5">Voltar à trilha</button></div></div>';
+  document.getElementById('v5').addEventListener('click', voltarTrilha);
+  const botao = document.getElementById('enviar-aberta');
+  botao.disabled = true; botao.textContent = 'Parada concluída';
+}
+
 async function avaliarAberta(){
+  const botao = document.getElementById('enviar-aberta');
+  if(botao.disabled) return;
   const texto = document.getElementById('resp-aberta').value.trim();
   const retorno = document.getElementById('retorno');
   if(texto.length < 15){
-    retorno.innerHTML = '<div class="erro">Escreva um pouco mais — pelo menos duas ou três linhas.</div>';
+    retorno.innerHTML = '<div class="erro">Escreva pelo menos 15 caracteres com suas ideias.</div>';
     return;
   }
-  const botao = document.getElementById('enviar-aberta');
+  const vez = ++operacao;
+  const estacao = atual;
+  // Guardar antes da consulta evita perder o texto se a conexão falhar.
+  estado.respostas[estacao.id] = texto; salvar();
   botao.disabled = true; botao.textContent = 'Lendo sua resposta...';
   retorno.innerHTML = '';
-  if(desafio.local){
-    estado.sementes += 10;
-    if(estado.feitas.indexOf(atual.id) < 0) estado.feitas.push(atual.id);
-    salvar(); pintarPainel();
-    retorno.innerHTML = '<div class="devolutiva"><b>Registro recebido.</b> Sua resposta foi guardada neste navegador. Compare suas ideias com o texto da reportagem e converse com alguém da comunidade para ampliar esse registro.</div>' +
-      '<div class="fim" style="margin-top:1.2rem"><h2>' + atual.selo + ' ' + atual.nomeSelo + '</h2>' +
-      '<p>Parada de ' + atual.local + ' concluída no modo local. Você tem ' + estado.sementes + ' sementes.</p>' +
-      '<div class="linha-btn" style="justify-content:center"><button class="btn" id="v5">Voltar à trilha</button></div></div>';
-    document.getElementById('v5').addEventListener('click', voltarTrilha);
-    botao.disabled = false; botao.textContent = 'Enviar resposta';
-    return;
-  }
+  const orientacaoLocal = 'Sua resposta foi guardada neste navegador. A IA não avaliou este registro. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
+  if(desafio.local){ concluirEstacao(texto, orientacaoLocal, true); return; }
   try{
-    const acervo = await lerAcervo(atual.pagina);
+    const acervo = await lerAcervo(estacao.pagina);
+    if(vez !== operacao) return;
     const pedido =
       'TEXTO DO ACERVO:\n' + acervo + '\n\n' +
       'PERGUNTA: ' + desafio.aberta + '\n' +
@@ -633,21 +659,11 @@ async function avaliarAberta(){
       'acertou, depois aponte um ponto do acervo que ela poderia ter usado e não usou. ' +
       'Fale direto com o estudante, sem nota e sem elogio vazio.';
     const devolutiva = await chamarIA(REGRA, pedido);
-    estado.sementes += 10;
-    if(estado.feitas.indexOf(atual.id) < 0) estado.feitas.push(atual.id);
-    salvar(); pintarPainel();
-    retorno.innerHTML =
-      '<div class="devolutiva">' + escaparHTML(devolutiva) + '</div>' +
-      '<div class="fim" style="margin-top:1.2rem">' +
-        '<h2>' + atual.selo + ' ' + atual.nomeSelo + '</h2>' +
-        '<p>Parada de ' + atual.local + ' concluída. Você tem ' + estado.sementes + ' sementes.</p>' +
-        '<div class="linha-btn" style="justify-content:center"><button class="btn" id="v5">Voltar à trilha</button></div>' +
-      '</div>';
-    document.getElementById('v5').addEventListener('click', voltarTrilha);
+    if(vez !== operacao) return;
+    concluirEstacao(texto, devolutiva, false);
   }catch(e){
-    retorno.innerHTML = '<div class="erro">Não consegui enviar sua resposta agora: ' + e.message + '</div>';
-  }finally{
-    botao.disabled = false; botao.textContent = 'Enviar resposta';
+    if(vez !== operacao) return;
+    concluirEstacao(texto, orientacaoLocal, true);
   }
 }
 
