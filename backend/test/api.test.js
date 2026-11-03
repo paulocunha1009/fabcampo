@@ -55,6 +55,11 @@ test('CORS bloqueia origem não autorizada', async () => {
   assert.equal((await response.json()).code, 'ORIGIN_BLOCKED');
 });
 
+test('diagnóstico não fica disponível na API padrão de produção', async () => {
+  const response = await fetch(`${baseUrl}/diagnostico`);
+  assert.equal(response.status, 404);
+});
+
 test('rota de IA orienta contingência quando não há chave', async () => {
   const response = await fetch(`${baseUrl}/api/assistente`, {
     method: 'POST',

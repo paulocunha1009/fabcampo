@@ -18,6 +18,7 @@ import express from 'express';
 import cors from 'cors';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
+import { readFileSync } from 'node:fs';
 import { createRateLimiter } from './lib/rate-limit.js';
 import { validateRequest } from './lib/validate-request.js';
 import { buildAcervoContext } from './lib/acervo.js';
@@ -95,7 +96,7 @@ DIRETRIZES
 - Não repita seu nome em todas as respostas; apresente-se como SabIA apenas quando isso ajudar a conversa`;
 
 // ── Express ───────────────────────────────────────────────────────────────────
-export function createApp({ aiClient = ai, rateLimiter = limiter } = {}) {
+export function createApp({ aiClient = ai, rateLimiter = limiter, previewHost = process.env.VERCEL_ENV === 'preview' ? process.env.VERCEL_URL : null } = {}) {
 const app = express();
 
 app.disable('x-powered-by');
@@ -110,6 +111,7 @@ app.use((_req, res, next) => {
 app.use(cors({
   origin(origin, cb) {
     if (!origin || origin === 'null' || ALLOWED_ORIGINS.includes(origin) ||
+        (previewHost && origin === `https://${previewHost}`) ||
         /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
       cb(null, true);
     } else {
@@ -120,6 +122,12 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '20kb' }));
+
+// Ferramenta de teste disponível apenas na URL única do preview protegido pela Vercel.
+app.get('/diagnostico', (_req, res) => {
+  if (!previewHost) return res.status(404).json({ error: 'Página não encontrada.' });
+  return res.type('html').send(readFileSync(new URL('./diagnostico.html', import.meta.url), 'utf8'));
+});
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
