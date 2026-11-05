@@ -12,6 +12,7 @@ backend/.env
 # ── DEPENDÊNCIAS (geradas pelo npm install) ───────────────────
 node_modules/
 backend/node_modules/
+__pycache__/
 
 # ── ARQUIVOS DO SISTEMA ───────────────────────────────────────
 .DS_Store

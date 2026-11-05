@@ -8,6 +8,11 @@ on:
       - "pages/**"
       - "js/**"
       - "css/**"
+      - "data/**"
+      - "*.html"
+      - "sitemap.xml"
+      - "tools/check_portal_links.py"
+      - "tools/test_check_portal_links.py"
       - "tools/build_ai_acervo.py"
       - ".github/workflows/validacao-backend.yml"
   pull_request:
@@ -27,6 +32,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Testar verificação de links internos
+        run: python -m unittest discover -s tools -p test_check_portal_links.py
+      - name: Conferir navegação e arquivos locais
+        run: python tools/check_portal_links.py
       - uses: actions/setup-node@v4
         with:
           node-version: "22"

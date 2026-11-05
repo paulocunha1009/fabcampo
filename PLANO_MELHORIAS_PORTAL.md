@@ -20,6 +20,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | SabIA consultar o acervo e validar respostas e links | Publicado anteriormente |
 | Limitar espera pela IA e oferecer alternativa local | Publicado anteriormente |
 | Validar automaticamente backend e acervo no GitHub | Ativo |
+| Verificar links internos e dependências locais das páginas do sitemap | Automatizado no GitHub; não exige publicação do portal |
 | Melhorar falhas, datas e carregamento de notícias | Implementado na `main`; publicação pendente |
 | Expedição começar limpa em cada abertura, adequada ao laboratório | Implementado na `main`; publicação pendente |
 | Consultar e baixar registros da atividade | Implementado na `main`; publicação pendente |
@@ -133,3 +134,15 @@ As cópias necessárias à animação são marcadas como `aria-hidden` e `inert`
 removidos para evitar duplicações no documento. Fotos, legendas e demais conteúdos
 do acervo não são alterados por essa revisão. A conferência real da rolagem e das
 animações continua pendente com as demais mudanças de interface.
+
+## Verificação de links e dependências
+
+`python tools/check_portal_links.py` confere as páginas declaradas no sitemap,
+links locais, âncoras estáticas, scripts, importações estáticas de módulos e arquivos
+de estilo referenciados. Também detecta diferenças de maiúsculas/minúsculas que
+poderiam passar despercebidas no Windows e falhar na hospedagem. A checagem não
+acessa a internet nem valida fatos, imagens pendentes ou destinos externos.
+
+O workflow de validação executa essa checagem e os testes do próprio verificador.
+Mudanças em HTML da raiz, sitemap, dados e ferramentas também acionam a validação,
+além das pastas de backend, páginas, JavaScript e CSS já acompanhadas.
