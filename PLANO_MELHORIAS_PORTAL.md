@@ -28,6 +28,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Revisar campos, avisos e foco por teclado da Expedição | Implementado na `main`; conferência visual e publicação pendentes |
 | SabIA: foco ao abrir e fechar, seleção acessível dos modos e preservação do texto durante espera | Implementado na `main`; conferência visual e publicação pendentes |
 | Catálogo: avisos de resultados e carregamento, resposta textual e foco na ficha | Implementado na `main`; conferência visual e publicação pendentes |
+| Contato: validação, mensagens de envio e preservação do texto | Implementado na `main`; conferência visual e publicação pendentes |
 | Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
 
@@ -91,3 +92,17 @@ O estado de carregamento é indicado por `aria-busy`. As opções são agrupadas
 enigma e a resposta é explicitada em texto, além das cores. Após o palpite, o foco
 vai para a ficha revelada. O enigma pronto não toma o foco se o visitante já estiver
 usando outro controle da página. A revisão não altera o conteúdo das fichas.
+
+## Formulário de contato
+
+O envio atual usa Google Forms com `mode: no-cors`. Uma resposta opaca não permite
+ao portal verificar o recebimento ou a aceitação dos campos. A interface informa
+essa limitação, sem confirmar sucesso e sem apagar ou esconder os dados preenchidos.
+O formulário oficial fica disponível por um link acionado pelo visitante, sem abrir
+abas automaticamente em falhas. O prazo da tentativa é de 15 segundos, com prevenção
+de envios simultâneos e restauração do botão ao terminar.
+
+Erros de validação são associados aos campos e o primeiro inválido recebe foco.
+Telefones são verificados apenas pelo formato, sem confirmação de titularidade.
+Links opcionais aceitam HTTP/HTTPS com domínio válido e sem credenciais embutidas.
+Os testes automatizados simulam a rede e não enviam mensagens ao Google Forms.

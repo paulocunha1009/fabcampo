@@ -10,15 +10,19 @@ const mensagens = {
 export function iniciarFormularioContato() {
   const formulario = document.querySelector('#formContato');
   if (!formulario) return;
+  const status = document.querySelector('#estado-envio');
+  let enviando = false;
 
   formulario.addEventListener('submit', async (evento) => {
     evento.preventDefault();
+    if(enviando) return;
 
     const campos = ['nome', 'email', 'assunto', 'mensagem', 'link-arquivos', 'autorizacao'];
     const resultados = campos.map((campo) => validarCampo(formulario, campo));
     const valido = resultados.every(Boolean);
 
     if (!valido) {
+      if(status) status.textContent = 'Revise os campos indicados antes de enviar.';
       const primeiroInvalido = formulario.querySelector('[aria-invalid="true"]');
       primeiroInvalido?.focus();
       return;
@@ -26,6 +30,9 @@ export function iniciarFormularioContato() {
 
     const botao = formulario.querySelector('[type="submit"]');
     const textoOriginal = botao?.textContent;
+    enviando = true;
+    formulario.setAttribute('aria-busy', 'true');
+    if(status) status.textContent = 'Enviando sua contribuição. Aguarde.';
 
     if (botao) {
       botao.disabled = true;
@@ -34,12 +41,12 @@ export function iniciarFormularioContato() {
 
     try {
       await enviarParaGoogleForms(formulario);
-      formulario.reset();
-      formulario.classList.add('oculto');
-      document.querySelector('#mensagemSucesso')?.classList.remove('oculto');
+      if(status) status.textContent = 'Tentativa de envio realizada. O portal não consegue confirmar o recebimento pelo Google Forms. Seus campos foram mantidos; você pode usar o formulário oficial abaixo para enviar diretamente.';
     } catch {
-      const destino = formulario.dataset.googleFormEndpoint?.replace('/formResponse', '/viewform');
-      if (destino) window.open(destino, '_blank', 'noopener,noreferrer');
+      if(status) status.textContent = 'Não foi possível confirmar o envio. Seus campos foram mantidos. Confira a conexão ou use o formulário oficial abaixo para enviar diretamente.';
+    } finally {
+      enviando = false;
+      formulario.setAttribute('aria-busy', 'false');
       if (botao) {
         botao.disabled = false;
         botao.textContent = textoOriginal;
@@ -61,7 +68,7 @@ function validarCampo(formulario, id) {
   const obrigatorio = campo.required;
   const preenchido = campo.type === 'checkbox' ? campo.checked : Boolean(valor);
   const emailOuTelefoneValido = id !== 'email' || validarEmailOuTelefone(String(valor));
-  const linkValido = id !== 'link-arquivos' || !valor || /^https?:\/\/\S+\.\S+/.test(String(valor));
+  const linkValido = id !== 'link-arquivos' || !valor || validarLink(String(valor));
   const valido = (!obrigatorio || preenchido) && emailOuTelefoneValido && linkValido;
 
   campo.setAttribute('aria-invalid', String(!valido));
@@ -76,8 +83,18 @@ function validarCampo(formulario, id) {
 function validarEmailOuTelefone(valor) {
   const texto = valor.trim();
   const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(texto);
-  const telefoneValido = texto.replace(/\D/g, '').length >= 10;
+  const digitos = texto.replace(/\D/g, '');
+  const telefoneValido = /^\+?[\d\s().-]+$/.test(texto) && digitos.length >= 10 && digitos.length <= 13;
   return emailValido || telefoneValido;
+}
+
+function validarLink(valor){
+  try {
+    const url = new URL(valor);
+    const partes = url.hostname.split('.');
+    const dominioValido = partes.length > 1 && partes.every(parte => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(parte));
+    return ['http:', 'https:'].includes(url.protocol) && dominioValido && !url.username && !url.password;
+  } catch { return false; }
 }
 
 function limparErro(campo) {
@@ -94,6 +111,7 @@ function enviarParaGoogleForms(formulario) {
   return fetch(endpoint, {
     method: 'POST',
     mode: 'no-cors',
-    body: dados
+    body: dados,
+    signal: AbortSignal.timeout(15000)
   });
 }

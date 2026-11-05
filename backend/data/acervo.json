@@ -4,7 +4,7 @@
     {
       "title": "História",
       "url": "pages/historia.html",
-      "sha256": "d47cb4028cd9c37f29f2ce1c7de64ca951222ac1f7ae56e335498a531b59be31",
+      "sha256": "f370f7250da34fe54c8da8cae101bf1783f245c28622ebd1e56316aef2f1c11c",
       "chunks": [
         {
           "section": "",
@@ -259,7 +259,7 @@
     {
       "title": "Memória",
       "url": "pages/memoria.html",
-      "sha256": "2b1b9ee9d2c85523e269e9326f6d383a166498bb146944ba7dc9b746b1aacac3",
+      "sha256": "75a86b4dd03cb4522ebbf73e41995a5349900c1a45cfefce35d916fa7d583a62",
       "chunks": [
         {
           "section": "",
@@ -318,7 +318,7 @@
     {
       "title": "Produção Agrícola",
       "url": "pages/agricola.html",
-      "sha256": "60840172dad29d41ff5b61b18940e181c5b7967cede1d94680776f49edc126fc",
+      "sha256": "bfbdf52b7d20589941020a24e077aaad1e3766aaec7a7a23d84d98a3d9dffe69",
       "chunks": [
         {
           "section": "",
@@ -397,7 +397,7 @@
     {
       "title": "Educação do Campo",
       "url": "pages/reportagem-educacao.html",
-      "sha256": "b534b3e0ab0c12a90dd919075ec413feb084a46afd8f068f98d67115879fa65e",
+      "sha256": "90c7457e9df4a0507e813baaa5fb8526d2e2bec355accfcc24ba90364f319d64",
       "chunks": [
         {
           "section": "",
@@ -808,7 +808,7 @@
     {
       "title": "Mudanças Climáticas",
       "url": "pages/reportagem-clima.html",
-      "sha256": "42f3a081ecc5a0c830242710bff8f53074af692f5a66764b767b6274460c6219",
+      "sha256": "26e9b51b9e0036c72b0eb05fff46a4d691b643183c121470974c602febdf374e",
       "chunks": [
         {
           "section": "",
@@ -1087,7 +1087,7 @@
     {
       "title": "Plantas Nativas",
       "url": "pages/Plantação-Nativa.html",
-      "sha256": "5bc5fcea209bd1fa688e49fd54bcffc15a8cc768a1fe68765558351f944cdb71",
+      "sha256": "e25c59329602845f1feaa9c40f0ec9912956112dbcaa9f275d1f8243f0bb6e59",
       "chunks": [
         {
           "section": "",
@@ -1306,7 +1306,7 @@
     {
       "title": "Plantas Medicinais",
       "url": "pages/Plantas-Medicinaisv2.html",
-      "sha256": "2d949e1b71412196a2034dc51d4a5a9fb52ec2a5d55f5e9985c822ee15afb335",
+      "sha256": "be9e11a73c1ba618280f0f8091657305d577f5a8cebe503d1695db18c9d903bf",
       "chunks": [
         {
           "section": "",
@@ -2029,7 +2029,7 @@
     {
       "title": "Inteligência Artificial na Educação",
       "url": "pages/materia_ia_educacao_v2.html",
-      "sha256": "9f69dea9fd6186d4d131aaad1f31c938043026b778f5a509fbbbc95634c237c9",
+      "sha256": "cada246a48288620313090de0e59a02df0e5526b5b81621eb1095289b505b35c",
       "chunks": [
         {
           "section": "IA na sala de aula",
@@ -2096,7 +2096,7 @@
     {
       "title": "Expedição",
       "url": "pages/expedicao.html",
-      "sha256": "6e74668ba8a8e7a229fcd9ebf0a4bb46a8877335126718891338b13eb5574428",
+      "sha256": "6dbf4a127a3681d6da1a9932a350b1cb2959581f695d357ea17849ce13e2ac39",
       "chunks": [
         {
           "section": "",
@@ -2119,7 +2119,7 @@
     {
       "title": "Catálogo do Território",
       "url": "pages/catalogo.html",
-      "sha256": "22f42c3c26f821207d553bf1e2ab147105aa764a174e468a59b342f60827c041",
+      "sha256": "decc4b2631ef50d66c9505f66c96b9982594de3ad9117b500d55a31a5d21bf6a",
       "chunks": [
         {
           "section": "Reconhece esta planta?",
