@@ -34,6 +34,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Galerias: controle de movimento, preferência do sistema e cópias acessíveis | Publicado; teste de uso com alunos pendente |
 | Modo de alto contraste | Publicado; teste de uso com alunos pendente |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Publicado; teste de uso com alunos pendente |
+| Busca dentro dos textos, com trecho original e carregamento sob demanda | Em revisão local; publicação pendente |
 
 ## Decisão para computadores compartilhados
 
@@ -102,6 +103,13 @@ ou informação de pesquisa foi acrescentada por essa melhoria.
 O carregamento das fichas tem prazo de cinco segundos. Falhas não interrompem a
 busca de páginas e são informadas ao visitante. Reabrir a busca permite tentar
 novamente. A consulta digitada é limpa ao fechar o diálogo.
+
+A ampliação da busca usa `data/busca.json`, gerado pelo mesmo comando do acervo.
+São 11 páginas temáticas, incluindo a página de mudas. O índice só é carregado ao
+abrir a busca. O resultado pode exibir um trecho original, limitado a 220 caracteres,
+e prioriza correspondências nos títulos. A consulta não é enviada à IA. Quando o
+índice falha, os nomes de páginas e as fichas de plantas continuam pesquisáveis.
+Somente destinos já conhecidos da navegação são aceitos para os textos indexados.
 
 ## Navegação por teclado no SabIA
 

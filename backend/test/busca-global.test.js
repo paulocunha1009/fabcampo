@@ -5,8 +5,9 @@ import { readFileSync } from 'node:fs';
 
 const source = readFileSync(new URL('../../js/components/busca-global.js', import.meta.url), 'utf8').replace('export function', 'function');
 const plantas = JSON.parse(readFileSync(new URL('../../data/plantas.json', import.meta.url), 'utf8'));
+const acervo = JSON.parse(readFileSync(new URL('../../data/busca.json', import.meta.url), 'utf8'));
 const tick = () => new Promise(resolve => setImmediate(resolve));
-function ambiente(pathname, provider){
+function ambiente(pathname, provider, acervoProvider = async () => ({ ok:true, json:async () => ({ version:1, pages:[] }) })){
   let dialogo, abrir;
   const requests = [];
   function node(){ return { children:[], events:{}, value:'', open:false,
@@ -29,7 +30,7 @@ function ambiente(pathname, provider){
     }
   };
   const ui = vm.createContext({ document, window:{ location:{ pathname } },
-    AbortSignal:{ timeout:ms => ({ prazo:ms }) }, fetch:(url, options) => { requests.push({ url, options }); return provider(url); } });
+    AbortSignal:{ timeout:ms => ({ prazo:ms }) }, fetch:(url, options) => { requests.push({ url, options }); return url.includes('busca.json') ? acervoProvider(url) : provider(url); } });
   vm.runInContext(source, ui);
   vm.runInContext('iniciarBuscaGlobal()', ui);
   return { requests, campo, status, resultados, dialogo, abrir, fechar,
@@ -95,4 +96,49 @@ test('catálogo com formato inesperado informa falha e consulta curta ou só pon
     assert.equal(ui.resultados.children.length, 0);
     assert.match(ui.status.textContent, /duas letras/);
   }
+});
+
+test('texto do acervo só carrega ao abrir a busca e atualiza a consulta já digitada com trecho original', async () => {
+  let liberar;
+  const ui = ambiente('/pages/catalogo.html', async () => ({ ok:true, json:async () => plantas }),
+    () => new Promise(resolve => { liberar = resolve; }));
+  assert.equal(ui.requests.some(r => r.url.includes('busca.json')), false);
+  ui.abrir.events.click();
+  ui.buscar('decreto 92.826');
+  assert.match(ui.status.textContent, /Carregando os textos/);
+  liberar({ ok:true, json:async () => acervo });
+  await tick();
+  const historia = ui.resultados.children.find(n => n.textContent === 'História');
+  assert.ok(historia);
+  assert.equal(new URL(historia.href, 'https://fabcampo.com.br/pages/catalogo.html').pathname, '/pages/historia.html');
+  const trecho = historia.children[0].textContent.replace('Trecho do acervo: ', '').replace(/…$/, '');
+  assert.ok(acervo.pages.find(p => p.url === 'pages/historia.html').chunks.some(c => c.text.startsWith(trecho)));
+  ui.buscar('guajiru');
+  assert.equal(ui.resultados.children[0].textContent, 'Guajiru');
+});
+
+test('falha do índice mantém busca básica e pode ser recuperada ao reabrir', async () => {
+  let tentativas = 0;
+  const ui = ambiente('/index.html', async () => ({ ok:true, json:async () => plantas }), async () => {
+    tentativas++;
+    return tentativas === 1 ? { ok:false } : { ok:true, json:async () => acervo };
+  });
+  ui.abrir.events.click();
+  await tick();
+  ui.buscar('historia');
+  assert.ok(ui.resultados.children.some(n => n.textContent === 'História'));
+  assert.match(ui.status.textContent, /textos do acervo não carregaram/);
+  ui.fechar.events.click(); ui.abrir.events.click();
+  await tick();
+  ui.buscar('decreto 92.826');
+  assert.ok(ui.resultados.children.some(n => n.textContent === 'História'));
+  assert.equal(tentativas, 2);
+});
+
+test('índice não pode acrescentar destinos desconhecidos à navegação', async () => {
+  const ui = ambiente('/index.html', async () => ({ ok:true, json:async () => plantas }), async () => ({
+    ok:true, json:async () => ({ version:1, pages:[{ url:'https://example.test/fora', chunks:[{ section:'', text:'Destino externo indevido' }] }] })
+  }));
+  ui.abrir.events.click(); await tick(); ui.buscar('destino externo');
+  assert.equal(ui.resultados.children.length, 0);
 });

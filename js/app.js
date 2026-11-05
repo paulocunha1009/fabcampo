@@ -4,7 +4,7 @@ import { iniciarCarrosseis } from './components/carrossel.js?v=20261105-1';
 import { prepararImagens } from './components/imagens.js';
 import { carregarConteudo } from './components/conteudo.js?v=20261105-1';
 import { iniciarChatEducacional } from './components/chat-widget.js?v=20261105-2';
-import { iniciarBuscaGlobal } from './components/busca-global.js?v=20261105-1';
+import { iniciarBuscaGlobal } from './components/busca-global.js?v=20261105-2';
 import { iniciarAltoContraste } from './components/alto-contraste.js?v=20261105-1';
 
 document.addEventListener('DOMContentLoaded', () => {

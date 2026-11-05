@@ -44,6 +44,11 @@ para detectar conteúdo desatualizado. A busca é textual e limitada: a ausênci
 trecho não demonstra ausência da informação no site. Por enquanto, ela usa a pergunta
 atual, sem pesquisa semântica ou banco vetorial.
 
+O mesmo comando também gera `data/busca.json`, usado na busca pública do portal.
+Esse índice contém os trechos do acervo e a página de mudas, sem reescrever os textos.
+Inclua os dois arquivos gerados ao alterar as páginas; os testes detectam índices
+desatualizados. A busca pública não envia as consultas para a API de IA.
+
 Mensagens, quizzes e recomendações são validados antes do envio ao navegador.
 Respostas vazias ou incompletas retornam `502 INVALID_AI_RESPONSE`, acionando a
 contingência local já existente. Links de recomendação precisam corresponder às páginas

@@ -30,6 +30,7 @@ export function iniciarBuscaGlobal() {
   const prefixoPaginas = emPages ? '' : 'pages/';
   const itens = PAGINAS.map(([titulo, caminho, termos]) => ({
     titulo,
+    pagina: caminho.startsWith('../') ? caminho.slice(3) : caminho ? 'pages/' + caminho : 'index.html',
     url: caminho.startsWith('../') ? raiz + caminho.slice(3) : prefixoPaginas + caminho,
     termos: `${titulo} ${termos}`
   }));
@@ -62,6 +63,8 @@ export function iniciarBuscaGlobal() {
   const resultados = dialogo.querySelector('.busca-global__resultados');
   let estadoCatalogo = 'carregando';
   let carregamento = null;
+  let estadoAcervo = 'aguardando';
+  let carregamentoAcervo = null;
 
   const renderizar = () => {
     const consulta = normalizar(campo.value.trim());
@@ -71,17 +74,31 @@ export function iniciarBuscaGlobal() {
       return;
     }
     const palavras = consulta.split(' ');
-    const encontrados = itens.filter((item) => palavras.every(palavra => normalizar(item.termos).includes(palavra)));
+    const corresponde = texto => palavras.every(palavra => normalizar(texto).includes(palavra));
+    const encontrados = itens.map(item => {
+      const trecho = item.trechos?.find(t => corresponde(t.section + ' ' + t.text));
+      if(!corresponde(item.termos) && !trecho) return null;
+      return { ...item, trecho, prioridade:corresponde(item.titulo) ? 2 : corresponde(item.termos) ? 1 : 0 };
+    }).filter(Boolean).sort((a,b) => b.prioridade - a.prioridade);
     const resumo = encontrados.length
       ? `${encontrados.length} resultado${encontrados.length === 1 ? '' : 's'}.`
       : 'Nenhum resultado. Tente outro termo.';
     status.textContent = resumo + (estadoCatalogo === 'carregando' ? ' Carregando as plantas do catálogo.'
-      : estadoCatalogo === 'erro' ? ' As plantas não puderam ser carregadas agora. Feche e abra a busca para tentar novamente.' : '');
+      : estadoCatalogo === 'erro' ? ' As plantas não puderam ser carregadas agora. Feche e abra a busca para tentar novamente.' : '')
+      + (estadoAcervo === 'carregando' ? ' Carregando os textos do acervo.'
+      : estadoAcervo === 'erro' ? ' Os textos do acervo não carregaram. Feche e abra a busca para tentar novamente.' : '');
     encontrados.forEach((item) => {
       const link = document.createElement('a');
       link.className = 'busca-global__resultado';
       link.href = item.url;
       link.textContent = item.titulo;
+      if(item.trecho){
+        const resumo = document.createElement('span');
+        resumo.className = 'busca-global__trecho';
+        const texto = item.trecho.text;
+        resumo.textContent = 'Trecho do acervo: ' + texto.slice(0,220) + (texto.length > 220 ? '…' : '');
+        link.append(resumo);
+      }
       resultados.append(link);
     });
   };
@@ -106,9 +123,28 @@ export function iniciarBuscaGlobal() {
   }
   carregarPlantas();
 
+  function carregarAcervo(){
+    if(carregamentoAcervo || estadoAcervo === 'pronto') return;
+    estadoAcervo = 'carregando';
+    carregamentoAcervo = fetch(`${raiz}data/busca.json`, { signal:AbortSignal.timeout(5000) })
+      .then(resposta => resposta.ok ? resposta.json() : Promise.reject(new Error('Acervo indisponível')))
+      .then(dados => {
+        if(dados?.version !== 1 || !Array.isArray(dados.pages)) throw new Error('Índice inválido');
+        for(const pagina of dados.pages){
+          const item = itens.find(i => i.pagina === pagina?.url);
+          if(!item || !Array.isArray(pagina.chunks)) continue;
+          item.trechos = pagina.chunks.filter(t => t && typeof t.text === 'string' && typeof t.section === 'string');
+        }
+        estadoAcervo = 'pronto';
+      })
+      .catch(() => { estadoAcervo = 'erro'; })
+      .finally(() => { carregamentoAcervo = null; renderizar(); });
+  }
+
   const mostrar = () => {
     if(!dialogo.open) dialogo.showModal();
     if(estadoCatalogo === 'erro') carregarPlantas();
+    carregarAcervo();
     renderizar();
     campo.focus();
   };

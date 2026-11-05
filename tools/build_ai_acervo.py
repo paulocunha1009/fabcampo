@@ -55,16 +55,25 @@ class Content(HTMLParser):
             self.main = False
 
 
-pages = []
-for title, url in PAGES:
+def extract_page(title, url):
     raw = (ROOT / url).read_bytes().replace(b'\r\n', b'\n')
     parser = Content()
     parser.feed(raw.decode('utf-8'))
     if not parser.blocks:
         raise ValueError(f'Nenhum trecho público extraído: {url}')
-    pages.append({'title': title, 'url': url,
-                  'sha256': hashlib.sha256(raw).hexdigest(), 'chunks': parser.blocks})
+    return {'title': title, 'url': url,
+            'sha256': hashlib.sha256(raw).hexdigest(), 'chunks': parser.blocks}
+
+
+pages = [extract_page(title, url) for title, url in PAGES]
 dest = ROOT / 'backend/data/acervo.json'
 dest.parent.mkdir(parents=True, exist_ok=True)
 dest.write_text(json.dumps({'version': 1, 'pages': pages}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 print(f'Acervo atualizado: {len(pages)} páginas, {sum(len(p["chunks"]) for p in pages)} trechos.')
+
+# A busca pública usa os mesmos trechos e inclui também a página do viveiro.
+# Não adiciona fontes externas nem dados digitados pelos visitantes.
+search_pages = pages + [extract_page('Cultivando Vida', 'pages/mudas.html')]
+search_dest = ROOT / 'data/busca.json'
+search_dest.write_text(json.dumps({'version': 1, 'pages': search_pages}, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+print(f'Índice de busca atualizado: {len(search_pages)} páginas.')
