@@ -18,7 +18,8 @@ const PAGINAS = [
 const normalizar = (texto) => String(texto || '')
   .normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '')
-  .toLowerCase();
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, ' ').trim();
 
 export function iniciarBuscaGlobal() {
   const cabecalho = document.querySelector('.cabecalho__conteudo');
@@ -29,7 +30,7 @@ export function iniciarBuscaGlobal() {
   const prefixoPaginas = emPages ? '' : 'pages/';
   const itens = PAGINAS.map(([titulo, caminho, termos]) => ({
     titulo,
-    url: caminho.startsWith('../') ? raiz + caminho.slice(3) : raiz + prefixoPaginas + caminho,
+    url: caminho.startsWith('../') ? raiz + caminho.slice(3) : prefixoPaginas + caminho,
     termos: `${titulo} ${termos}`
   }));
   itens[0].url = raiz + 'index.html';
@@ -59,6 +60,8 @@ export function iniciarBuscaGlobal() {
   const campo = dialogo.querySelector('#busca-portal');
   const status = dialogo.querySelector('.busca-global__status');
   const resultados = dialogo.querySelector('.busca-global__resultados');
+  let estadoCatalogo = 'carregando';
+  let carregamento = null;
 
   const renderizar = () => {
     const consulta = normalizar(campo.value.trim());
@@ -67,10 +70,13 @@ export function iniciarBuscaGlobal() {
       status.textContent = 'Digite pelo menos duas letras.';
       return;
     }
-    const encontrados = itens.filter((item) => normalizar(item.termos).includes(consulta));
-    status.textContent = encontrados.length
+    const palavras = consulta.split(' ');
+    const encontrados = itens.filter((item) => palavras.every(palavra => normalizar(item.termos).includes(palavra)));
+    const resumo = encontrados.length
       ? `${encontrados.length} resultado${encontrados.length === 1 ? '' : 's'}.`
       : 'Nenhum resultado. Tente outro termo.';
+    status.textContent = resumo + (estadoCatalogo === 'carregando' ? ' Carregando as plantas do catálogo.'
+      : estadoCatalogo === 'erro' ? ' As plantas não puderam ser carregadas agora. Feche e abra a busca para tentar novamente.' : '');
     encontrados.forEach((item) => {
       const link = document.createElement('a');
       link.className = 'busca-global__resultado';
@@ -80,24 +86,38 @@ export function iniciarBuscaGlobal() {
     });
   };
 
-  fetch(`${raiz}data/plantas.json`)
-    .then((resposta) => resposta.ok ? resposta.json() : Promise.reject())
-    .then((dados) => {
-      (dados.especies || []).forEach((planta) => itens.push({
-        titulo: planta.nome,
-        url: `${raiz}pages/catalogo.html?busca=${encodeURIComponent(planta.nome)}`,
-        termos: `${planta.nome} ${planta.cientifico || ''} ${(planta.usos || []).join(' ')}`
-      }));
-    })
-    .catch(() => {});
+  function carregarPlantas(){
+    if(carregamento || estadoCatalogo === 'pronto') return;
+    estadoCatalogo = 'carregando';
+    carregamento = fetch(`${raiz}data/plantas.json`, { signal:AbortSignal.timeout(5000) })
+      .then((resposta) => resposta.ok ? resposta.json() : Promise.reject(new Error('Catálogo indisponível')))
+      .then((dados) => {
+        if(!Array.isArray(dados?.especies)) throw new Error('Catálogo inválido');
+        const plantas = dados.especies.filter(planta => planta && typeof planta.nome === 'string' && planta.nome.trim());
+        plantas.forEach((planta) => itens.push({
+          titulo: planta.nome,
+          url: `${prefixoPaginas}catalogo.html?busca=${encodeURIComponent(planta.nome)}`,
+          termos: `${planta.nome} ${typeof planta.cientifico === 'string' ? planta.cientifico : ''} ${Array.isArray(planta.usos) ? planta.usos.filter(u => typeof u === 'string').join(' ') : ''}`
+        }));
+        estadoCatalogo = 'pronto';
+      })
+      .catch(() => { estadoCatalogo = 'erro'; })
+      .finally(() => { carregamento = null; renderizar(); });
+  }
+  carregarPlantas();
 
   const mostrar = () => {
-    dialogo.showModal();
+    if(!dialogo.open) dialogo.showModal();
+    if(estadoCatalogo === 'erro') carregarPlantas();
+    renderizar();
     campo.focus();
   };
   abrir.addEventListener('click', mostrar);
   campo.addEventListener('input', renderizar);
   dialogo.querySelector('.busca-global__fechar').addEventListener('click', () => dialogo.close());
+  dialogo.addEventListener('close', () => {
+    campo.value = ''; renderizar(); abrir.focus();
+  });
   dialogo.addEventListener('click', (evento) => {
     if (evento.target === dialogo) dialogo.close();
   });

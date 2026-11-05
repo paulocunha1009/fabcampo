@@ -1,0 +1,46 @@
+/* Controle em fluxo normal: não cobre o menu, o conteúdo ou o assistente. */
+.acessibilidade { display:flex; justify-content:flex-start; padding-block:12px; }
+.acessibilidade__contraste {
+  padding:8px 14px; border:2px solid var(--cor-primaria, #1f6f3b);
+  border-radius:6px; background:#fff; color:#111; font:inherit; font-weight:700; cursor:pointer;
+}
+.acessibilidade__contraste[aria-pressed="true"] { text-decoration:underline; text-underline-offset:4px; }
+
+/* A paleta é aplicada somente na tela. Fotografias e vídeos não são invertidos. */
+@media screen {
+  html[data-alto-contraste] { color-scheme:dark; }
+  html[data-alto-contraste] body,
+  html[data-alto-contraste] body * {
+    background:#000 !important; color:#fff !important; border-color:#fff !important;
+    box-shadow:none !important; text-shadow:none !important;
+  }
+  html[data-alto-contraste] body *::before,
+  html[data-alto-contraste] body *::after {
+    background:transparent !important; color:inherit !important; border-color:#fff !important;
+    box-shadow:none !important; text-shadow:none !important;
+  }
+  html[data-alto-contraste] a,
+  html[data-alto-contraste] a * { color:#ffff00 !important; text-decoration:underline !important; }
+  html[data-alto-contraste] :focus-visible { outline:3px solid #ffff00 !important; outline-offset:4px; }
+  html[data-alto-contraste] input::placeholder,
+  html[data-alto-contraste] textarea::placeholder { color:#fff !important; opacity:1; }
+  html[data-alto-contraste] button[aria-pressed="true"],
+  html[data-alto-contraste] button[aria-selected="true"] { border:3px solid #ffff00 !important; }
+  html[data-alto-contraste] button:hover:not(:disabled),
+  html[data-alto-contraste] button:hover:not(:disabled) *,
+  html[data-alto-contraste] .alt.certa,
+  html[data-alto-contraste] .alt.certa *,
+  html[data-alto-contraste] .palpite.certa,
+  html[data-alto-contraste] .palpite.certa *,
+  html[data-alto-contraste] .ai-quiz__opcao--correta,
+  html[data-alto-contraste] .ai-quiz__opcao--correta * { background:#fff !important; color:#000 !important; }
+  html[data-alto-contraste] .alt.certa::after,
+  html[data-alto-contraste] .palpite.certa::after,
+  html[data-alto-contraste] .ai-quiz__opcao--correta::after { content:" (resposta correta)"; }
+  html[data-alto-contraste] .alt.errada,
+  html[data-alto-contraste] .palpite.errada,
+  html[data-alto-contraste] .ai-quiz__opcao--errada { border:4px double #fff !important; }
+  html[data-alto-contraste] button:disabled { opacity:1; cursor:not-allowed; }
+  html[data-alto-contraste] .barra i { background:#ffff00 !important; }
+}
+@media print { .acessibilidade { display:none; } }

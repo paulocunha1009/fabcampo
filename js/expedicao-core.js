@@ -19,12 +19,13 @@
     const result = {
       sementes:Number.isSafeInteger(v.sementes) && v.sementes >= 0 ? v.sementes : 0,
       feitas:Array.isArray(v.feitas) ? [...new Set(v.feitas.filter(id => ids.includes(id)))] : [],
-      registro:typeof v.registro === 'string' ? v.registro : '', premiadas:{}, respostas:{}
+      registro:typeof v.registro === 'string' ? v.registro : '', premiadas:{}, respostas:{}, perguntas:{}
     };
     for(const id of ids){
       const p = v.premiadas?.[id];
       result.premiadas[id] = { questoes:Array.isArray(p?.questoes) ? [...new Set(p.questoes.filter(i => Number.isInteger(i) && i >= 0 && i < 3))] : [], aberta:p?.aberta === true };
       if(typeof v.respostas?.[id] === 'string') result.respostas[id] = v.respostas[id];
+      if(typeof v.perguntas?.[id] === 'string') result.perguntas[id] = v.perguntas[id];
     }
     return result;
   }
@@ -40,5 +41,31 @@
     }
     return true;
   }
-  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar };
+  function exportarRegistros(estado, estacoes, data){
+    const atual = normalizarEstado(estado, estacoes.map(e => e.id));
+    const linhas = [
+      'CAMPO DIGITAL · FABCAMPO', 'Expedição — Meus registros',
+      'Data desta cópia: ' + data, '', 'Estudante: ______________________________',
+      'Turma: _________________________________', '',
+      'Paradas concluídas: ' + atual.feitas.length + '/' + estacoes.length,
+      'Sementes: ' + atual.sementes + ' (pontuação da atividade; não é nota escolar)', '',
+      'Esta cópia reúne as respostas abertas e o registro de memória desta atividade.',
+      'Não inclui as perguntas e alternativas dos quizzes nem suas devolutivas.',
+      'Não foi enviada automaticamente ao professor. Pode ser entregue ou usada no caderno de campo.',
+      'Uma resposta marcada como rascunho ainda pode estar incompleta.', ''
+    ];
+    for(const estacao of estacoes){
+      const resposta = estacao.memoriaViva ? atual.registro : atual.respostas[estacao.id];
+      linhas.push('----------------------------------------',
+        estacao.local + ' — ' + estacao.titulo,
+        'Situação: ' + (atual.feitas.includes(estacao.id) ? 'parada concluída' : resposta?.trim() ? 'rascunho; parada não concluída' : 'sem registro'));
+      if(!estacao.memoriaViva && resposta?.trim()) linhas.push('Pergunta aberta:',
+        atual.perguntas[estacao.id]?.trim() ? atual.perguntas[estacao.id] : 'A pergunta não foi guardada com este registro.');
+      linhas.push(
+        estacao.memoriaViva ? 'Registro de memória (sem pontuação):' : 'Resposta aberta:',
+        resposta?.trim() ? resposta : 'Nenhum texto registrado.', '');
+    }
+    return linhas.join('\n');
+  }
+  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar, exportarRegistros };
 })(globalThis);

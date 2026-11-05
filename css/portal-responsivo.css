@@ -63,10 +63,12 @@
     transform: none;
   }
 
-  .menu__grupo--aberto .submenu,
-  .menu__grupo:focus-within .submenu {
+  .menu:not([data-preparado="true"]) .menu__grupo:focus-within .submenu,
+  .menu__grupo--aberto .submenu {
     display: grid !important;
   }
+
+  .submenu[hidden] { display:none !important; }
 
   .submenu a {
     font-size: 0.86rem;

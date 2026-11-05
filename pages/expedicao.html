@@ -18,8 +18,8 @@
 
 <title>Expedição no Território | EEMPC Francisco Araújo Barros</title>
 <link rel="icon" type="image/png" href="../img/logo/favicon-campo-digital.png">
-<link rel="stylesheet" href="../css/portal.css?v=20260927-1">
-<link rel="stylesheet" href="../css/portal-responsivo.css?v=20260920-6">
+<link rel="stylesheet" href="../css/portal.css?v=20261105-2">
+<link rel="stylesheet" href="../css/portal-responsivo.css?v=20261105-1">
 
 <!-- Google Analytics 4 — substitua G-D56GE991YS pelo ID real em analytics.google.com -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D56GE991YS"></script>
@@ -204,7 +204,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
     <div class="hero__meta" aria-label="Características da experiência">
       <span>🧭 7 marcos históricos</span>
       <span>📚 Acervo da comunidade</span>
-      <span>✓ Progresso salvo neste aparelho</span>
+      <span>✓ Atividade sem login · baixe seus registros antes de sair</span>
     </div>
   </div>
 </section>
@@ -216,6 +216,16 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
     <div class="medida"><b id="m-paradas">0/7</b><span>paradas</span></div>
     <div class="selos" id="m-selos" aria-label="Selos conquistados"></div>
   </div>
+  <p class="secao-apoio">Atividade para uso no laboratório: cada abertura começa do zero. Respostas e progresso ficam apenas enquanto esta página está aberta. Baixe seus registros antes de sair, atualizar a página ou encerrar. Eles não são enviados ao professor automaticamente.</p>
+  <p class="secao-apoio" id="aviso-salvamento" role="status" aria-live="polite"></p>
+  <div class="linha-btn"><button class="btn sec" id="baixar-registros" type="button">Baixar meus registros (.txt)</button><button class="btn terra" id="encerrar-atividade" type="button">Encerrar atividade</button></div>
+  <p class="secao-apoio">Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo fica na pasta de downloads mesmo após encerrar; siga a orientação do professor sobre sua entrega e remoção do PC compartilhado.</p>
+  <p class="secao-apoio" id="aviso-download" role="status" aria-live="polite"></p>
+  <details class="bloco" id="meus-registros">
+    <summary>Ver meus registros</summary>
+    <p class="secao-apoio">Confira os textos desta atividade. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída.</p>
+    <pre id="lista-registros" style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit"></pre>
+  </details>
 
   <!-- ======== TELA: TRILHA ======== -->
   <section class="tela on" id="tela-trilha">
@@ -255,7 +265,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 </footer>
 
 <script src="../js/config.js"></script>
-<script src="../js/expedicao-core.js"></script>
+<script src="../js/expedicao-core.js?v=20261105-3"></script>
 <script>
 /* =====================================================================
    1. CONFIGURAÇÃO
@@ -323,11 +333,13 @@ let respondida = false;
 
 function carregar(){
   const ids = ESTACOES.map(e => e.id);
-  try { return ExpedicaoCore.normalizarEstado(JSON.parse(localStorage.getItem(CHAVE)), ids); }
-  catch(e){ return ExpedicaoCore.normalizarEstado(null, ids); }
+  // Não recuperar registros do aluno anterior. Remover apenas a chave da versão antiga.
+  try { localStorage.removeItem(CHAVE); } catch(e){}
+  return ExpedicaoCore.normalizarEstado(null, ids);
 }
 function salvar(){
-  try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e){}
+  document.getElementById('aviso-salvamento').textContent = 'Registro disponível nesta atividade. Baixe uma cópia antes de sair ou encerrar.';
+  if(document.getElementById('meus-registros').open) atualizarConsultaRegistros();
 }
 
 /* =====================================================================
@@ -403,11 +415,12 @@ function pintarTrilha(){
   });
 }
 
-function mostrar(tela){
+function mostrar(tela, semFoco){
   document.querySelectorAll('.tela').forEach(function(t){ t.classList.remove('on'); });
   const destino = document.getElementById(tela);
   destino.classList.add('on');
   document.body.classList.toggle('expedicao-em-etapa', tela !== 'tela-trilha');
+  if(semFoco) return;
   const titulo = destino.querySelector('h2');
   if(titulo){
     titulo.setAttribute('tabindex', '-1');
@@ -440,18 +453,30 @@ function abrirEstacao(id){
       '</div>' +
       '<div class="bloco">' +
         '<h2>Meu registro</h2>' +
-        '<p class="secao-apoio">O que você quer que fique guardado sobre a luta pela terra ' +
+        '<p class="secao-apoio" id="orientacao-registro">O que você quer que fique guardado sobre a luta pela terra ' +
         'nesse território? Escreva com as suas palavras.</p>' +
-        '<textarea id="registro" placeholder="Escreva aqui...">' + escaparHTML(estado.registro || '') + '</textarea>' +
+        '<label for="registro">Seu registro de memória</label>' +
+        '<textarea id="registro" aria-describedby="orientacao-registro" placeholder="Escreva aqui...">' + escaparHTML(estado.registro || '') + '</textarea>' +
+        '<p id="registro-aviso" role="status" aria-live="polite"></p>' +
         '<div class="linha-btn">' +
-          '<button class="btn terra" id="salvar-registro">Guardar registro</button>' +
+          '<button class="btn terra" id="salvar-registro">Concluir registro</button>' +
           '<a class="btn sec" href="../contato.html">Enviar ao portal</a>' +
         '</div>' +
       '</div>';
     document.getElementById('v1').addEventListener('click', voltarTrilha);
+    document.getElementById('registro').addEventListener('input', function(event){
+      estado.registro = event.target.value;
+      salvar();
+    });
     document.getElementById('salvar-registro').addEventListener('click', function(){
       const t = document.getElementById('registro').value.trim();
-      if(!t){ return; }
+      if(!t){
+        document.getElementById('registro-aviso').textContent = 'Escreva seu registro antes de concluir.';
+        document.getElementById('registro').setAttribute('aria-invalid', 'true');
+        document.getElementById('registro').focus();
+        return;
+      }
+      document.getElementById('registro').setAttribute('aria-invalid', 'false');
       estado.registro = t;
       if(estado.feitas.indexOf(atual.id) < 0) estado.feitas.push(atual.id);
       salvar(); pintarPainel(); pintarTrilha(); voltarTrilha();
@@ -568,17 +593,18 @@ function pintarQuestao(){
       (desafio.local ? '<div class="aviso">Modo local: a IA está indisponível, mas o desafio continua com dados do próprio portal.</div>' : '') +
       '<div class="barra"><i style="width:' + (indice/total*100) + '%"></i></div>' +
       '<p class="contagem">' + atual.local + ' &middot; questão ' + (indice+1) + ' de ' + total + '</p>' +
-      '<p class="pergunta">' + escaparHTML(q.pergunta) + '</p>' +
-      '<div id="alts">' + q.opcoes.map(function(o,i){
+      '<h2 class="pergunta" id="pergunta-atual" tabindex="-1">' + escaparHTML(q.pergunta) + '</h2>' +
+      '<div id="alts" role="group" aria-labelledby="pergunta-atual">' + q.opcoes.map(function(o,i){
         return '<button class="alt" data-i="' + i + '">' +
           '<span class="let">' + String.fromCharCode(65+i) + '</span><span>' + escaparHTML(o) + '</span></button>';
       }).join('') + '</div>' +
-      '<div id="pos"></div>' +
+      '<div id="pos" role="status" aria-live="polite"></div>' +
     '</div>';
   document.getElementById('v3').addEventListener('click', voltarTrilha);
   document.querySelectorAll('.alt').forEach(function(b){
     b.addEventListener('click', function(){ responder(parseInt(b.dataset.i,10)); });
   });
+  document.getElementById('pergunta-atual').focus({ preventScroll:true });
 }
 
 function responder(escolha){
@@ -600,20 +626,33 @@ function responder(escolha){
   document.getElementById('seguir').addEventListener('click', function(){
     if(ultima){ pintarAberta(); } else { indice++; pintarQuestao(); }
   });
+  document.getElementById('seguir').focus();
 }
 
 function pintarAberta(){
+  // O rascunho continua vinculado à pergunta que o aluno estava respondendo.
+  if(estado.respostas[atual.id]?.trim() && estado.perguntas[atual.id]) desafio.aberta = estado.perguntas[atual.id];
   document.getElementById('tela-desafio').innerHTML =
     '<button class="btn sec" id="v4">&larr; Sair do desafio</button>' +
     '<div class="bloco" style="margin-top:1rem">' +
       '<p class="contagem">' + atual.local + ' &middot; pergunta aberta</p>' +
-      '<p class="pergunta">' + escaparHTML(desafio.aberta) + '</p>' +
-      '<textarea id="resp-aberta" maxlength="4000" placeholder="Responda com as suas palavras...">' + escaparHTML(estado.respostas[atual.id] || '') + '</textarea>' +
+      '<h2 class="pergunta" id="pergunta-atual" tabindex="-1">' + escaparHTML(desafio.aberta) + '</h2>' +
+      '<label for="resp-aberta" id="rotulo-resposta">Sua resposta</label>' +
+      '<p id="orientacao-resposta" class="secao-apoio">Escreva com suas palavras. Use de 15 a 4.000 caracteres.</p>' +
+      '<textarea id="resp-aberta" aria-labelledby="rotulo-resposta pergunta-atual" aria-describedby="orientacao-resposta" minlength="15" maxlength="4000" placeholder="Responda com as suas palavras...">' + escaparHTML(estado.respostas[atual.id] || '') + '</textarea>' +
       '<div class="linha-btn"><button class="btn" id="enviar-aberta">Enviar resposta</button></div>' +
-      '<div id="retorno"></div>' +
+      '<div id="retorno" role="status" aria-live="polite"></div>' +
     '</div>';
   document.getElementById('v4').addEventListener('click', voltarTrilha);
+  const idRascunho = atual.id;
+  const perguntaRascunho = desafio.aberta;
+  document.getElementById('resp-aberta').addEventListener('input', function(event){
+    estado.respostas[idRascunho] = event.target.value;
+    estado.perguntas[idRascunho] = perguntaRascunho;
+    salvar();
+  });
   document.getElementById('enviar-aberta').addEventListener('click', avaliarAberta);
+  document.getElementById('pergunta-atual').focus({ preventScroll:true });
 }
 
 function concluirEstacao(texto, devolutiva, modoLocal){
@@ -634,19 +673,25 @@ function concluirEstacao(texto, devolutiva, modoLocal){
 async function avaliarAberta(){
   const botao = document.getElementById('enviar-aberta');
   if(botao.disabled) return;
-  const texto = document.getElementById('resp-aberta').value.trim();
+  const campoResposta = document.getElementById('resp-aberta');
+  const texto = campoResposta.value.trim();
   const retorno = document.getElementById('retorno');
   if(texto.length < 15){
     retorno.innerHTML = '<div class="erro">Escreva pelo menos 15 caracteres com suas ideias.</div>';
+    campoResposta.setAttribute('aria-invalid', 'true');
+    campoResposta.focus();
     return;
   }
+  campoResposta.setAttribute('aria-invalid', 'false');
   const vez = ++operacao;
   const estacao = atual;
   // Guardar antes da consulta evita perder o texto se a conexão falhar.
-  estado.respostas[estacao.id] = texto; salvar();
+  estado.respostas[estacao.id] = texto;
+  estado.perguntas[estacao.id] = desafio.aberta;
+  salvar();
   botao.disabled = true; botao.textContent = 'Lendo sua resposta...';
   retorno.innerHTML = '';
-  const orientacaoLocal = 'Sua resposta foi guardada neste navegador. A IA não avaliou este registro. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
+  const orientacaoLocal = 'A IA não avaliou este registro. Baixe uma cópia antes de sair ou encerrar a atividade. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
   if(desafio.local){ concluirEstacao(texto, orientacaoLocal, true); return; }
   try{
     const acervo = await lerAcervo(estacao.pagina);
@@ -673,6 +718,7 @@ async function avaliarAberta(){
 const guia = document.getElementById('guia');
 const msgs = document.getElementById('guia-msgs');
 let guiaOcupado = false;
+let guiaOperacao = 0;
 
 const botaoGuia = document.getElementById('guia-abrir');
 const fecharGuia = document.getElementById('guia-fechar');
@@ -718,6 +764,7 @@ async function perguntarGuia(){
   falar('eu', texto);
   const esperando = falar('ia', 'Consultando o acervo...');
   guiaOcupado = true;
+  const vezGuia = ++guiaOperacao;
   try{
     /* Busca nas páginas do acervo. Para ficar leve, lê a página da estação
        aberta (se houver) e sempre a História, que é a base do território. */
@@ -725,6 +772,7 @@ async function perguntarGuia(){
     const partes = [];
     for(let i = 0; i < paginas.length; i++){
       try { partes.push(await lerAcervo(paginas[i])); } catch(e){}
+      if(vezGuia !== guiaOperacao) return;
     }
     if(!partes.length) throw new Error('não consegui abrir as páginas do portal.');
     const resposta = await chamarIA(
@@ -733,22 +781,81 @@ async function perguntarGuia(){
       '\n\nPERGUNTA DO ESTUDANTE: ' + texto +
       '\n\nResponda em no máximo 5 frases e diga em qual página do portal está a informação.'
     );
+    if(vezGuia !== guiaOperacao) return;
     esperando.textContent = resposta;
   }catch(e){
+    if(vezGuia !== guiaOperacao) return;
     esperando.textContent = 'Não consegui responder agora: ' + e.message;
   }finally{
-    guiaOcupado = false;
-    msgs.scrollTop = msgs.scrollHeight;
+    if(vezGuia === guiaOperacao){
+      guiaOcupado = false;
+      msgs.scrollTop = msgs.scrollHeight;
+    }
   }
 }
 
 /* =====================================================================
    8. INICIAR
 ===================================================================== */
+function encerrarAtividade(voltar){
+  operacao++;
+  guiaOperacao++;
+  guiaOcupado = false;
+  estado = carregar();
+  atual = null; desafio = null; indice = 0; respondida = false;
+  for(const id of ['tela-estacao', 'tela-desafio', 'lista-registros', 'guia-msgs']) document.getElementById(id).replaceChildren();
+  document.getElementById('guia-input').value = '';
+  guia.classList.remove('on');
+  botaoGuia.setAttribute('aria-expanded', 'false');
+  document.getElementById('meus-registros').open = false;
+  document.getElementById('aviso-download').textContent = '';
+  document.getElementById('aviso-salvamento').textContent = 'Atividade encerrada. Respostas e progresso foram limpos desta página. O próximo aluno pode começar.';
+  pintarPainel(); pintarTrilha();
+  mostrar('tela-trilha', !voltar);
+}
+document.getElementById('encerrar-atividade').addEventListener('click', function(){
+  if(window.confirm('Baixou seus registros? Encerrar apaga as respostas e o progresso desta atividade. Deseja encerrar?')) encerrarAtividade(true);
+});
+window.addEventListener('pagehide', function(){ encerrarAtividade(false); });
+window.addEventListener('pageshow', function(event){ if(event.persisted) encerrarAtividade(false); });
+window.addEventListener('beforeunload', function(event){
+  if(estado.registro.trim() || Object.values(estado.respostas).some(t => t.trim()) || estado.sementes || estado.feitas.length){
+    event.preventDefault(); event.returnValue = '';
+  }
+});
+function atualizarConsultaRegistros(){
+  const data = new Date().toLocaleString('pt-BR', { timeZone:'America/Fortaleza' });
+  document.getElementById('lista-registros').textContent = ExpedicaoCore.exportarRegistros(estado, ESTACOES, data);
+}
+document.getElementById('meus-registros').addEventListener('toggle', function(event){
+  if(event.target.open) atualizarConsultaRegistros();
+});
+document.getElementById('baixar-registros').addEventListener('click', function(){
+  const aviso = document.getElementById('aviso-download');
+  let endereco;
+  let link;
+  try{
+    const data = new Date().toLocaleString('pt-BR', { timeZone:'America/Fortaleza' });
+    const texto = ExpedicaoCore.exportarRegistros(estado, ESTACOES, data);
+    const arquivo = new Blob(['\uFEFF', texto], { type:'text/plain;charset=utf-8' });
+    endereco = URL.createObjectURL(arquivo);
+    link = document.createElement('a');
+    link.href = endereco;
+    link.download = 'fabcampo-meus-registros.txt';
+    document.body.appendChild(link);
+    link.click();
+    aviso.textContent = 'Download solicitado. Confira o arquivo fabcampo-meus-registros.txt na pasta de downloads do navegador.';
+  }catch(e){
+    aviso.textContent = 'Não foi possível iniciar o download. Copie suas respostas antes de sair da página.';
+  }finally{
+    if(link) link.remove();
+    if(endereco) setTimeout(function(){ URL.revokeObjectURL(endereco); }, 1000);
+  }
+});
 pintarPainel();
 pintarTrilha();
 </script>
-<script type="module" src="../js/app.js?v=20260919-2"></script>
+<script type="module" src="../js/app.js?v=20261105-8"></script>
   <script src="../js/security/security-img.js"></script>
 </body>
 </html>

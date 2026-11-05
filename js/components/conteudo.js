@@ -19,6 +19,8 @@ export async function carregarConteudo() {
 function renderizarNoticias(noticias) {
   const destino = document.querySelector('[data-render="noticias"]');
   if (!destino) return;
+  // A página inicial tem seu próprio carregador, com cache e atualização remota.
+  if (destino.hasAttribute('data-noticias-auto')) return;
 
   destino.innerHTML = noticias.map((noticia, indice) => {
     const padroes = [

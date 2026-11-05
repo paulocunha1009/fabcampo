@@ -1,12 +1,14 @@
-import { iniciarMenu } from './components/menu.js';
-import { iniciarFormularioContato } from './components/formulario.js?v=20260913-1';
-import { iniciarCarrosseis } from './components/carrossel.js';
+import { iniciarMenu } from './components/menu.js?v=20261105-1';
+import { iniciarFormularioContato } from './components/formulario.js?v=20261105-1';
+import { iniciarCarrosseis } from './components/carrossel.js?v=20261105-1';
 import { prepararImagens } from './components/imagens.js';
-import { carregarConteudo } from './components/conteudo.js';
-import { iniciarChatEducacional } from './components/chat-widget.js';
-import { iniciarBuscaGlobal } from './components/busca-global.js';
+import { carregarConteudo } from './components/conteudo.js?v=20261105-1';
+import { iniciarChatEducacional } from './components/chat-widget.js?v=20261105-2';
+import { iniciarBuscaGlobal } from './components/busca-global.js?v=20261105-1';
+import { iniciarAltoContraste } from './components/alto-contraste.js?v=20261105-1';
 
 document.addEventListener('DOMContentLoaded', () => {
+  iniciarAltoContraste();
   prepararImagens();
   iniciarMenu();
   iniciarFormularioContato();

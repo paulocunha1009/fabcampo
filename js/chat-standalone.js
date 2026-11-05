@@ -15,6 +15,7 @@
   var historico  = [];
   var modoAtivo  = 'chat';
   var aguardando = false;
+  var conversaVersao = 0;
 
   function escaparHTML(valor) {
     return String(valor == null ? '' : valor).replace(/[&<>"']/g, function (c) {
@@ -132,7 +133,7 @@
       '</button>',
 
       '<div class="ai-chat__painel" id="ai-chat-painel"',
-      '     role="dialog" aria-labelledby="ai-chat-titulo" aria-modal="true">',
+      '     role="dialog" aria-labelledby="ai-chat-titulo">',
 
       '  <div class="ai-chat__cabecalho">',
       '    <div class="ai-chat__identidade">',
@@ -144,11 +145,11 @@
       '    <button class="ai-chat__fechar" type="button" aria-label="Fechar assistente">✕</button>',
       '  </div>',
 
-      '  <div class="ai-chat__tabs" role="tablist" aria-label="Modos do assistente">',
-      '    <button class="ai-chat__tab ai-chat__tab--ativo" type="button" data-modo="chat" role="tab" aria-selected="true">💬 Perguntar</button>',
-      '    <button class="ai-chat__tab" type="button" data-modo="aprender" role="tab" aria-selected="false">📖 Aprender</button>',
-      '    <button class="ai-chat__tab" type="button" data-modo="quiz" role="tab" aria-selected="false">🧠 Quiz</button>',
-      '    <button class="ai-chat__tab" type="button" data-modo="explorar" role="tab" aria-selected="false">🔍 Explorar</button>',
+      '  <div class="ai-chat__tabs" role="group" aria-label="Modos do assistente">',
+      '    <button class="ai-chat__tab ai-chat__tab--ativo" type="button" data-modo="chat" aria-pressed="true">💬 Perguntar</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="aprender" aria-pressed="false">📖 Aprender</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="quiz" aria-pressed="false">🧠 Quiz</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="explorar" aria-pressed="false">🔍 Explorar</button>',
       '  </div>',
 
       '  <div class="ai-topicos" data-topicos style="display:none;" aria-label="Temas de quiz rápido">',
@@ -168,13 +169,14 @@
       '    </div>',
       '  </div>',
 
+      '  <button class="ai-chat__tab ai-chat__nova" type="button">Nova conversa</button>',
       '  <form class="ai-chat__form" aria-label="Enviar mensagem para o assistente">',
       '    <label class="oculto" for="ai-chat-pergunta">Digite sua mensagem</label>',
       '    <input id="ai-chat-pergunta" name="pergunta" type="text"',
       '           autocomplete="off" placeholder="Digite sua dúvida..." required>',
       '    <button class="botao" type="submit" aria-label="Enviar mensagem">↑</button>',
       '  </form>',
-      '  <p class="ai-chat__privacidade">Não informe nome, endereço, telefone ou outros dados pessoais. As conversas não são armazenadas pelo portal.</p>',
+      '  <p class="ai-chat__privacidade">Não informe nome, endereço, telefone ou outros dados pessoais. As conversas não são armazenadas pelo portal. Em PC compartilhado, use Nova conversa ao terminar; fechar o painel apenas o esconde.</p>',
       '</div>'
     ].join('\n');
 
@@ -187,19 +189,22 @@
     chat.dataset.eventsBound = 'true';
     var toggle    = chat.querySelector('.ai-chat__toggle');
     var fechar    = chat.querySelector('.ai-chat__fechar');
-    var tabs      = chat.querySelectorAll('.ai-chat__tab');
+    var tabs      = chat.querySelectorAll('.ai-chat__tab[data-modo]');
     var topicos   = chat.querySelectorAll('.ai-topico');
     var atalhos   = chat.querySelectorAll('.ai-atalho');
     var areaTop   = chat.querySelector('[data-topicos]');
     var mensagens = chat.querySelector('.ai-chat__mensagens');
     var formulario= chat.querySelector('.ai-chat__form');
     var campo     = chat.querySelector('#ai-chat-pergunta');
+    chat.querySelector('.ai-chat__nova').addEventListener('click', function(){ reiniciarConversa(chat, true); });
+    window.addEventListener('pagehide', function(){ reiniciarConversa(chat, false); });
+    window.addEventListener('pageshow', function(event){ if(event.persisted) reiniciarConversa(chat, false); });
 
     toggle.addEventListener('click', function () { alternarPainel(chat, campo); });
     fechar.addEventListener('click', function () { fecharPainel(chat); });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && chat.dataset.open === 'true') fecharPainel(chat);
+      if (e.key === 'Escape' && chat.dataset.open === 'true' && chat.contains(document.activeElement)) fecharPainel(chat);
     });
 
     tabs.forEach(function (tab) {
@@ -207,7 +212,7 @@
         modoAtivo = tab.dataset.modo;
         tabs.forEach(function (t) {
           t.classList.toggle('ai-chat__tab--ativo', t === tab);
-          t.setAttribute('aria-selected', String(t === tab));
+          t.setAttribute('aria-pressed', String(t === tab));
         });
         areaTop.style.display = modoAtivo === 'quiz' ? 'flex' : 'none';
         campo.placeholder = modoAtivo === 'quiz'     ? 'Ex: quiz sobre plantas medicinais...'
@@ -232,6 +237,7 @@
 
     formulario.addEventListener('submit', function (e) {
       e.preventDefault();
+      if(aguardando) return;
       var texto = campo.value.trim();
       if (!texto) return;
       campo.value = '';
@@ -250,14 +256,36 @@
   }
 
   // ── Envio de mensagem ────────────────────────────────────────────────────────
+  function reiniciarConversa(chat, focar){
+    conversaVersao++;
+    historico = []; aguardando = false; modoAtivo = 'chat';
+    var mensagens = chat.querySelector('.ai-chat__mensagens');
+    mensagens.replaceChildren();
+    adicionarMensagem(mensagens, 'Conversa limpa. Você pode começar uma nova pergunta.', 'bot');
+    var campo = chat.querySelector('#ai-chat-pergunta');
+    campo.value = ''; campo.placeholder = 'Digite sua dúvida...';
+    chat.querySelector('[data-topicos]').style.display = 'none';
+    chat.querySelectorAll('.ai-chat__tab[data-modo]').forEach(function(tab){
+      var ativa = tab.dataset.modo === 'chat';
+      tab.classList.toggle('ai-chat__tab--ativo', ativa);
+      tab.setAttribute('aria-pressed', String(ativa));
+    });
+    if(focar) campo.focus();
+    else {
+      chat.dataset.open = 'false';
+      chat.querySelector('.ai-chat__toggle').setAttribute('aria-expanded', 'false');
+    }
+  }
   function enviar(mensagemReal, container, campo, textoExibido) {
     if (aguardando) return;
     aguardando = true;
+    var vez = conversaVersao;
 
     adicionarMensagem(container, textoExibido || mensagemReal, 'user');
     var typing = mostrarTyping(container);
 
     perguntarAssistente(mensagemReal, historico).then(function (resposta) {
+      if(vez !== conversaVersao) return;
       historico.push({ role: 'user', content: mensagemReal });
       container.removeChild(typing);
 
@@ -277,6 +305,7 @@
       if (historico.length > 30) historico = historico.slice(-30);
       aguardando = false;
     }).catch(function (erro) {
+      if(vez !== conversaVersao) return;
       container.removeChild(typing);
       adicionarMensagem(container, '⚠️ ' + (erro.message || 'Não consegui responder. Verifique se o backend está rodando.'), 'bot');
       aguardando = false;
@@ -744,6 +773,7 @@
   function fecharPainel(chat) {
     chat.dataset.open = 'false';
     chat.querySelector('.ai-chat__toggle').setAttribute('aria-expanded', 'false');
+    chat.querySelector('.ai-chat__toggle').focus();
   }
 
   // ── Inicia quando o DOM estiver pronto ───────────────────────────────────────
