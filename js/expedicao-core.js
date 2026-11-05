@@ -48,7 +48,7 @@
     const atual = normalizarEstado(estado, estacoes.map(e => e.id));
     const linhas = [
       'CAMPO DIGITAL · FABCAMPO', 'Expedição — Meus registros',
-      'Exportado em: ' + data, '', 'Estudante: ______________________________',
+      'Data desta cópia: ' + data, '', 'Estudante: ______________________________',
       'Turma: _________________________________', '',
       'Paradas concluídas: ' + atual.feitas.length + '/' + estacoes.length,
       'Sementes: ' + atual.sementes + ' (pontuação da atividade; não é nota escolar)', '',

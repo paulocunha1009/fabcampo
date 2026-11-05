@@ -105,6 +105,10 @@ ao servidor e não altera o progresso. O arquivo é texto UTF-8 com BOM para pre
 acentos em editores comuns no Windows. A interface confirma a solicitação do download,
 sem afirmar que o navegador terminou de salvar o arquivo.
 
+`Ver meus registros` permite consultar e copiar os mesmos textos diretamente na
+página, sem refazer quizzes. A consulta aberta acompanha o salvamento de rascunhos;
+abrir ou fechar a consulta não altera pontuação ou conclusão das paradas.
+
 Os clientes do assistente aguardam até 25 segundos. Em falha de conexão, demora ou
 limite da API, exibem um aviso de modo local e oferecem o conteúdo local existente.
 Os limites de produção permanecem em 15 pedidos de IA por minuto e 200 por dia.

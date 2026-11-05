@@ -2096,7 +2096,7 @@
     {
       "title": "Expedição",
       "url": "pages/expedicao.html",
-      "sha256": "0738920001aba21d11025cd00ebf8d26be0ebfd783db32d12661984bf98277ec",
+      "sha256": "362e577ce3d9f63d0fbcbe050657996e0ce866d8f06dbd4e83392a87ff51e333",
       "chunks": [
         {
           "section": "",
@@ -2105,6 +2105,10 @@
         {
           "section": "",
           "text": "Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo pode ser aberto em um editor de texto."
+        },
+        {
+          "section": "",
+          "text": "Confira abaixo os textos disponíveis neste navegador. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída."
         },
         {
           "section": "A linha do tempo",

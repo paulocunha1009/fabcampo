@@ -139,3 +139,31 @@ test('botão cria arquivo de texto com nome definido e avisa se o download falha
   clicar();
   assert.match(aviso.textContent, /Não foi possível iniciar/);
 });
+
+test('consulta de registros mostra rascunho como texto e acompanha alterações sem pontuar', () => {
+  const html = readFileSync(new URL('../../pages/expedicao.html', import.meta.url), 'utf8');
+  const elements = new Map();
+  const document = { getElementById(id){
+    if(!elements.has(id)) elements.set(id, { open:false, textContent:'', listeners:{}, addEventListener(type, fn){ this.listeners[type] = fn; } });
+    return elements.get(id);
+  } };
+  const state = normalizarEstado(null, ids);
+  state.respostas.m1986 = '<script>texto do aluno</script>';
+  const before = JSON.stringify(state);
+  const ui = vm.createContext({ document, estado:state, ExpedicaoCore:context.ExpedicaoCore,
+    ESTACOES:[{ id:'m1986', local:'1986', titulo:'Terra' }], CHAVE:'teste', localStorage:{ setItem(){} } });
+  let start = html.indexOf('function atualizarConsultaRegistros(){');
+  vm.runInContext(html.slice(start, html.indexOf("document.getElementById('baixar-registros').addEventListener", start)), ui);
+  document.getElementById('meus-registros').open = true;
+  document.getElementById('meus-registros').listeners.toggle({ target:{ open:true } });
+  assert.match(document.getElementById('lista-registros').textContent, /<script>texto do aluno<\/script>/);
+  assert.match(document.getElementById('lista-registros').textContent, /rascunho/);
+  assert.equal(JSON.stringify(state), before);
+  start = html.indexOf('function salvar(){');
+  vm.runInContext(html.slice(start, html.indexOf('/* =====================================================================', start)), ui);
+  state.respostas.m1986 = 'Texto revisado';
+  vm.runInContext('salvar()', ui);
+  assert.match(document.getElementById('lista-registros').textContent, /Texto revisado/);
+  assert.equal(state.sementes, 0);
+  assert.equal(state.feitas.length, 0);
+});

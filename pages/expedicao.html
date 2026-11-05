@@ -221,6 +221,11 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
   <div class="linha-btn"><button class="btn sec" id="baixar-registros" type="button">Baixar meus registros (.txt)</button></div>
   <p class="secao-apoio">Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo pode ser aberto em um editor de texto.</p>
   <p class="secao-apoio" id="aviso-download" role="status" aria-live="polite"></p>
+  <details class="bloco" id="meus-registros">
+    <summary>Ver meus registros</summary>
+    <p class="secao-apoio">Confira abaixo os textos disponíveis neste navegador. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída.</p>
+    <pre id="lista-registros" style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit"></pre>
+  </details>
 
   <!-- ======== TELA: TRILHA ======== -->
   <section class="tela on" id="tela-trilha">
@@ -340,6 +345,7 @@ function salvar(){
   document.getElementById('aviso-salvamento').textContent = ok
     ? 'Rascunhos e progresso salvos neste navegador.'
     : 'Não foi possível salvar neste navegador. Copie suas respostas antes de fechar a página.';
+  if(document.getElementById('meus-registros').open) atualizarConsultaRegistros();
   return ok;
 }
 
@@ -767,6 +773,13 @@ async function perguntarGuia(){
 /* =====================================================================
    8. INICIAR
 ===================================================================== */
+function atualizarConsultaRegistros(){
+  const data = new Date().toLocaleString('pt-BR', { timeZone:'America/Fortaleza' });
+  document.getElementById('lista-registros').textContent = ExpedicaoCore.exportarRegistros(estado, ESTACOES, data);
+}
+document.getElementById('meus-registros').addEventListener('toggle', function(event){
+  if(event.target.open) atualizarConsultaRegistros();
+});
 document.getElementById('baixar-registros').addEventListener('click', function(){
   const aviso = document.getElementById('aviso-download');
   let endereco;
