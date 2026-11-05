@@ -1,4 +1,4 @@
-import { iniciarMenu } from './components/menu.js';
+import { iniciarMenu } from './components/menu.js?v=20261105-1';
 import { iniciarFormularioContato } from './components/formulario.js?v=20261105-1';
 import { iniciarCarrosseis } from './components/carrossel.js';
 import { prepararImagens } from './components/imagens.js';

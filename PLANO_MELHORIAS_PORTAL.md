@@ -29,6 +29,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | SabIA: foco ao abrir e fechar, seleção acessível dos modos e preservação do texto durante espera | Implementado na `main`; conferência visual e publicação pendentes |
 | Catálogo: avisos de resultados e carregamento, resposta textual e foco na ficha | Implementado na `main`; conferência visual e publicação pendentes |
 | Contato: validação, mensagens de envio e preservação do texto | Implementado na `main`; conferência visual e publicação pendentes |
+| Menu: submenus ocultos fora da navegação, Escape e devolução de foco | Implementado na `main`; conferência visual e publicação pendentes |
 | Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
 
@@ -106,3 +107,15 @@ Erros de validação são associados aos campos e o primeiro inválido recebe fo
 Telefones são verificados apenas pelo formato, sem confirmação de titularidade.
 Links opcionais aceitam HTTP/HTTPS com domínio válido e sem credenciais embutidas.
 Os testes automatizados simulam a rede e não enviam mensagens ao Google Forms.
+
+## Menu e submenus
+
+Com JavaScript ativo, os submenus abrem por seus botões (clique ou ativação nativa
+pelo teclado), com `aria-controls` e `aria-expanded` sincronizados. Fechados, usam
+`hidden` e não deixam links invisíveis no percurso do Tab. O CSS mantém a alternativa
+de hover/foco no desktop antes da inicialização do script.
+
+`Escape` fecha primeiro o submenu e devolve foco ao seu botão; no menu móvel, uma
+segunda ação fecha a navegação e retorna ao botão Menu. A tecla só atua se o foco
+estiver na navegação. Sair da navegação fecha o menu móvel. O tratamento de resize
+agora acompanha o limite de 1.180 pixels já usado no CSS responsivo.
