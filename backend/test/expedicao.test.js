@@ -50,34 +50,40 @@ test('repetir questões ou conclusão não duplica sementes e memória não rece
   assert.equal(state.sementes, 15);
 });
 
-test('rascunhos sobrevivem à reabertura sem concluir parada nem premiar', () => {
-  const dados = new Map();
-  const storage = { setItem: (k, v) => dados.set(k, v) };
-  const state = normalizarEstado(null, ids);
-  state.respostas.m1986 = 'Minha resposta ainda em escrita';
-  state.registro = 'Meu registro de memória em escrita';
-  assert.equal(context.ExpedicaoCore.salvarEstado(storage, 'teste', state), true);
-  const restaurado = normalizarEstado(JSON.parse(dados.get('teste')), ids);
-  assert.equal(restaurado.respostas.m1986, state.respostas.m1986);
-  assert.equal(restaurado.registro, state.registro);
-  assert.equal(restaurado.feitas.length, 0);
-  assert.equal(restaurado.sementes, 0);
-  assert.equal(context.ExpedicaoCore.salvarEstado({ setItem(){ throw new Error('Quota'); } }, 'teste', state), false);
+test('cada abertura começa vazia, ignora dados antigos e funciona com armazenamento bloqueado', () => {
+  const html = readFileSync(new URL('../../pages/expedicao.html', import.meta.url), 'utf8');
+  const start = html.indexOf('function carregar(){');
+  const code = html.slice(start, html.indexOf('function salvar(){', start));
+  let removida;
+  const storage = { getItem(){ throw new Error('Não deve ler registros anteriores'); },
+    setItem(){ throw new Error('Não deve persistir registros'); }, removeItem:k => { removida = k; } };
+  const ui = vm.createContext({ ExpedicaoCore:context.ExpedicaoCore, ESTACOES:ids.map(id => ({ id })), CHAVE:'legado', localStorage:storage });
+  vm.runInContext(code, ui);
+  const primeiro = vm.runInContext('carregar()', ui);
+  primeiro.respostas.m1986 = 'Resposta do aluno anterior';
+  primeiro.sementes = 25;
+  const segundo = vm.runInContext('carregar()', ui);
+  assert.equal(removida, 'legado');
+  assert.equal(Object.keys(segundo.respostas).length, 0);
+  assert.equal(segundo.sementes, 0);
+  assert.equal(segundo.registro, '');
+  assert.equal(segundo.feitas.length, 0);
+  ui.localStorage = { removeItem(){ throw new Error('Bloqueado'); } };
+  assert.equal(vm.runInContext('carregar().sementes', ui), 0);
 });
 
-test('digitação da resposta aberta salva rascunho e falha de armazenamento mostra aviso', () => {
+test('digitação mantém rascunho e pergunta apenas na atividade sem gravar no navegador', () => {
   const html = readFileSync(new URL('../../pages/expedicao.html', import.meta.url), 'utf8');
   const elements = new Map();
   const document = { getElementById(id){
     if(!elements.has(id)) elements.set(id, { textContent:'', innerHTML:'', listeners:{}, addEventListener(type, fn){ this.listeners[type] = fn; } });
     return elements.get(id);
   } };
-  const dados = new Map();
   const state = normalizarEstado(null, ids);
   const ui = vm.createContext({ document, ExpedicaoCore:context.ExpedicaoCore, estado:state,
     CHAVE:'teste', atual:{ id:'m1986', local:'Estação' }, desafio:{ aberta:'Reflexão' },
     escaparHTML: v => v, voltarTrilha(){}, avaliarAberta(){},
-    localStorage:{ setItem:(k, v) => dados.set(k, v) }
+    localStorage:{ setItem(){ assert.fail('Não deve gravar em disco'); } }
   });
   for(const [inicio, fim] of [['function salvar(){', '/* ====================================================================='], ['function pintarAberta(){', 'function concluirEstacao(']]){
     const start = html.indexOf(inicio);
@@ -86,17 +92,16 @@ test('digitação da resposta aberta salva rascunho e falha de armazenamento mos
   vm.runInContext('pintarAberta()', ui);
   const escrever = document.getElementById('resp-aberta').listeners.input;
   escrever({ target:{ value:'Rascunho sem enviar' } });
-  assert.equal(JSON.parse(dados.get('teste')).respostas.m1986, 'Rascunho sem enviar');
-  assert.equal(JSON.parse(dados.get('teste')).perguntas.m1986, 'Reflexão');
+  assert.equal(state.respostas.m1986, 'Rascunho sem enviar');
+  assert.equal(state.perguntas.m1986, 'Reflexão');
   ui.desafio.aberta = 'Outra pergunta recém-gerada';
   vm.runInContext('pintarAberta()', ui);
   assert.equal(ui.desafio.aberta, 'Reflexão');
   assert.equal(state.sementes, 0);
-  assert.match(document.getElementById('aviso-salvamento').textContent, /salvos/);
-  ui.localStorage = { setItem(){ throw new Error('Bloqueado'); } };
+  assert.match(document.getElementById('aviso-salvamento').textContent, /Baixe uma cópia/);
   escrever({ target:{ value:'Continuo escrevendo' } });
   assert.equal(state.respostas.m1986, 'Continuo escrevendo');
-  assert.match(document.getElementById('aviso-salvamento').textContent, /Não foi possível salvar/);
+  assert.match(document.getElementById('aviso-salvamento').textContent, /nesta atividade/);
 });
 
 test('exportação organiza textos reais por parada sem alterar progresso ou inventar respostas', () => {

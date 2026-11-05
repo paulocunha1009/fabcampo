@@ -41,10 +41,6 @@
     }
     return true;
   }
-  function salvarEstado(storage, chave, estado){
-    try { storage.setItem(chave, JSON.stringify(estado)); return true; }
-    catch(e){ return false; }
-  }
   function exportarRegistros(estado, estacoes, data){
     const atual = normalizarEstado(estado, estacoes.map(e => e.id));
     const linhas = [
@@ -53,7 +49,7 @@
       'Turma: _________________________________', '',
       'Paradas concluídas: ' + atual.feitas.length + '/' + estacoes.length,
       'Sementes: ' + atual.sementes + ' (pontuação da atividade; não é nota escolar)', '',
-      'Esta cópia reúne as respostas abertas e o registro de memória disponíveis neste navegador.',
+      'Esta cópia reúne as respostas abertas e o registro de memória desta atividade.',
       'Não inclui as perguntas e alternativas dos quizzes nem suas devolutivas.',
       'Não foi enviada automaticamente ao professor. Pode ser entregue ou usada no caderno de campo.',
       'Uma resposta marcada como rascunho ainda pode estar incompleta.', ''
@@ -71,5 +67,5 @@
     }
     return linhas.join('\n');
   }
-  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar, salvarEstado, exportarRegistros };
+  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar, exportarRegistros };
 })(globalThis);

@@ -90,27 +90,35 @@ Todos os valores são configuráveis sem mudança de código. Veja [DEPLOY_VERCE
 
 ## Uso pela turma
 
-Na Expedição, respostas abertas e registros de memória são salvos durante a
-digitação no armazenamento do navegador, sem concluir a parada ou atribuir pontos.
-O aluno recebe aviso se o salvamento falhar. Os registros não são sincronizados
-entre dispositivos nem enviados ao professor; limpar os dados do navegador pode
-apagá-los. Retomar um rascunho de resposta aberta ainda exige chegar novamente à
-pergunta aberta da parada. A retomada exata da questão em andamento não é persistida.
+Na Expedição, cada abertura inicia uma atividade vazia, sem login nem recuperação
+de registros anteriores. Respostas, perguntas e progresso ficam somente em memória
+enquanto a página está aberta; não são gravados em localStorage ou sessionStorage.
+A chave de localStorage usada na versão antiga é removida quando o armazenamento
+permite, sem ler ou importar seu conteúdo nem limpar dados de outras funcionalidades.
+O aluno deve baixar os registros antes de atualizar a página, sair ou encerrar.
+O navegador pode exibir seu aviso nativo de saída enquanto houver trabalho na página.
+
+`Encerrar atividade` solicita confirmação após lembrar do download e limpa respostas,
+pontuação, rascunhos e conversa com o guia. Sair e voltar pelo histórico também começa
+limpo, incluindo a restauração pelo cache de navegação. Respostas assíncronas da sessão
+encerrada são ignoradas. O encerramento não remove arquivos já baixados do computador;
+a orientação de entrega e remoção no laboratório cabe ao professor.
 
 O botão `Baixar meus registros (.txt)` gera no navegador uma cópia das respostas
 abertas, do registro de memória e da pontuação atual, organizada por parada. Inclui
 rascunhos identificados e espaços para o aluno preencher nome e turma no arquivo.
-Não exporta perguntas, alternativas ou devolutivas dos quizzes; não envia registros
-ao servidor e não altera o progresso. O arquivo é texto UTF-8 com BOM para preservar
+Não exporta perguntas, alternativas ou devolutivas dos quizzes; gerar o arquivo não
+envia registros ao servidor e não altera o progresso. O arquivo é texto UTF-8 com BOM para preservar
 acentos em editores comuns no Windows. A interface confirma a solicitação do download,
 sem afirmar que o navegador terminou de salvar o arquivo.
 
 `Ver meus registros` permite consultar e copiar os mesmos textos diretamente na
-página, sem refazer quizzes. A consulta aberta acompanha o salvamento de rascunhos;
+página, sem refazer quizzes. A consulta aberta acompanha os rascunhos da sessão;
 abrir ou fechar a consulta não altera pontuação ou conclusão das paradas.
-Novas respostas abertas guardam também a pergunta exibida. Ao retomar um rascunho,
-a pergunta original é preservada mesmo se a IA gerar outro desafio. Registros antigos
-sem a pergunta continuam legíveis; a cópia informa que ela não foi guardada.
+Respostas abertas incluem também a pergunta exibida. Ao voltar à pergunta dentro da
+mesma atividade, o rascunho mantém seu contexto mesmo se a IA gerar outro desafio.
+A avaliação opcional pela IA continua enviando o texto ao backend quando o aluno
+aciona `Enviar resposta`; nenhuma identificação de aluno foi acrescentada.
 
 Os clientes do assistente aguardam até 25 segundos. Em falha de conexão, demora ou
 limite da API, exibem um aviso de modo local e oferecem o conteúdo local existente.

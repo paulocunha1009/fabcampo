@@ -204,7 +204,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
     <div class="hero__meta" aria-label="Características da experiência">
       <span>🧭 7 marcos históricos</span>
       <span>📚 Acervo da comunidade</span>
-      <span>✓ Progresso salvo neste aparelho</span>
+      <span>✓ Atividade sem login · baixe seus registros antes de sair</span>
     </div>
   </div>
 </section>
@@ -216,14 +216,14 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
     <div class="medida"><b id="m-paradas">0/7</b><span>paradas</span></div>
     <div class="selos" id="m-selos" aria-label="Selos conquistados"></div>
   </div>
-  <p class="secao-apoio">Respostas e progresso ficam neste navegador e neste dispositivo. Em computador compartilhado, outra pessoa pode ver seus registros. Eles não são enviados ao professor automaticamente.</p>
+  <p class="secao-apoio">Atividade para uso no laboratório: cada abertura começa do zero. Respostas e progresso ficam apenas enquanto esta página está aberta. Baixe seus registros antes de sair, atualizar a página ou encerrar. Eles não são enviados ao professor automaticamente.</p>
   <p class="secao-apoio" id="aviso-salvamento" role="status" aria-live="polite"></p>
-  <div class="linha-btn"><button class="btn sec" id="baixar-registros" type="button">Baixar meus registros (.txt)</button></div>
-  <p class="secao-apoio">Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo pode ser aberto em um editor de texto.</p>
+  <div class="linha-btn"><button class="btn sec" id="baixar-registros" type="button">Baixar meus registros (.txt)</button><button class="btn terra" id="encerrar-atividade" type="button">Encerrar atividade</button></div>
+  <p class="secao-apoio">Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo fica na pasta de downloads mesmo após encerrar; siga a orientação do professor sobre sua entrega e remoção do PC compartilhado.</p>
   <p class="secao-apoio" id="aviso-download" role="status" aria-live="polite"></p>
   <details class="bloco" id="meus-registros">
     <summary>Ver meus registros</summary>
-    <p class="secao-apoio">Confira abaixo os textos disponíveis neste navegador. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída.</p>
+    <p class="secao-apoio">Confira os textos desta atividade. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída.</p>
     <pre id="lista-registros" style="white-space:pre-wrap;overflow-wrap:anywhere;font:inherit"></pre>
   </details>
 
@@ -265,7 +265,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 </footer>
 
 <script src="../js/config.js"></script>
-<script src="../js/expedicao-core.js?v=20261105-2"></script>
+<script src="../js/expedicao-core.js?v=20261105-3"></script>
 <script>
 /* =====================================================================
    1. CONFIGURAÇÃO
@@ -333,20 +333,13 @@ let respondida = false;
 
 function carregar(){
   const ids = ESTACOES.map(e => e.id);
-  try { return ExpedicaoCore.normalizarEstado(JSON.parse(localStorage.getItem(CHAVE)), ids); }
-  catch(e){
-    document.getElementById('aviso-salvamento').textContent = 'Não foi possível recuperar os registros deste navegador. Copie suas respostas antes de sair.';
-    return ExpedicaoCore.normalizarEstado(null, ids);
-  }
+  // Não recuperar registros do aluno anterior. Remover apenas a chave da versão antiga.
+  try { localStorage.removeItem(CHAVE); } catch(e){}
+  return ExpedicaoCore.normalizarEstado(null, ids);
 }
 function salvar(){
-  let ok = false;
-  try { ok = ExpedicaoCore.salvarEstado(localStorage, CHAVE, estado); } catch(e){}
-  document.getElementById('aviso-salvamento').textContent = ok
-    ? 'Rascunhos e progresso salvos neste navegador.'
-    : 'Não foi possível salvar neste navegador. Copie suas respostas antes de fechar a página.';
+  document.getElementById('aviso-salvamento').textContent = 'Registro disponível nesta atividade. Baixe uma cópia antes de sair ou encerrar.';
   if(document.getElementById('meus-registros').open) atualizarConsultaRegistros();
-  return ok;
 }
 
 /* =====================================================================
@@ -422,11 +415,12 @@ function pintarTrilha(){
   });
 }
 
-function mostrar(tela){
+function mostrar(tela, semFoco){
   document.querySelectorAll('.tela').forEach(function(t){ t.classList.remove('on'); });
   const destino = document.getElementById(tela);
   destino.classList.add('on');
   document.body.classList.toggle('expedicao-em-etapa', tela !== 'tela-trilha');
+  if(semFoco) return;
   const titulo = destino.querySelector('h2');
   if(titulo){
     titulo.setAttribute('tabindex', '-1');
@@ -463,7 +457,7 @@ function abrirEstacao(id){
         'nesse território? Escreva com as suas palavras.</p>' +
         '<textarea id="registro" placeholder="Escreva aqui...">' + escaparHTML(estado.registro || '') + '</textarea>' +
         '<div class="linha-btn">' +
-          '<button class="btn terra" id="salvar-registro">Guardar registro</button>' +
+          '<button class="btn terra" id="salvar-registro">Concluir registro</button>' +
           '<a class="btn sec" href="../contato.html">Enviar ao portal</a>' +
         '</div>' +
       '</div>';
@@ -680,7 +674,7 @@ async function avaliarAberta(){
   salvar();
   botao.disabled = true; botao.textContent = 'Lendo sua resposta...';
   retorno.innerHTML = '';
-  const orientacaoLocal = 'A IA não avaliou este registro. Confira o aviso de salvamento nesta página. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
+  const orientacaoLocal = 'A IA não avaliou este registro. Baixe uma cópia antes de sair ou encerrar a atividade. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
   if(desafio.local){ concluirEstacao(texto, orientacaoLocal, true); return; }
   try{
     const acervo = await lerAcervo(estacao.pagina);
@@ -707,6 +701,7 @@ async function avaliarAberta(){
 const guia = document.getElementById('guia');
 const msgs = document.getElementById('guia-msgs');
 let guiaOcupado = false;
+let guiaOperacao = 0;
 
 const botaoGuia = document.getElementById('guia-abrir');
 const fecharGuia = document.getElementById('guia-fechar');
@@ -752,6 +747,7 @@ async function perguntarGuia(){
   falar('eu', texto);
   const esperando = falar('ia', 'Consultando o acervo...');
   guiaOcupado = true;
+  const vezGuia = ++guiaOperacao;
   try{
     /* Busca nas páginas do acervo. Para ficar leve, lê a página da estação
        aberta (se houver) e sempre a História, que é a base do território. */
@@ -759,6 +755,7 @@ async function perguntarGuia(){
     const partes = [];
     for(let i = 0; i < paginas.length; i++){
       try { partes.push(await lerAcervo(paginas[i])); } catch(e){}
+      if(vezGuia !== guiaOperacao) return;
     }
     if(!partes.length) throw new Error('não consegui abrir as páginas do portal.');
     const resposta = await chamarIA(
@@ -767,18 +764,48 @@ async function perguntarGuia(){
       '\n\nPERGUNTA DO ESTUDANTE: ' + texto +
       '\n\nResponda em no máximo 5 frases e diga em qual página do portal está a informação.'
     );
+    if(vezGuia !== guiaOperacao) return;
     esperando.textContent = resposta;
   }catch(e){
+    if(vezGuia !== guiaOperacao) return;
     esperando.textContent = 'Não consegui responder agora: ' + e.message;
   }finally{
-    guiaOcupado = false;
-    msgs.scrollTop = msgs.scrollHeight;
+    if(vezGuia === guiaOperacao){
+      guiaOcupado = false;
+      msgs.scrollTop = msgs.scrollHeight;
+    }
   }
 }
 
 /* =====================================================================
    8. INICIAR
 ===================================================================== */
+function encerrarAtividade(voltar){
+  operacao++;
+  guiaOperacao++;
+  guiaOcupado = false;
+  estado = carregar();
+  atual = null; desafio = null; indice = 0; respondida = false;
+  for(const id of ['tela-estacao', 'tela-desafio', 'lista-registros', 'guia-msgs']) document.getElementById(id).replaceChildren();
+  document.getElementById('guia-input').value = '';
+  guia.classList.remove('on');
+  botaoGuia.setAttribute('aria-expanded', 'false');
+  document.getElementById('meus-registros').open = false;
+  document.getElementById('aviso-download').textContent = '';
+  document.getElementById('aviso-salvamento').textContent = 'Atividade encerrada. Respostas e progresso foram limpos desta página. O próximo aluno pode começar.';
+  pintarPainel(); pintarTrilha();
+  mostrar('tela-trilha', !voltar);
+}
+document.getElementById('encerrar-atividade').addEventListener('click', function(){
+  if(window.confirm('Baixou seus registros? Encerrar apaga as respostas e o progresso desta atividade. Deseja encerrar?')) encerrarAtividade(true);
+});
+window.addEventListener('pagehide', function(){ encerrarAtividade(false); });
+window.addEventListener('pageshow', function(event){ if(event.persisted) encerrarAtividade(false); });
+window.addEventListener('beforeunload', function(event){
+  if(estado.registro.trim() || Object.values(estado.respostas).some(t => t.trim()) || estado.sementes || estado.feitas.length){
+    event.preventDefault(); event.returnValue = '';
+  }
+});
 function atualizarConsultaRegistros(){
   const data = new Date().toLocaleString('pt-BR', { timeZone:'America/Fortaleza' });
   document.getElementById('lista-registros').textContent = ExpedicaoCore.exportarRegistros(estado, ESTACOES, data);

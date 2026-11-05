@@ -2096,19 +2096,19 @@
     {
       "title": "Expedição",
       "url": "pages/expedicao.html",
-      "sha256": "a037b6ae8a6a2cdc05260bad3ed093457f5e8e53622f5ed1aacad94510ea5ecb",
+      "sha256": "a39b7bf70a488fcd4d14ca07d79aa28db133fe5e3f0013d5e322801ec4102ddd",
       "chunks": [
         {
           "section": "",
-          "text": "Respostas e progresso ficam neste navegador e neste dispositivo. Em computador compartilhado, outra pessoa pode ver seus registros. Eles não são enviados ao professor automaticamente."
+          "text": "Atividade para uso no laboratório: cada abertura começa do zero. Respostas e progresso ficam apenas enquanto esta página está aberta. Baixe seus registros antes de sair, atualizar a página ou encerrar. Eles não são enviados ao professor automaticamente."
         },
         {
           "section": "",
-          "text": "Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo pode ser aberto em um editor de texto."
+          "text": "Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo fica na pasta de downloads mesmo após encerrar; siga a orientação do professor sobre sua entrega e remoção do PC compartilhado."
         },
         {
           "section": "",
-          "text": "Confira abaixo os textos disponíveis neste navegador. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída."
+          "text": "Confira os textos desta atividade. Você pode selecioná-los e copiá-los. Rascunhos não significam que a parada foi concluída."
         },
         {
           "section": "A linha do tempo",
