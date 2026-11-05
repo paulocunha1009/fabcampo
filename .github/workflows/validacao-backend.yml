@@ -1,0 +1,39 @@
+name: Validação do backend e acervo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "pages/**"
+      - "js/**"
+      - "tools/build_ai_acervo.py"
+      - ".github/workflows/validacao-backend.yml"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validacao-backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Instalar dependências
+        working-directory: backend
+        run: npm ci --ignore-scripts
+      - name: Validar API, atividades e atualização do acervo
+        working-directory: backend
+        run: npm test

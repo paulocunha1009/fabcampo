@@ -48,6 +48,12 @@ Execute `npm test` na pasta `backend`. Os testes usam um provedor controlado e
 não precisam de chave Gemini nem de Upstash. `createApp` permite testar as rotas
 com esse provedor, mantendo o app padrão usado pela Vercel.
 
+O workflow `Validação do backend e acervo` executa essa suíte no GitHub em mudanças
+relevantes na branch `main` e em pull requests para ela, sem credenciais de produção.
+Uma falha sinaliza o problema na revisão; esse workflow não bloqueia sozinho a
+implantação automática da Vercel. Se o acervo estiver desatualizado, gere novamente
+o arquivo com o comando acima e inclua a atualização no commit.
+
 `DOTENV_CONFIG_PATH` permite indicar um arquivo de configuração separado nos testes,
 evitando carregar credenciais do `.env` local. Os testes cobrem também o contexto
 enviado ao provedor, links, respostas truncadas e falhas de cota.
