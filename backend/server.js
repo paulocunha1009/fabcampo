@@ -23,6 +23,7 @@ import { createRateLimiter } from './lib/rate-limit.js';
 import { validateRequest } from './lib/validate-request.js';
 import { buildAcervoContext } from './lib/acervo.js';
 import { normalizeAnswer } from './lib/assistant-answer.js';
+import { createEditorialAuth } from './lib/editorial-auth.js';
 
 dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
 
@@ -96,7 +97,7 @@ DIRETRIZES
 - Não repita seu nome em todas as respostas; apresente-se como SabIA apenas quando isso ajudar a conversa`;
 
 // ── Express ───────────────────────────────────────────────────────────────────
-export function createApp({ aiClient = ai, rateLimiter = limiter, newsFetch = fetch, clock = Date.now, previewHost = process.env.VERCEL_ENV === 'preview' ? process.env.VERCEL_URL : null } = {}) {
+export function createApp({ aiClient = ai, rateLimiter = limiter, newsFetch = fetch, clock = Date.now, editorialAuth = createEditorialAuth(), previewHost = process.env.VERCEL_ENV === 'preview' ? process.env.VERCEL_URL : null } = {}) {
 const app = express();
 
 app.disable('x-powered-by');
@@ -122,6 +123,21 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '20kb' }));
+
+// Preparação do acesso editorial: não cria sessão nem publica conteúdo.
+app.get('/api/editorial/me', async (req, res) => {
+  try {
+    const account = await editorialAuth.authenticate(req.headers.authorization);
+    return res.json({ account, role: 'editor' });
+  } catch (error) {
+    const status = [401, 403, 503].includes(error.status) ? error.status : 503;
+    const messages = { 401: 'Entre novamente com sua conta Google.',
+      403: 'Esta conta não está autorizada para o painel.',
+      503: 'O acesso editorial ainda não está disponível.' };
+    if (status === 401) res.setHeader('WWW-Authenticate', 'Bearer');
+    return res.status(status).json({ error: messages[status] });
+  }
+});
 
 // Ferramenta de teste disponível apenas na URL única do preview protegido pela Vercel.
 app.get('/diagnostico', (_req, res) => {

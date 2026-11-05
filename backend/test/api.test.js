@@ -5,6 +5,8 @@ process.env.VERCEL = '1';
 // Os testes nunca devem carregar credenciais locais ou acessar serviços pagos.
 process.env.DOTENV_CONFIG_PATH = '.env.test-not-present';
 delete process.env.GEMINI_API_KEY;
+delete process.env.EDITORIAL_GOOGLE_CLIENT_ID;
+delete process.env.EDITORIAL_GOOGLE_SUBJECTS;
 delete process.env.UPSTASH_REDIS_REST_URL;
 delete process.env.UPSTASH_REDIS_REST_TOKEN;
 delete process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
@@ -30,6 +32,13 @@ before(async () => {
 
 after(async () => {
   await new Promise(resolve => server.close(resolve));
+});
+
+test('acesso editorial sem configuração fica fechado e não expõe contas', async () => {
+  const response = await fetch(`${baseUrl}/api/editorial/me`);
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(await response.json(), { error: 'O acesso editorial ainda não está disponível.' });
 });
 
 test('health informa serviço, modelo e limites sem expor segredos', async () => {

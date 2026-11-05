@@ -39,7 +39,7 @@ agenda da escola nem alterada por esse painel.
 
 O professor definiu que somente ele e a equipe autorizada poderão publicar. A
 pesquisa e a curadoria dos estudantes continuam sendo encaminhadas à equipe.
-A escolha entre conta Google ou conta GitHub para entrada está pendente. Nome
+O professor escolheu conta Google, como a usada na escola. Nome
 digitado ou botão escondido não servem como autenticação. Uma publicação direta
 precisa verificar o acesso no servidor, inclusive quando a requisição não vem da tela.
 
@@ -68,6 +68,38 @@ durante a página e o arquivo exportado reúne somente notícias e eventos, sem
 reescrever as demais seções do portal.
 
 Os botões de entrada e publicação direta estão indisponíveis nesta prévia. Não há
-login implementado, gravação em servidor ou liberação de acesso público à edição.
-A autenticação, o armazenamento persistente e o fluxo de publicação são a etapa
-seguinte, após as definições com o professor. A prévia não foi publicada no site.
+login conectado à tela, gravação em servidor ou liberação de acesso público à edição.
+A configuração Google, o armazenamento persistente e o fluxo de publicação são a
+etapa seguinte. A prévia não foi publicada no site.
+
+## Preparação do acesso Google
+
+`backend/lib/editorial-auth.js` usa a biblioteca oficial `google-auth-library` para
+verificar assinatura, emissor, público e validade do ID token. A autorização compara
+o identificador estável Google `sub` com uma lista individual definida no servidor.
+Uma conta Google ou um domínio escolar, isoladamente, não concedem acesso.
+E-mail digitado não é prova de identidade. A verificação ocorre a cada requisição,
+sem cookies, sessão própria ou armazenamento de token no navegador nesta etapa.
+
+`GET /api/editorial/me` recebe somente `Authorization: Bearer <ID token>` e retorna
+a identidade de um editor autorizado. Sem configuração completa responde 503;
+token ausente ou inválido recebe 401; conta não autorizada recebe 403. A rota não
+cadastra contas, não concede permissões e não publica conteúdo. Respostas não têm
+cache; erros não incluem o token nem detalhes internos do Google.
+
+Configuração pendente, sem valores reais adicionados ao repositório:
+
+1. Configurar um cliente Web do Google Identity Services para a origem exata do painel.
+2. Conectar o botão de entrada, mantendo o ID token somente em memória e enviando-o
+   por HTTPS em cabeçalho, nunca na URL. Não pedir acesso a Gmail, Drive ou Calendar.
+3. Confirmar com o professor a primeira conta e vincular seu `sub` validado à lista
+   `EDITORIAL_GOOGLE_SUBJECTS` no servidor. Não habilitar cadastro automático.
+4. Definir `EDITORIAL_GOOGLE_CLIENT_ID` e a lista aprovada no ambiente do backend;
+   conferir recusa de outra conta antes de conectar qualquer operação de gravação.
+5. Implementar saída e expiração para uso em computadores compartilhados.
+
+Os testes incluem assinatura RSA real via biblioteca Google com chave de teste
+local, adulteração do token, configuração ausente e recusa de conta não autorizada.
+Não equivalem à validação com a conta real da escola, ainda pendente.
+
+Referência: https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
