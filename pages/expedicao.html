@@ -216,6 +216,8 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
     <div class="medida"><b id="m-paradas">0/7</b><span>paradas</span></div>
     <div class="selos" id="m-selos" aria-label="Selos conquistados"></div>
   </div>
+  <p class="secao-apoio">Respostas e progresso ficam neste navegador e neste dispositivo. Em computador compartilhado, outra pessoa pode ver seus registros. Eles não são enviados ao professor automaticamente.</p>
+  <p class="secao-apoio" id="aviso-salvamento" role="status" aria-live="polite"></p>
 
   <!-- ======== TELA: TRILHA ======== -->
   <section class="tela on" id="tela-trilha">
@@ -255,7 +257,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 </footer>
 
 <script src="../js/config.js"></script>
-<script src="../js/expedicao-core.js"></script>
+<script src="../js/expedicao-core.js?v=20261105-1"></script>
 <script>
 /* =====================================================================
    1. CONFIGURAÇÃO
@@ -324,10 +326,18 @@ let respondida = false;
 function carregar(){
   const ids = ESTACOES.map(e => e.id);
   try { return ExpedicaoCore.normalizarEstado(JSON.parse(localStorage.getItem(CHAVE)), ids); }
-  catch(e){ return ExpedicaoCore.normalizarEstado(null, ids); }
+  catch(e){
+    document.getElementById('aviso-salvamento').textContent = 'Não foi possível recuperar os registros deste navegador. Copie suas respostas antes de sair.';
+    return ExpedicaoCore.normalizarEstado(null, ids);
+  }
 }
 function salvar(){
-  try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e){}
+  let ok = false;
+  try { ok = ExpedicaoCore.salvarEstado(localStorage, CHAVE, estado); } catch(e){}
+  document.getElementById('aviso-salvamento').textContent = ok
+    ? 'Rascunhos e progresso salvos neste navegador.'
+    : 'Não foi possível salvar neste navegador. Copie suas respostas antes de fechar a página.';
+  return ok;
 }
 
 /* =====================================================================
@@ -449,6 +459,10 @@ function abrirEstacao(id){
         '</div>' +
       '</div>';
     document.getElementById('v1').addEventListener('click', voltarTrilha);
+    document.getElementById('registro').addEventListener('input', function(event){
+      estado.registro = event.target.value;
+      salvar();
+    });
     document.getElementById('salvar-registro').addEventListener('click', function(){
       const t = document.getElementById('registro').value.trim();
       if(!t){ return; }
@@ -613,6 +627,11 @@ function pintarAberta(){
       '<div id="retorno"></div>' +
     '</div>';
   document.getElementById('v4').addEventListener('click', voltarTrilha);
+  const idRascunho = atual.id;
+  document.getElementById('resp-aberta').addEventListener('input', function(event){
+    estado.respostas[idRascunho] = event.target.value;
+    salvar();
+  });
   document.getElementById('enviar-aberta').addEventListener('click', avaliarAberta);
 }
 
@@ -646,7 +665,7 @@ async function avaliarAberta(){
   estado.respostas[estacao.id] = texto; salvar();
   botao.disabled = true; botao.textContent = 'Lendo sua resposta...';
   retorno.innerHTML = '';
-  const orientacaoLocal = 'Sua resposta foi guardada neste navegador. A IA não avaliou este registro. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
+  const orientacaoLocal = 'A IA não avaliou este registro. Confira o aviso de salvamento nesta página. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';
   if(desafio.local){ concluirEstacao(texto, orientacaoLocal, true); return; }
   try{
     const acervo = await lerAcervo(estacao.pagina);

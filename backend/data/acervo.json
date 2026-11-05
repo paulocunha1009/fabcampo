@@ -2096,8 +2096,12 @@
     {
       "title": "Expedição",
       "url": "pages/expedicao.html",
-      "sha256": "70e259c1d0e1700fe5db63bd1873cec0f5f7bd088f33250caf977315ea7ce41e",
+      "sha256": "9fc6a8a1a8a9b64e2dc2e5234d15766e0aa837a1b68054412de809a777914016",
       "chunks": [
+        {
+          "section": "",
+          "text": "Respostas e progresso ficam neste navegador e neste dispositivo. Em computador compartilhado, outra pessoa pode ver seus registros. Eles não são enviados ao professor automaticamente."
+        },
         {
           "section": "A linha do tempo",
           "text": "Cada parada é um marco com documento: decreto, portaria, ata de fundação ou lei. A trilha segue três fios que se cruzam — a conquista da terra, a cooperativa e a escola. O marco de 1987 não tem pontuação: é leitura e registro."

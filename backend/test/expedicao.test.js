@@ -49,3 +49,48 @@ test('repetir questões ou conclusão não duplica sementes e memória não rece
   assert.equal(premiar(state, 'm1987', 'aberta', true), false);
   assert.equal(state.sementes, 15);
 });
+
+test('rascunhos sobrevivem à reabertura sem concluir parada nem premiar', () => {
+  const dados = new Map();
+  const storage = { setItem: (k, v) => dados.set(k, v) };
+  const state = normalizarEstado(null, ids);
+  state.respostas.m1986 = 'Minha resposta ainda em escrita';
+  state.registro = 'Meu registro de memória em escrita';
+  assert.equal(context.ExpedicaoCore.salvarEstado(storage, 'teste', state), true);
+  const restaurado = normalizarEstado(JSON.parse(dados.get('teste')), ids);
+  assert.equal(restaurado.respostas.m1986, state.respostas.m1986);
+  assert.equal(restaurado.registro, state.registro);
+  assert.equal(restaurado.feitas.length, 0);
+  assert.equal(restaurado.sementes, 0);
+  assert.equal(context.ExpedicaoCore.salvarEstado({ setItem(){ throw new Error('Quota'); } }, 'teste', state), false);
+});
+
+test('digitação da resposta aberta salva rascunho e falha de armazenamento mostra aviso', () => {
+  const html = readFileSync(new URL('../../pages/expedicao.html', import.meta.url), 'utf8');
+  const elements = new Map();
+  const document = { getElementById(id){
+    if(!elements.has(id)) elements.set(id, { textContent:'', innerHTML:'', listeners:{}, addEventListener(type, fn){ this.listeners[type] = fn; } });
+    return elements.get(id);
+  } };
+  const dados = new Map();
+  const state = normalizarEstado(null, ids);
+  const ui = vm.createContext({ document, ExpedicaoCore:context.ExpedicaoCore, estado:state,
+    CHAVE:'teste', atual:{ id:'m1986', local:'Estação' }, desafio:{ aberta:'Reflexão' },
+    escaparHTML: v => v, voltarTrilha(){}, avaliarAberta(){},
+    localStorage:{ setItem:(k, v) => dados.set(k, v) }
+  });
+  for(const [inicio, fim] of [['function salvar(){', '/* ====================================================================='], ['function pintarAberta(){', 'function concluirEstacao(']]){
+    const start = html.indexOf(inicio);
+    vm.runInContext(html.slice(start, html.indexOf(fim, start)), ui);
+  }
+  vm.runInContext('pintarAberta()', ui);
+  const escrever = document.getElementById('resp-aberta').listeners.input;
+  escrever({ target:{ value:'Rascunho sem enviar' } });
+  assert.equal(JSON.parse(dados.get('teste')).respostas.m1986, 'Rascunho sem enviar');
+  assert.equal(state.sementes, 0);
+  assert.match(document.getElementById('aviso-salvamento').textContent, /salvos/);
+  ui.localStorage = { setItem(){ throw new Error('Bloqueado'); } };
+  escrever({ target:{ value:'Continuo escrevendo' } });
+  assert.equal(state.respostas.m1986, 'Continuo escrevendo');
+  assert.match(document.getElementById('aviso-salvamento').textContent, /Não foi possível salvar/);
+});

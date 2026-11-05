@@ -90,6 +90,13 @@ Todos os valores são configuráveis sem mudança de código. Veja [DEPLOY_VERCE
 
 ## Uso pela turma
 
+Na Expedição, respostas abertas e registros de memória são salvos durante a
+digitação no armazenamento do navegador, sem concluir a parada ou atribuir pontos.
+O aluno recebe aviso se o salvamento falhar. Os registros não são sincronizados
+entre dispositivos nem enviados ao professor; limpar os dados do navegador pode
+apagá-los. Retomar um rascunho de resposta aberta ainda exige chegar novamente à
+pergunta aberta da parada. A retomada exata da questão em andamento não é persistida.
+
 Os clientes do assistente aguardam até 25 segundos. Em falha de conexão, demora ou
 limite da API, exibem um aviso de modo local e oferecem o conteúdo local existente.
 Os limites de produção permanecem em 15 pedidos de IA por minuto e 200 por dia.

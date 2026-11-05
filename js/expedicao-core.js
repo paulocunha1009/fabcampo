@@ -40,5 +40,9 @@
     }
     return true;
   }
-  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar };
+  function salvarEstado(storage, chave, estado){
+    try { storage.setItem(chave, JSON.stringify(estado)); return true; }
+    catch(e){ return false; }
+  }
+  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar, salvarEstado };
 })(globalThis);
