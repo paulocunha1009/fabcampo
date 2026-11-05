@@ -1,0 +1,97 @@
+import { validarRegistro, montarRascunho } from './editorial-core.js';
+const $ = id => document.getElementById(id);
+const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data'];
+let tipo = 'noticias';
+let conteudo = { noticias:[], eventos:[] };
+let pronto = false;
+function bloquearTroca(alterado){
+  document.querySelectorAll('[data-tipo]').forEach(b => { b.disabled = alterado; });
+  $('registro-editorial').disabled = alterado;
+  $('baixar-rascunho').disabled = alterado || !pronto;
+  $('cancelar-edicao').hidden = !alterado;
+}
+function informar(texto){ $('estado-painel').textContent = texto; }
+function listar(selecionado = ''){
+  const lista = $('registro-editorial');
+  lista.replaceChildren(new Option('Novo registro', ''));
+  conteudo[tipo].forEach((registro, indice) => lista.append(new Option(registro.titulo || registro.nome, String(indice))));
+  lista.value = selecionado;
+}
+function limparErros(){ campos.forEach(id => { $(id).removeAttribute('aria-invalid'); $(id).setAttribute('aria-describedby', 'erro-'+id+(id === 'data' ? ' ajuda-data' : '')); $('erro-'+id).textContent = ''; }); }
+function previa(registro){
+  const area = $('previa-editorial'); area.replaceChildren();
+  const titulo = document.createElement('h3'); titulo.textContent = registro.titulo || registro.nome;
+  const detalhes = document.createElement('p'); detalhes.textContent = registro.data ? 'Data: '+registro.data : 'Data não informada';
+  const texto = document.createElement('p'); texto.textContent = registro.resumo || registro.descricao;
+  area.append(titulo, detalhes, texto);
+  if(registro.fonte){ const fonte = document.createElement('p'); fonte.textContent = 'Fonte: '+registro.fonte; area.append(fonte); }
+  if(registro.link){
+    try {
+      const validado = validarRegistro('noticias', registro);
+      const link = document.createElement('a'); link.textContent = 'Abrir página de referência';
+      link.href = new URL(validado.link, 'https://fabcampo.com.br/').href;
+      link.target = '_blank'; link.rel = 'noopener noreferrer'; area.append(link);
+    } catch {}
+  }
+}
+function escolher(){
+  limparErros();
+  const registro = conteudo[tipo][$('registro-editorial').value];
+  campos.forEach(id => { $(id).value = registro?.[id] || (id === 'categoria' ? 'Portal' : ''); });
+  if(registro) previa(registro);
+  else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; }
+}
+document.querySelectorAll('[data-tipo]').forEach(botao => botao.addEventListener('click', () => {
+  tipo = botao.dataset.tipo;
+  document.querySelectorAll('[data-tipo]').forEach(b => b.setAttribute('aria-pressed', String(b === botao)));
+  document.querySelectorAll('[data-campos]').forEach(bloco => { bloco.hidden = bloco.dataset.campos !== tipo; });
+  listar(); escolher();
+}));
+$('registro-editorial').addEventListener('change', escolher);
+$('editorial-form').addEventListener('input', () => {
+  if(!pronto) return;
+  bloquearTroca(true);
+  informar('Edição em andamento. Guarde no rascunho ou descarte esta edição antes de trocar de registro.');
+});
+$('cancelar-edicao').addEventListener('click', () => {
+  escolher(); bloquearTroca(false);
+  informar('Edição descartada. O restante do rascunho foi preservado.');
+});
+$('editorial-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if(!pronto){ informar('Aguarde o carregamento do conteúdo existente antes de preparar o rascunho.'); return; }
+  limparErros();
+  try {
+    const registro = validarRegistro(tipo, Object.fromEntries(campos.map(id => [id, $(id).value])));
+    const posicao = $('registro-editorial').value;
+    const indice = posicao === '' ? conteudo[tipo].length : Number(posicao);
+    conteudo[tipo][indice] = registro;
+    listar(String(indice)); previa(registro);
+    bloquearTroca(false);
+    informar('Registro guardado somente neste rascunho. Confira a prévia e baixe o arquivo antes de sair.');
+    $('titulo-previa').focus();
+  } catch(error){
+    informar('Confira os campos indicados.');
+    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; $(error.campo).focus(); }
+  }
+});
+$('baixar-rascunho').addEventListener('click', () => {
+  let url;
+  const link = document.createElement('a');
+  try {
+    const arquivo = montarRascunho(conteudo);
+    url = URL.createObjectURL(new Blob([JSON.stringify(arquivo,null,2)+'\n'], { type:'application/json;charset=utf-8' }));
+    link.href = url; link.download = 'fabcampo-rascunho-editorial.json'; document.body.append(link); link.click();
+    informar('Download solicitado. Este arquivo é um rascunho e ainda não foi publicado no portal.');
+  } catch(error){ informar('Não foi possível preparar o arquivo: '+error.message); }
+  finally { link.remove(); if(url) setTimeout(() => URL.revokeObjectURL(url),1000); }
+});
+fetch('../data/site.json', { signal:AbortSignal.timeout(5000) })
+  .then(response => { if(!response.ok) throw new Error(); return response.json(); })
+  .then(dados => {
+    if(!Array.isArray(dados.noticias) || !Array.isArray(dados.eventos)) throw new Error();
+    conteudo = structuredClone({ noticias:dados.noticias, eventos:dados.eventos });
+    pronto = true; listar(); $('baixar-rascunho').disabled = false;
+    informar('Conteúdo existente carregado para revisão. Nenhuma alteração foi publicada.');
+  })
+  .catch(() => informar('Não foi possível carregar o conteúdo existente. Recarregue a página para tentar novamente.'));

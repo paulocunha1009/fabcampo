@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Prévia do painel editorial | Campo Digital</title>
+  <link rel="stylesheet" href="../css/portal.css?v=20261105-3">
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+  <a class="link-pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="painel-topo"><div class="container"><img src="../img/logo/campo-digital-logo-header.png" alt="Campo Digital"><a href="../index.html">Voltar ao portal</a></div></header>
+  <main class="container" id="conteudo">
+    <p class="selo">Gestão do conteúdo</p><h1>Painel editorial</h1>
+    <p>Notícias da comunidade e agenda da escola.</p>
+    <div class="painel-aviso"><strong>Prévia em desenvolvimento.</strong> As alterações ficam somente nesta página. Baixe o rascunho antes de sair. A publicação direta e a entrada da equipe ainda serão conectadas.</div>
+    <p class="painel-origem">Os textos e as datas carregados vêm do arquivo atual do portal e precisam de revisão da equipe antes de qualquer publicação.</p>
+    <div class="painel-acoes"><button type="button" disabled>Entrar no painel — em preparação</button><button type="button" disabled>Publicar no portal — em preparação</button></div>
+    <p id="estado-painel" role="status" aria-live="polite">Carregando conteúdo existente...</p>
+    <div class="painel-acoes" role="group" aria-label="Tipo de conteúdo">
+      <button type="button" data-tipo="noticias" aria-pressed="true">Notícias da comunidade</button>
+      <button type="button" data-tipo="eventos" aria-pressed="false">Eventos da escola</button>
+    </div>
+    <div class="painel-grade">
+      <section class="painel-cartao" aria-labelledby="titulo-edicao">
+        <h2 id="titulo-edicao">Preparar registro</h2>
+        <label for="registro-editorial">Escolher registro</label><select id="registro-editorial"><option value="">Novo registro</option></select>
+        <form id="editorial-form" novalidate>
+          <div data-campos="noticias">
+            <label for="titulo">Título</label><input id="titulo" maxlength="160"><small id="erro-titulo"></small>
+            <label for="resumo">Resumo</label><textarea id="resumo" rows="4" maxlength="1200"></textarea><small id="erro-resumo"></small>
+            <label for="categoria">Categoria</label><select id="categoria"><option>Portal</option><option>Tecnologia</option><option>Agroecologia</option><option>Educação</option><option>Cultura</option></select><small id="erro-categoria"></small>
+            <label for="fonte">Fonte ou autoria</label><input id="fonte" maxlength="160"><small id="erro-fonte"></small>
+            <label for="link">Link da notícia ou página do portal</label><input id="link" inputmode="url" maxlength="2000" placeholder="Cole o endereço ou caminho da página"><small id="erro-link"></small>
+          </div>
+          <div data-campos="eventos" hidden>
+            <label for="nome">Nome do evento</label><input id="nome" maxlength="160"><small id="erro-nome"></small>
+            <label for="descricao">Descrição</label><textarea id="descricao" rows="4" maxlength="1200"></textarea><small id="erro-descricao"></small>
+          </div>
+          <label for="data">Data</label><input id="data" type="date" aria-describedby="ajuda-data"><small id="erro-data"></small>
+          <p id="ajuda-data">Na notícia, deixe em branco se a data não for conhecida. No evento, informe a data confirmada.</p>
+          <button type="submit">Guardar no rascunho e conferir</button>
+          <button type="button" id="cancelar-edicao" hidden>Descartar esta edição</button>
+        </form>
+      </section>
+      <section class="painel-cartao" aria-labelledby="titulo-previa">
+        <h2 id="titulo-previa" tabindex="-1">Prévia do rascunho</h2>
+        <p>Esta prévia mostra somente o registro escolhido. Não altera o portal publicado.</p>
+        <article id="previa-editorial"><p>Escolha um registro ou prepare um novo.</p></article>
+        <button id="baixar-rascunho" type="button" disabled>Baixar rascunho editorial (.json)</button>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="painel.js"></script>
+</body>
+</html>

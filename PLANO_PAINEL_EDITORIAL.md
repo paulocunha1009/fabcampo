@@ -35,14 +35,11 @@ inicial. A agenda escolar deve mostrar registros confirmados pela equipe. A agen
 de feriados existente pode permanecer identificada como tal, sem ser tratada como
 agenda da escola nem alterada por esse painel.
 
-## Decisão necessária para o fluxo
+## Decisão do professor sobre o fluxo
 
-A pergunta enviada ao professor é quem poderá publicar:
-
-1. Somente professor e equipe autorizada.
-2. Alunos preparam rascunhos; professor revisa e publica.
-
-Essa resposta define os papéis e se haverá acesso separado a rascunhos. Nome
+O professor definiu que somente ele e a equipe autorizada poderão publicar. A
+pesquisa e a curadoria dos estudantes continuam sendo encaminhadas à equipe.
+A escolha entre conta Google ou conta GitHub para entrada está pendente. Nome
 digitado ou botão escondido não servem como autenticação. Uma publicação direta
 precisa verificar o acesso no servidor, inclusive quando a requisição não vem da tela.
 
@@ -58,5 +55,19 @@ precisa verificar o acesso no servidor, inclusive quando a requisição não vem
 - Conferir publicação autorizada, rejeição de acesso indevido e preservação do
   trabalho em falhas de rede, além da conferência visual.
 
-Este documento registra o levantamento e as decisões pendentes. O painel ainda
-não foi implementado nem disponibilizado para edição pública.
+## Prévia implementada para revisão
+
+`painel/index.html` contém a prévia de desenvolvimento do editor, com formulários
+de notícia e evento, validação de campos, visualização do registro e exportação de
+um arquivo JSON explicitamente marcado como rascunho. Usa os registros existentes
+em `data/site.json`; nenhuma notícia ou data de evento foi inventada para preenchê-lo.
+
+A edição em andamento bloqueia a troca de registro até ser guardada no rascunho
+ou descartada, para evitar perder o texto por engano. Os dados ficam em memória
+durante a página e o arquivo exportado reúne somente notícias e eventos, sem
+reescrever as demais seções do portal.
+
+Os botões de entrada e publicação direta estão indisponíveis nesta prévia. Não há
+login implementado, gravação em servidor ou liberação de acesso público à edição.
+A autenticação, o armazenamento persistente e o fluxo de publicação são a etapa
+seguinte, após as definições com o professor. A prévia não foi publicada no site.

@@ -9,6 +9,7 @@ on:
       - "js/**"
       - "css/**"
       - "data/**"
+      - "painel/**"
       - "*.html"
       - "sitemap.xml"
       - "tools/check_portal_links.py"
