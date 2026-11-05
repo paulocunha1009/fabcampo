@@ -133,7 +133,7 @@
       '</button>',
 
       '<div class="ai-chat__painel" id="ai-chat-painel"',
-      '     role="dialog" aria-labelledby="ai-chat-titulo" aria-modal="true">',
+      '     role="dialog" aria-labelledby="ai-chat-titulo">',
 
       '  <div class="ai-chat__cabecalho">',
       '    <div class="ai-chat__identidade">',
@@ -145,11 +145,11 @@
       '    <button class="ai-chat__fechar" type="button" aria-label="Fechar assistente">✕</button>',
       '  </div>',
 
-      '  <div class="ai-chat__tabs" role="tablist" aria-label="Modos do assistente">',
-      '    <button class="ai-chat__tab ai-chat__tab--ativo" type="button" data-modo="chat" role="tab" aria-selected="true">💬 Perguntar</button>',
-      '    <button class="ai-chat__tab" type="button" data-modo="aprender" role="tab" aria-selected="false">📖 Aprender</button>',
-      '    <button class="ai-chat__tab" type="button" data-modo="quiz" role="tab" aria-selected="false">🧠 Quiz</button>',
-      '    <button class="ai-chat__tab" type="button" data-modo="explorar" role="tab" aria-selected="false">🔍 Explorar</button>',
+      '  <div class="ai-chat__tabs" role="group" aria-label="Modos do assistente">',
+      '    <button class="ai-chat__tab ai-chat__tab--ativo" type="button" data-modo="chat" aria-pressed="true">💬 Perguntar</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="aprender" aria-pressed="false">📖 Aprender</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="quiz" aria-pressed="false">🧠 Quiz</button>',
+      '    <button class="ai-chat__tab" type="button" data-modo="explorar" aria-pressed="false">🔍 Explorar</button>',
       '  </div>',
 
       '  <div class="ai-topicos" data-topicos style="display:none;" aria-label="Temas de quiz rápido">',
@@ -204,7 +204,7 @@
     fechar.addEventListener('click', function () { fecharPainel(chat); });
 
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && chat.dataset.open === 'true') fecharPainel(chat);
+      if (e.key === 'Escape' && chat.dataset.open === 'true' && chat.contains(document.activeElement)) fecharPainel(chat);
     });
 
     tabs.forEach(function (tab) {
@@ -212,7 +212,7 @@
         modoAtivo = tab.dataset.modo;
         tabs.forEach(function (t) {
           t.classList.toggle('ai-chat__tab--ativo', t === tab);
-          t.setAttribute('aria-selected', String(t === tab));
+          t.setAttribute('aria-pressed', String(t === tab));
         });
         areaTop.style.display = modoAtivo === 'quiz' ? 'flex' : 'none';
         campo.placeholder = modoAtivo === 'quiz'     ? 'Ex: quiz sobre plantas medicinais...'
@@ -237,6 +237,7 @@
 
     formulario.addEventListener('submit', function (e) {
       e.preventDefault();
+      if(aguardando) return;
       var texto = campo.value.trim();
       if (!texto) return;
       campo.value = '';
@@ -267,7 +268,7 @@
     chat.querySelectorAll('.ai-chat__tab[data-modo]').forEach(function(tab){
       var ativa = tab.dataset.modo === 'chat';
       tab.classList.toggle('ai-chat__tab--ativo', ativa);
-      tab.setAttribute('aria-selected', String(ativa));
+      tab.setAttribute('aria-pressed', String(ativa));
     });
     if(focar) campo.focus();
     else {
@@ -772,6 +773,7 @@
   function fecharPainel(chat) {
     chat.dataset.open = 'false';
     chat.querySelector('.ai-chat__toggle').setAttribute('aria-expanded', 'false');
+    chat.querySelector('.ai-chat__toggle').focus();
   }
 
   // ── Inicia quando o DOM estiver pronto ───────────────────────────────────────

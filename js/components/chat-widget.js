@@ -59,7 +59,7 @@ function criarElemento() {
 
     <!-- Painel principal -->
     <div class="ai-chat__painel" id="ai-chat-painel"
-         role="dialog" aria-labelledby="ai-chat-titulo" aria-modal="true">
+         role="dialog" aria-labelledby="ai-chat-titulo">
 
       <!-- Cabeçalho -->
       <div class="ai-chat__cabecalho">
@@ -71,13 +71,13 @@ function criarElemento() {
       </div>
 
       <!-- Abas de modo -->
-      <div class="ai-chat__tabs" role="tablist" aria-label="Modos do assistente">
+      <div class="ai-chat__tabs" role="group" aria-label="Modos do assistente">
         <button class="ai-chat__tab ai-chat__tab--ativo" type="button"
-                data-modo="chat" role="tab" aria-selected="true">💬 Perguntar</button>
+                data-modo="chat" aria-pressed="true">💬 Perguntar</button>
         <button class="ai-chat__tab" type="button"
-                data-modo="quiz" role="tab" aria-selected="false">🧠 Quiz</button>
+                data-modo="quiz" aria-pressed="false">🧠 Quiz</button>
         <button class="ai-chat__tab" type="button"
-                data-modo="explorar" role="tab" aria-selected="false">🔍 Explorar</button>
+                data-modo="explorar" aria-pressed="false">🔍 Explorar</button>
       </div>
 
       <!-- Tópicos rápidos de quiz (visível só no modo quiz) -->
@@ -137,7 +137,7 @@ function vincularEventos(chat) {
 
   // Fechar com Escape
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && chat.dataset.open === 'true') fecharPainel(chat);
+    if (e.key === 'Escape' && chat.dataset.open === 'true' && chat.contains(document.activeElement)) fecharPainel(chat);
   });
 
   // Trocar de aba
@@ -146,7 +146,7 @@ function vincularEventos(chat) {
       modoAtivo = tab.dataset.modo;
       tabs.forEach(t => {
         t.classList.toggle('ai-chat__tab--ativo', t === tab);
-        t.setAttribute('aria-selected', String(t === tab));
+        t.setAttribute('aria-pressed', String(t === tab));
       });
 
       areaTop.style.display  = modoAtivo === 'quiz'     ? 'flex'  : 'none';
@@ -168,6 +168,7 @@ function vincularEventos(chat) {
   // Envio do formulário
   formulario.addEventListener('submit', async e => {
     e.preventDefault();
+    if(aguardando) return;
     const texto = campo.value.trim();
     if (!texto) return;
     campo.value = '';
@@ -196,7 +197,7 @@ function reiniciarConversa(chat, focar){
   chat.querySelectorAll('.ai-chat__tab[data-modo]').forEach(tab => {
     const ativa = tab.dataset.modo === 'chat';
     tab.classList.toggle('ai-chat__tab--ativo', ativa);
-    tab.setAttribute('aria-selected', String(ativa));
+    tab.setAttribute('aria-pressed', String(ativa));
   });
   if(focar) campo.focus();
   else {
@@ -390,4 +391,5 @@ function alternarPainel(chat, campo) {
 function fecharPainel(chat) {
   chat.dataset.open = 'false';
   chat.querySelector('.ai-chat__toggle').setAttribute('aria-expanded', 'false');
+  chat.querySelector('.ai-chat__toggle').focus();
 }

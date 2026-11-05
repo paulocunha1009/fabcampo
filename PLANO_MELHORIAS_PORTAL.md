@@ -26,6 +26,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Guardar pergunta e resposta juntas durante a atividade | Implementado na `main`; publicação pendente |
 | Limpar a conversa do SabIA na troca de aluno | Implementado na `main`; publicação pendente |
 | Revisar campos, avisos e foco por teclado da Expedição | Implementado na `main`; conferência visual e publicação pendentes |
+| SabIA: foco ao abrir e fechar, seleção acessível dos modos e preservação do texto durante espera | Implementado na `main`; conferência visual e publicação pendentes |
 | Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
 
@@ -71,3 +72,12 @@ ou informação de pesquisa foi acrescentada por essa melhoria.
 O carregamento das fichas tem prazo de cinco segundos. Falhas não interrompem a
 busca de páginas e são informadas ao visitante. Reabrir a busca permite tentar
 novamente. A consulta digitada é limpa ao fechar o diálogo.
+
+## Navegação por teclado no SabIA
+
+O painel é um diálogo não modal: a página continua disponível. Ao abrir, o foco vai
+para a pergunta; ao fechar, volta ao botão do assistente. `Escape` fecha o painel
+quando o foco está em um controle dele, sem interferir em outras áreas da página.
+Os modos usam botões nativos agrupados, com o modo ativo indicado por `aria-pressed`.
+Não são anunciados como abas de um painel inexistente. Se outra pergunta estiver
+em andamento, tentar enviar novamente preserva o novo texto no campo.
