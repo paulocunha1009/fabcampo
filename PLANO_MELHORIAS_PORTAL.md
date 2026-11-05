@@ -34,7 +34,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Galerias: controle de movimento, preferência do sistema e cópias acessíveis | Publicado; teste de uso com alunos pendente |
 | Modo de alto contraste | Publicado; teste de uso com alunos pendente |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Publicado; teste de uso com alunos pendente |
-| Busca dentro dos textos, com trecho original e carregamento sob demanda | Em revisão local; publicação pendente |
+| Busca dentro dos textos, com trecho original e carregamento sob demanda | Publicado em 05/11/2026; exemplo conferido no domínio oficial |
 
 ## Decisão para computadores compartilhados
 
@@ -110,6 +110,14 @@ abrir a busca. O resultado pode exibir um trecho original, limitado a 220 caract
 e prioriza correspondências nos títulos. A consulta não é enviada à IA. Quando o
 índice falha, os nomes de páginas e as fichas de plantas continuam pesquisáveis.
 Somente destinos já conhecidos da navegação são aceitos para os textos indexados.
+
+Ampliação publicada no frontend em `eb3de2a0db0588e704d97d0e5d78d1d9d45a8fb0`,
+com origem em `bd15ecc6e86780c83ef53a918de9e0869714c0c3`. A execução do GitHub
+Pages `42126816719` concluiu com sucesso. Os 18 arquivos entregues responderam HTTP
+200 e coincidiram com a versão revisada. No domínio oficial, a consulta
+`decreto 92.826` encontrou História com o trecho original correspondente.
+Os 91 testes JavaScript, três testes do verificador e a checagem de links passaram.
+Esta entrega atua na busca do frontend, sem alteração de rotas ou limites da API.
 
 ## Navegação por teclado no SabIA
 
