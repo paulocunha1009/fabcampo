@@ -170,12 +170,13 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
   </div>
 
   <div class="ferramentas">
-    <input class="busca" id="busca" type="search" aria-label="Buscar planta por nome popular ou científico" placeholder="Buscar por nome popular ou científico..." autocomplete="off">
+    <input class="busca" id="busca" type="search" aria-label="Buscar planta por nome popular ou científico" aria-describedby="status-fichas" placeholder="Buscar por nome popular ou científico..." autocomplete="off">
     <button class="filtro" data-f="todas" aria-pressed="true">Todas</button>
     <button class="filtro" data-f="nativa" aria-pressed="false">Nativas</button>
     <button class="filtro" data-f="medicinal" aria-pressed="false">Medicinais</button>
     <button class="filtro" data-f="ambas" aria-pressed="false">Nativa e medicinal</button>
   </div>
+  <p id="status-fichas" role="status" aria-live="polite">Carregando fichas...</p>
 
   <section aria-labelledby="titulo-fichas">
     <h2 class="sr-only" id="titulo-fichas">Fichas das espécies documentadas</h2>
@@ -193,7 +194,8 @@ body{font-family:"Segoe UI",Arial,sans-serif;background:var(--cor-fundo);color:v
     <p>O assistente descreve uma espécie do catálogo sem dizer o nome. A descrição sai
        da ficha — nenhuma informação vem de fora.</p>
     <button class="btn" id="btn-desafio">Sortear uma planta</button>
-    <div id="area-desafio"></div>
+    <p id="status-desafio" role="status" aria-live="polite"></p>
+    <div id="area-desafio" aria-busy="false"></div>
   </section>
 
   <h2 class="secao-titulo">Ainda por documentar</h2>
@@ -240,6 +242,7 @@ fetch('../data/plantas.json', { signal:AbortSignal.timeout(12000) })
       nativasPendentes + (medicinaisPendentes ? '. Medicinais: ' + medicinaisPendentes : '');
   })
   .catch(function(e){
+    document.getElementById('status-fichas').textContent = 'Não foi possível carregar as fichas. Recarregue a página para tentar novamente.';
     document.getElementById('fichas').innerHTML =
       '<p class="vazio">Não consegui carregar as fichas. Recarregue a página para tentar novamente.</p>';
   });
@@ -271,6 +274,9 @@ function filtrar(){
 function pintar(){
   const lista = filtrar();
   const alvo = document.getElementById('fichas');
+  document.getElementById('status-fichas').textContent = lista.length
+    ? lista.length + (lista.length === 1 ? ' ficha encontrada.' : ' fichas encontradas.')
+    : 'Nenhuma ficha encontrada. Tente outro nome ou filtro.';
   if(!lista.length){
     alvo.innerHTML = '<p class="vazio">Nenhuma ficha com esse filtro. Que tal documentar uma?</p>';
     return;
@@ -309,11 +315,15 @@ document.getElementById('btn-desafio').addEventListener('click', async function(
   const botao = this;
   if(botao.disabled) return;
   const area = document.getElementById('area-desafio');
+  const status = document.getElementById('status-desafio');
   if(BASE.especies.length < 4){
+    status.textContent = 'O desafio precisa de pelo menos 4 fichas carregadas. Confira se o catálogo abriu corretamente.';
     area.innerHTML = '<div class="enigma">O desafio precisa de pelo menos 4 fichas no catálogo.</div>';
     return;
   }
   botao.disabled = true; botao.textContent = 'Preparando o enigma...';
+  area.setAttribute('aria-busy', 'true');
+  status.textContent = 'Preparando o enigma. Aguarde.';
   area.innerHTML = '';
   const sorteada = BASE.especies[Math.floor(Math.random() * BASE.especies.length)];
   try{
@@ -338,10 +348,13 @@ document.getElementById('btn-desafio').addEventListener('click', async function(
     const opcoes = CatalogoCore.opcoesPara(BASE.especies, sorteada);
     let respondido = false;
     area.innerHTML = (modoLocal ? '<div class="nota-med">Modo local: desafio preparado com a ficha do catálogo.</div>' : '') +
-      '<div class="enigma">' + escaparHTML(enigma) + '</div>' +
+      '<div class="enigma" id="enigma-planta" tabindex="-1">' + escaparHTML(enigma) + '</div>' +
+      '<div role="group" aria-labelledby="enigma-planta">' +
       opcoes.map(function(p){
         return '<button class="palpite" data-id="' + escaparHTML(p.id) + '">' + escaparHTML(p.nome) + '</button>';
-      }).join('');
+      }).join('') + '</div>';
+    status.textContent = 'Enigma pronto' + (modoLocal ? ' no modo local' : '') + '. Escolha uma das quatro plantas.';
+    if(document.activeElement === botao || document.activeElement === document.body) document.getElementById('enigma-planta').focus();
     area.querySelectorAll('.palpite').forEach(function(b){
       b.addEventListener('click', function(){
         if(respondido) return;
@@ -352,14 +365,20 @@ document.getElementById('btn-desafio').addEventListener('click', async function(
           else if(x === b) x.classList.add('errada');
         });
         area.insertAdjacentHTML('beforeend',
-          '<div class="enigma"><b>' + escaparHTML(sorteada.nome) + '</b>' +
+          '<div class="enigma" id="resultado-palpite" tabindex="-1">' +
+          (b.dataset.id === sorteada.id ? 'Você acertou. ' : 'A resposta correta é ') +
+          '<b>' + escaparHTML(sorteada.nome) + '</b>' +
           (sorteada.cientifico ? ' — <i>' + escaparHTML(sorteada.cientifico) + '</i>' : '') +
           '<br>' + escaparHTML(sorteada.texto) + '</div>');
+        status.textContent = 'Resposta registrada. Confira a ficha abaixo.';
+        document.getElementById('resultado-palpite').focus();
       });
     });
   }catch(e){
+    status.textContent = 'Não foi possível montar o desafio. Tente sortear outra planta.';
     area.innerHTML = '<div class="enigma">Não foi possível montar este desafio. Tente sortear outra planta.</div>';
   }finally{
+    area.setAttribute('aria-busy', 'false');
     botao.disabled = false; botao.textContent = 'Sortear outra planta';
   }
 });

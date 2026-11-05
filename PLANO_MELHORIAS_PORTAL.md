@@ -27,6 +27,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Limpar a conversa do SabIA na troca de aluno | Implementado na `main`; publicação pendente |
 | Revisar campos, avisos e foco por teclado da Expedição | Implementado na `main`; conferência visual e publicação pendentes |
 | SabIA: foco ao abrir e fechar, seleção acessível dos modos e preservação do texto durante espera | Implementado na `main`; conferência visual e publicação pendentes |
+| Catálogo: avisos de resultados e carregamento, resposta textual e foco na ficha | Implementado na `main`; conferência visual e publicação pendentes |
 | Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
 
@@ -81,3 +82,12 @@ quando o foco está em um controle dele, sem interferir em outras áreas da pág
 Os modos usam botões nativos agrupados, com o modo ativo indicado por `aria-pressed`.
 Não são anunciados como abas de um painel inexistente. Se outra pergunta estiver
 em andamento, tentar enviar novamente preserva o novo texto no campo.
+
+## Acessibilidade do Catálogo
+
+Busca e filtros informam a quantidade de fichas encontradas por uma região de
+status. O desafio anuncia preparo, modo local e disponibilidade das alternativas.
+O estado de carregamento é indicado por `aria-busy`. As opções são agrupadas pelo
+enigma e a resposta é explicitada em texto, além das cores. Após o palpite, o foco
+vai para a ficha revelada. O enigma pronto não toma o foco se o visitante já estiver
+usando outro controle da página. A revisão não altera o conteúdo das fichas.
