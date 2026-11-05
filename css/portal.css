@@ -549,6 +549,13 @@ body.menu-aberto .cabecalho {
   animation-play-state: paused;
 }
 
+.rolo-fotos__controles { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin-bottom:12px; }
+.rolo-fotos__movimento { border:2px solid var(--cor-primaria); border-radius:6px; padding:8px 12px; background:var(--cor-superficie); color:var(--cor-texto); font:inherit; cursor:pointer; }
+.rolo-fotos__controles span { color:var(--cor-texto-suave); font-size:.9rem; }
+.rolo-fotos[data-pausado="true"] { overflow-x:auto; }
+.rolo-fotos[data-pausado="true"] .rolo-fotos__trilha { animation:none; transform:none; }
+.rolo-fotos[data-pausado="true"] .rolo-fotos__copia { display:none; }
+
 .foto-card {
   position: relative;
   width: 280px;
@@ -2915,6 +2922,9 @@ body[data-page="materia-ia"] .grade-cards .card-link p {
 /* ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
+  .rolo-fotos { overflow-x:auto; }
+  .rolo-fotos__trilha { animation:none !important; transform:none !important; }
+  .rolo-fotos__copia { display:none; }
   *,
   *::before,
   *::after {

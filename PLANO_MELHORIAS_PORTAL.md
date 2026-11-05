@@ -30,6 +30,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Catálogo: avisos de resultados e carregamento, resposta textual e foco na ficha | Implementado na `main`; conferência visual e publicação pendentes |
 | Contato: validação, mensagens de envio e preservação do texto | Implementado na `main`; conferência visual e publicação pendentes |
 | Menu: submenus ocultos fora da navegação, Escape e devolução de foco | Implementado na `main`; conferência visual e publicação pendentes |
+| Galerias: controle de movimento, preferência do sistema e cópias acessíveis | Implementado na `main`; conferência visual e publicação pendentes |
 | Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
 
@@ -119,3 +120,16 @@ de hover/foco no desktop antes da inicialização do script.
 segunda ação fecha a navegação e retorna ao botão Menu. A tecla só atua se o foco
 estiver na navegação. Sair da navegação fecha o menu móvel. O tratamento de resize
 agora acompanha o limite de 1.180 pixels já usado no CSS responsivo.
+
+## Galerias e movimento
+
+As galerias automáticas oferecem `Ver fotos sem movimento`. O modo estático mostra
+somente as fotos originais e permite percorrer a galeria horizontalmente. Dar foco
+à região também interrompe o movimento para navegação pelo teclado. A preferência
+`prefers-reduced-motion` do sistema é respeitada, inclusive quando muda com a página
+aberta. Sem essa detecção, o botão continua disponível.
+
+As cópias necessárias à animação são marcadas como `aria-hidden` e `inert`, com IDs
+removidos para evitar duplicações no documento. Fotos, legendas e demais conteúdos
+do acervo não são alterados por essa revisão. A conferência real da rolagem e das
+animações continua pendente com as demais mudanças de interface.
