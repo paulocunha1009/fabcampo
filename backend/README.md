@@ -9,6 +9,13 @@ Backend Express para o **SabIA — Inteligência do Território**, atividades da
 - `POST /api/assistente` — assistente educacional;
 - `POST /api/atividade` — atividades ancoradas no acervo do portal.
 
+As notícias usam prazo de 2,5 segundos por fonte e compartilham consultas simultâneas
+dentro da mesma instância. O cache dura 30 minutos; se as fontes falharem, o último
+resultado disponível é retornado com `stale: true`. Sem cache, a lista vazia permite
+ao frontend manter seu conteúdo local. Datas ausentes ou inválidas ficam vazias,
+e apenas links HTTP/HTTPS são aceitos. O cache em memória não é compartilhado entre
+instâncias da Vercel.
+
 ## Desenvolvimento local
 
 ```bash

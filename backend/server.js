@@ -96,7 +96,7 @@ DIRETRIZES
 - Não repita seu nome em todas as respostas; apresente-se como SabIA apenas quando isso ajudar a conversa`;
 
 // ── Express ───────────────────────────────────────────────────────────────────
-export function createApp({ aiClient = ai, rateLimiter = limiter, previewHost = process.env.VERCEL_ENV === 'preview' ? process.env.VERCEL_URL : null } = {}) {
+export function createApp({ aiClient = ai, rateLimiter = limiter, newsFetch = fetch, clock = Date.now, previewHost = process.env.VERCEL_ENV === 'preview' ? process.env.VERCEL_URL : null } = {}) {
 const app = express();
 
 app.disable('x-powered-by');
@@ -157,6 +157,7 @@ const FEEDS = [
 
 let noticiasCache = null;
 let noticiasTs    = 0;
+let noticiasEmAndamento = null;
 const NOTICIAS_TTL = 30 * 60 * 1000; // 30 minutos
 const NOTICIAS_MAX = 6;
 const TERMOS_NOTICIAS = [
@@ -220,16 +221,18 @@ function ehTemaDoPortal(item) {
 }
 
 function dataISO(pub) {
-  const data = pub ? new Date(pub) : new Date();
-  if (Number.isNaN(data.getTime())) return new Date().toISOString().slice(0, 10);
+  if (!pub) return '';
+  const data = new Date(pub);
+  if (Number.isNaN(data.getTime())) return '';
   return data.toISOString().slice(0, 10);
 }
 
 async function fetchFeed(feed) {
-  const resp = await fetch(feed.url, {
+  const resp = await newsFetch(feed.url, {
     headers: { 'User-Agent': 'Mozilla/5.0 PortalComunidade/1.0' },
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(2500),
   });
+  if (!resp.ok) throw new Error(`Fonte indisponível (${resp.status})`);
   const xml   = await resp.text();
   const itens = extrairItensRSS(xml).slice(0, 8);
   return itens
@@ -243,38 +246,44 @@ async function fetchFeed(feed) {
       classe:    feed.classe,
       fonte:     feed.nome,
     }))
-    .filter(item => item.titulo && item.link && ehTemaDoPortal(item))
+    .filter(item => item.titulo && /^https?:\/\//i.test(item.link) && ehTemaDoPortal(item))
     .slice(0, 2);
 }
 
-app.get('/api/noticias', async (_req, res) => {
-  // Serve do cache se ainda válido
-  if (noticiasCache && Date.now() - noticiasTs < NOTICIAS_TTL) {
-    return res.json({ noticias: noticiasCache, cached: true });
-  }
-  try {
+async function atualizarNoticias() {
     const resultados = await Promise.allSettled(FEEDS.map(fetchFeed));
     const todas = resultados.flatMap(r => r.status === 'fulfilled' ? r.value : []);
     const vistas = new Set();
     const topNoticias = todas
-      .sort((a, b) => new Date(b.data) - new Date(a.data))
+      .sort((a, b) => (Date.parse(b.data) || 0) - (Date.parse(a.data) || 0))
       .filter(noticia => {
-        const chave = noticia.link || noticia.titulo;
-        if (vistas.has(chave)) return false;
-        vistas.add(chave);
+        if (vistas.has(noticia.link)) return false;
+        vistas.add(noticia.link);
         return true;
       })
       .slice(0, NOTICIAS_MAX);
-
     if (topNoticias.length > 0) {
       noticiasCache = topNoticias;
-      noticiasTs    = Date.now();
+      noticiasTs = clock();
     }
-    res.json({
-      noticias: topNoticias.length > 0 ? topNoticias : (noticiasCache || []),
+    return {
+      noticias: noticiasCache || [],
       fontes: FEEDS.map(feed => feed.nome),
-      cached: false,
-    });
+      cached: topNoticias.length === 0 && Boolean(noticiasCache),
+      stale: topNoticias.length === 0 && Boolean(noticiasCache),
+    };
+}
+
+app.get('/api/noticias', async (_req, res) => {
+  // Serve do cache se ainda válido
+  if (noticiasCache && clock() - noticiasTs < NOTICIAS_TTL) {
+    return res.json({ noticias: noticiasCache, cached: true, stale: false });
+  }
+  try {
+    if (!noticiasEmAndamento) {
+      noticiasEmAndamento = atualizarNoticias().finally(() => { noticiasEmAndamento = null; });
+    }
+    res.json(await noticiasEmAndamento);
   } catch (e) {
     console.error('Erro noticias:', e.message);
     res.json({ noticias: noticiasCache || [], cached: Boolean(noticiasCache) });
