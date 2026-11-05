@@ -7,6 +7,7 @@ on:
       - "backend/**"
       - "pages/**"
       - "js/**"
+      - "css/**"
       - "tools/build_ai_acervo.py"
       - ".github/workflows/validacao-backend.yml"
   pull_request:

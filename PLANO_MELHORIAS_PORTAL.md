@@ -26,7 +26,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Guardar pergunta e resposta juntas durante a atividade | Implementado na `main`; publicação pendente |
 | Limpar a conversa do SabIA na troca de aluno | Implementado na `main`; publicação pendente |
 | Revisar campos, avisos e foco por teclado da Expedição | Implementado na `main`; conferência visual e publicação pendentes |
-| Modo de alto contraste | Previsto no roadmap; ainda não implementado nesta etapa |
+| Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
 
 ## Decisão para computadores compartilhados
 
@@ -46,3 +46,16 @@ a entrega e remoção desses arquivos seguem a orientação do professor.
 
 A revisão por código e os testes automáticos não substituem a conferência real
 com teclado, leitores de tela e os computadores usados pela escola.
+
+## Modo de alto contraste
+
+O controle aparece antes do conteúdo principal nas páginas que carregam `js/app.js`.
+Usa botão nativo com estado `aria-pressed` e anúncio da mudança. O modo pode seguir a
+preferência `prefers-contrast` do sistema e ser alterado manualmente na página atual.
+Não grava preferências no computador. Fotografias e vídeos não são invertidos.
+O estilo especial é aplicado apenas em tela e mantém indicação textual das respostas
+corretas dos quizzes. Páginas antigas de redirecionamento não recebem controles.
+
+Na conferência visual, verificar legibilidade do menu, formulários, widgets, imagens,
+quiz, Catálogo e Expedição, além de foco de teclado e comportamento em telas pequenas.
+Não há declaração de conformidade integral de acessibilidade baseada nesses testes.

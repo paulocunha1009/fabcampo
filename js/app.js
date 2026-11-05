@@ -5,8 +5,10 @@ import { prepararImagens } from './components/imagens.js';
 import { carregarConteudo } from './components/conteudo.js?v=20261105-1';
 import { iniciarChatEducacional } from './components/chat-widget.js?v=20261105-1';
 import { iniciarBuscaGlobal } from './components/busca-global.js';
+import { iniciarAltoContraste } from './components/alto-contraste.js?v=20261105-1';
 
 document.addEventListener('DOMContentLoaded', () => {
+  iniciarAltoContraste();
   prepararImagens();
   iniciarMenu();
   iniciarFormularioContato();
