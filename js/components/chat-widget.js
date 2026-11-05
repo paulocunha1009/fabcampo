@@ -14,6 +14,7 @@ import { perguntarAssistente } from '../services/ai-service.js';
 let historico    = [];   // [{ role: 'user'|'assistant', content: string }]
 let modoAtivo    = 'chat';
 let aguardando   = false;
+let conversaVersao = 0;
 
 function escaparHTML(valor) {
   return String(valor ?? '').replace(/[&<>"']/g, c => ({
@@ -102,13 +103,14 @@ function criarElemento() {
       </div>
 
       <!-- Formulário de entrada -->
+      <button class="ai-chat__tab ai-chat__nova" type="button">Nova conversa</button>
       <form class="ai-chat__form" aria-label="Enviar mensagem para o assistente">
         <label class="oculto" for="ai-chat-pergunta">Digite sua mensagem</label>
         <input id="ai-chat-pergunta" name="pergunta" type="text"
                autocomplete="off" placeholder="Digite sua dúvida..." required>
         <button class="botao" type="submit" aria-label="Enviar mensagem">↑</button>
       </form>
-      <p class="ai-chat__privacidade">Não informe nome, endereço, telefone ou outros dados pessoais. As conversas não são armazenadas pelo portal.</p>
+      <p class="ai-chat__privacidade">Não informe nome, endereço, telefone ou outros dados pessoais. As conversas não são armazenadas pelo portal. Em PC compartilhado, use Nova conversa ao terminar; fechar o painel apenas o esconde.</p>
     </div>
   `;
 
@@ -119,12 +121,15 @@ function criarElemento() {
 function vincularEventos(chat) {
   const toggle    = chat.querySelector('.ai-chat__toggle');
   const fechar    = chat.querySelector('.ai-chat__fechar');
-  const tabs      = chat.querySelectorAll('.ai-chat__tab');
+  const tabs      = chat.querySelectorAll('.ai-chat__tab[data-modo]');
   const topicos   = chat.querySelectorAll('.ai-topico');
   const areaTop   = chat.querySelector('[data-topicos]');
   const mensagens = chat.querySelector('.ai-chat__mensagens');
   const formulario= chat.querySelector('.ai-chat__form');
   const campo     = chat.querySelector('#ai-chat-pergunta');
+  chat.querySelector('.ai-chat__nova').addEventListener('click', () => reiniciarConversa(chat, true));
+  window.addEventListener('pagehide', () => reiniciarConversa(chat, false));
+  window.addEventListener('pageshow', event => { if(event.persisted) reiniciarConversa(chat, false); });
 
   // Abrir / fechar painel
   toggle.addEventListener('click', () => alternarPainel(chat, campo));
@@ -179,9 +184,30 @@ function vincularEventos(chat) {
 }
 
 // ── Envio de mensagem ────────────────────────────────────────────────────────
+function reiniciarConversa(chat, focar){
+  conversaVersao++;
+  historico = []; aguardando = false; modoAtivo = 'chat';
+  const mensagens = chat.querySelector('.ai-chat__mensagens');
+  mensagens.replaceChildren();
+  adicionarMensagem(mensagens, 'Conversa limpa. Você pode começar uma nova pergunta.', 'bot');
+  const campo = chat.querySelector('#ai-chat-pergunta');
+  campo.value = ''; campo.placeholder = 'Digite sua dúvida...';
+  chat.querySelector('[data-topicos]').style.display = 'none';
+  chat.querySelectorAll('.ai-chat__tab[data-modo]').forEach(tab => {
+    const ativa = tab.dataset.modo === 'chat';
+    tab.classList.toggle('ai-chat__tab--ativo', ativa);
+    tab.setAttribute('aria-selected', String(ativa));
+  });
+  if(focar) campo.focus();
+  else {
+    chat.dataset.open = 'false';
+    chat.querySelector('.ai-chat__toggle').setAttribute('aria-expanded', 'false');
+  }
+}
 async function enviar(mensagemReal, container, campo, textoExibido) {
   if (aguardando) return;
   aguardando = true;
+  const vez = conversaVersao;
 
   // Exibe mensagem do usuário
   adicionarMensagem(container, textoExibido || mensagemReal, 'user');
@@ -191,6 +217,7 @@ async function enviar(mensagemReal, container, campo, textoExibido) {
 
   try {
     const resposta = await perguntarAssistente(mensagemReal, historico);
+    if(vez !== conversaVersao) return;
     historico.push({ role: 'user', content: mensagemReal });
 
     container.removeChild(typing);
@@ -212,6 +239,7 @@ async function enviar(mensagemReal, container, campo, textoExibido) {
     if (historico.length > 30) historico = historico.slice(-30);
 
   } catch (erro) {
+    if(vez !== conversaVersao) return;
     container.removeChild(typing);
     adicionarMensagem(container, `⚠️ ${erro.message || 'Não consegui responder. Verifique se o backend está rodando.'}`, 'bot');
   }

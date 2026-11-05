@@ -90,6 +90,13 @@ Todos os valores são configuráveis sem mudança de código. Veja [DEPLOY_VERCE
 
 ## Uso pela turma
 
+No SabIA, `Nova conversa` limpa as mensagens da tela, o campo de entrada e o histórico
+usado na próxima pergunta, e retorna ao modo Perguntar. Respostas pendentes da conversa
+anterior são ignoradas. Navegar para fora e voltar pelo histórico também limpa a
+conversa; fechar apenas o painel preserva a conversa atual enquanto a página fica aberta.
+Não foi adicionado login nem identificação de estudante. O cache local de notícias
+contém somente conteúdo público, não respostas de alunos.
+
 Na Expedição, cada abertura inicia uma atividade vazia, sem login nem recuperação
 de registros anteriores. Respostas, perguntas e progresso ficam somente em memória
 enquanto a página está aberta; não são gravados em localStorage ou sessionStorage.
