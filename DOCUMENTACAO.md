@@ -601,6 +601,10 @@ img/galeria/rolo-01.jpg
 
 ## 17. Roadmap Técnico
 
+O acompanhamento das entregas e decisões de novembro de 2026 está em
+[PLANO_MELHORIAS_PORTAL.md](PLANO_MELHORIAS_PORTAL.md). Consulte esse registro para
+distinguir alterações implementadas, publicações pendentes e propostas ainda não executadas.
+
 ### Curto prazo
 
 - criar imagens reais para todos os placeholders;

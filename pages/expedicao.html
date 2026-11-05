@@ -453,9 +453,11 @@ function abrirEstacao(id){
       '</div>' +
       '<div class="bloco">' +
         '<h2>Meu registro</h2>' +
-        '<p class="secao-apoio">O que você quer que fique guardado sobre a luta pela terra ' +
+        '<p class="secao-apoio" id="orientacao-registro">O que você quer que fique guardado sobre a luta pela terra ' +
         'nesse território? Escreva com as suas palavras.</p>' +
-        '<textarea id="registro" placeholder="Escreva aqui...">' + escaparHTML(estado.registro || '') + '</textarea>' +
+        '<label for="registro">Seu registro de memória</label>' +
+        '<textarea id="registro" aria-describedby="orientacao-registro" placeholder="Escreva aqui...">' + escaparHTML(estado.registro || '') + '</textarea>' +
+        '<p id="registro-aviso" role="status" aria-live="polite"></p>' +
         '<div class="linha-btn">' +
           '<button class="btn terra" id="salvar-registro">Concluir registro</button>' +
           '<a class="btn sec" href="../contato.html">Enviar ao portal</a>' +
@@ -468,7 +470,13 @@ function abrirEstacao(id){
     });
     document.getElementById('salvar-registro').addEventListener('click', function(){
       const t = document.getElementById('registro').value.trim();
-      if(!t){ return; }
+      if(!t){
+        document.getElementById('registro-aviso').textContent = 'Escreva seu registro antes de concluir.';
+        document.getElementById('registro').setAttribute('aria-invalid', 'true');
+        document.getElementById('registro').focus();
+        return;
+      }
+      document.getElementById('registro').setAttribute('aria-invalid', 'false');
       estado.registro = t;
       if(estado.feitas.indexOf(atual.id) < 0) estado.feitas.push(atual.id);
       salvar(); pintarPainel(); pintarTrilha(); voltarTrilha();
@@ -585,17 +593,18 @@ function pintarQuestao(){
       (desafio.local ? '<div class="aviso">Modo local: a IA está indisponível, mas o desafio continua com dados do próprio portal.</div>' : '') +
       '<div class="barra"><i style="width:' + (indice/total*100) + '%"></i></div>' +
       '<p class="contagem">' + atual.local + ' &middot; questão ' + (indice+1) + ' de ' + total + '</p>' +
-      '<p class="pergunta">' + escaparHTML(q.pergunta) + '</p>' +
-      '<div id="alts">' + q.opcoes.map(function(o,i){
+      '<h2 class="pergunta" id="pergunta-atual" tabindex="-1">' + escaparHTML(q.pergunta) + '</h2>' +
+      '<div id="alts" role="group" aria-labelledby="pergunta-atual">' + q.opcoes.map(function(o,i){
         return '<button class="alt" data-i="' + i + '">' +
           '<span class="let">' + String.fromCharCode(65+i) + '</span><span>' + escaparHTML(o) + '</span></button>';
       }).join('') + '</div>' +
-      '<div id="pos"></div>' +
+      '<div id="pos" role="status" aria-live="polite"></div>' +
     '</div>';
   document.getElementById('v3').addEventListener('click', voltarTrilha);
   document.querySelectorAll('.alt').forEach(function(b){
     b.addEventListener('click', function(){ responder(parseInt(b.dataset.i,10)); });
   });
+  document.getElementById('pergunta-atual').focus({ preventScroll:true });
 }
 
 function responder(escolha){
@@ -617,6 +626,7 @@ function responder(escolha){
   document.getElementById('seguir').addEventListener('click', function(){
     if(ultima){ pintarAberta(); } else { indice++; pintarQuestao(); }
   });
+  document.getElementById('seguir').focus();
 }
 
 function pintarAberta(){
@@ -626,10 +636,12 @@ function pintarAberta(){
     '<button class="btn sec" id="v4">&larr; Sair do desafio</button>' +
     '<div class="bloco" style="margin-top:1rem">' +
       '<p class="contagem">' + atual.local + ' &middot; pergunta aberta</p>' +
-      '<p class="pergunta">' + escaparHTML(desafio.aberta) + '</p>' +
-      '<textarea id="resp-aberta" maxlength="4000" placeholder="Responda com as suas palavras...">' + escaparHTML(estado.respostas[atual.id] || '') + '</textarea>' +
+      '<h2 class="pergunta" id="pergunta-atual" tabindex="-1">' + escaparHTML(desafio.aberta) + '</h2>' +
+      '<label for="resp-aberta" id="rotulo-resposta">Sua resposta</label>' +
+      '<p id="orientacao-resposta" class="secao-apoio">Escreva com suas palavras. Use de 15 a 4.000 caracteres.</p>' +
+      '<textarea id="resp-aberta" aria-labelledby="rotulo-resposta pergunta-atual" aria-describedby="orientacao-resposta" minlength="15" maxlength="4000" placeholder="Responda com as suas palavras...">' + escaparHTML(estado.respostas[atual.id] || '') + '</textarea>' +
       '<div class="linha-btn"><button class="btn" id="enviar-aberta">Enviar resposta</button></div>' +
-      '<div id="retorno"></div>' +
+      '<div id="retorno" role="status" aria-live="polite"></div>' +
     '</div>';
   document.getElementById('v4').addEventListener('click', voltarTrilha);
   const idRascunho = atual.id;
@@ -640,6 +652,7 @@ function pintarAberta(){
     salvar();
   });
   document.getElementById('enviar-aberta').addEventListener('click', avaliarAberta);
+  document.getElementById('pergunta-atual').focus({ preventScroll:true });
 }
 
 function concluirEstacao(texto, devolutiva, modoLocal){
@@ -660,12 +673,16 @@ function concluirEstacao(texto, devolutiva, modoLocal){
 async function avaliarAberta(){
   const botao = document.getElementById('enviar-aberta');
   if(botao.disabled) return;
-  const texto = document.getElementById('resp-aberta').value.trim();
+  const campoResposta = document.getElementById('resp-aberta');
+  const texto = campoResposta.value.trim();
   const retorno = document.getElementById('retorno');
   if(texto.length < 15){
     retorno.innerHTML = '<div class="erro">Escreva pelo menos 15 caracteres com suas ideias.</div>';
+    campoResposta.setAttribute('aria-invalid', 'true');
+    campoResposta.focus();
     return;
   }
+  campoResposta.setAttribute('aria-invalid', 'false');
   const vez = ++operacao;
   const estacao = atual;
   // Guardar antes da consulta evita perder o texto se a conexão falhar.

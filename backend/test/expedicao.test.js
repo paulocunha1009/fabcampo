@@ -76,7 +76,7 @@ test('digitação mantém rascunho e pergunta apenas na atividade sem gravar no 
   const html = readFileSync(new URL('../../pages/expedicao.html', import.meta.url), 'utf8');
   const elements = new Map();
   const document = { getElementById(id){
-    if(!elements.has(id)) elements.set(id, { textContent:'', innerHTML:'', listeners:{}, addEventListener(type, fn){ this.listeners[type] = fn; } });
+    if(!elements.has(id)) elements.set(id, { textContent:'', innerHTML:'', listeners:{}, focus(){}, addEventListener(type, fn){ this.listeners[type] = fn; } });
     return elements.get(id);
   } };
   const state = normalizarEstado(null, ids);
