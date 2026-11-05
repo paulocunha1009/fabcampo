@@ -21,19 +21,19 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Limitar espera pela IA e oferecer alternativa local | Publicado anteriormente |
 | Validar automaticamente backend e acervo no GitHub | Ativo |
 | Verificar links internos e dependências locais das páginas do sitemap | Automatizado no GitHub; não exige publicação do portal |
-| Melhorar falhas, datas e carregamento de notícias | Implementado na `main`; publicação pendente |
-| Expedição começar limpa em cada abertura, adequada ao laboratório | Implementado na `main`; publicação pendente |
-| Consultar e baixar registros da atividade | Implementado na `main`; publicação pendente |
-| Guardar pergunta e resposta juntas durante a atividade | Implementado na `main`; publicação pendente |
-| Limpar a conversa do SabIA na troca de aluno | Implementado na `main`; publicação pendente |
-| Revisar campos, avisos e foco por teclado da Expedição | Implementado na `main`; conferência visual e publicação pendentes |
-| SabIA: foco ao abrir e fechar, seleção acessível dos modos e preservação do texto durante espera | Implementado na `main`; conferência visual e publicação pendentes |
-| Catálogo: avisos de resultados e carregamento, resposta textual e foco na ficha | Implementado na `main`; conferência visual e publicação pendentes |
-| Contato: validação, mensagens de envio e preservação do texto | Implementado na `main`; conferência visual e publicação pendentes |
-| Menu: submenus ocultos fora da navegação, Escape e devolução de foco | Implementado na `main`; conferência visual e publicação pendentes |
-| Galerias: controle de movimento, preferência do sistema e cópias acessíveis | Implementado na `main`; conferência visual e publicação pendentes |
-| Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
-| Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
+| Melhorar falhas, datas e carregamento de notícias | Publicado em 05/11/2026 |
+| Expedição começar limpa em cada abertura, adequada ao laboratório | Publicado em 05/11/2026 |
+| Consultar e baixar registros da atividade | Publicado em 05/11/2026 |
+| Guardar pergunta e resposta juntas durante a atividade | Publicado em 05/11/2026 |
+| Limpar a conversa do SabIA na troca de aluno | Publicado em 05/11/2026 |
+| Revisar campos, avisos e foco por teclado da Expedição | Publicado; teste de uso com alunos pendente |
+| SabIA: foco ao abrir e fechar, seleção acessível dos modos e preservação do texto durante espera | Publicado; teste de uso com alunos pendente |
+| Catálogo: avisos de resultados e carregamento, resposta textual e foco na ficha | Publicado; teste de uso com alunos pendente |
+| Contato: validação, mensagens de envio e preservação do texto | Publicado; teste de uso com alunos pendente |
+| Menu: submenus ocultos fora da navegação, Escape e devolução de foco | Publicado; teste de uso com alunos pendente |
+| Galerias: controle de movimento, preferência do sistema e cópias acessíveis | Publicado; teste de uso com alunos pendente |
+| Modo de alto contraste | Publicado; teste de uso com alunos pendente |
+| Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Publicado; teste de uso com alunos pendente |
 
 ## Decisão para computadores compartilhados
 
@@ -50,6 +50,31 @@ a entrega e remoção desses arquivos seguem a orientação do professor.
 3. Publicação: promover a API testada na Vercel e sincronizar somente os arquivos
    necessários do frontend com `master`, preservando as diferenças entre as branches.
 4. Alunos: testar o uso no laboratório após a publicação e registrar dificuldades.
+
+## Publicação concluída em 5 de novembro de 2026
+
+Publicação autorizada pelo professor após retorno ao PC de casa. A conferência
+funcional incluiu alto contraste, busca por nome científico, menu e Escape,
+consulta e download de registros, encerramento da sessão, conversa real com SabIA,
+limpeza de conversa, galeria estática, validação do formulário sem envio real e
+uma parada da Expedição com três questões e conclusão por alternativa local.
+
+- Frontend publicado em `master`: `273ef8189434d93ed7dc9b860e5d1fe4fcd1f66b`.
+- API promovida: `a46d068390687fc7d75732ed2b80b013fc14b646`.
+- Implantação Vercel: `EXXxjY4WQtvXH97BUSggfz9Tm2hg`.
+- GitHub Pages: execução `42123792063`, concluída com sucesso.
+- Conferência após publicação: os 28 arquivos entregues responderam HTTP 200 e
+  coincidiram com a versão revisada, após normalização de finais de linha.
+- `/health`: HTTP 200, IA configurada, Upstash ativo, 15 pedidos globais por minuto
+  e 200 por dia. `/api/noticias`: HTTP 200 com cinco notícias na conferência.
+- `/diagnostico`: HTTP 404, sem expor a ferramenta de preview.
+- Antes da publicação: 87 testes JavaScript e três testes do verificador aprovados,
+  mais a checagem de 14 páginas e 38 arquivos locais.
+- Retorno do frontend: commit anterior `4530fdf`, preservado no histórico e na
+  branch local `codex/backup-portal-antes-laboratorio-20261105`.
+
+O teste de uso pelos alunos no laboratório permanece como próxima etapa. Não houve
+envio real de contribuição ao Google Forms nem auditoria formal com leitores de tela.
 
 A revisão por código e os testes automáticos não substituem a conferência real
 com teclado, leitores de tela e os computadores usados pela escola.
