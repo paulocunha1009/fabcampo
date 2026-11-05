@@ -27,6 +27,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Limpar a conversa do SabIA na troca de aluno | Implementado na `main`; publicação pendente |
 | Revisar campos, avisos e foco por teclado da Expedição | Implementado na `main`; conferência visual e publicação pendentes |
 | Modo de alto contraste | Implementado na `main`; conferência visual e publicação pendentes |
+| Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Implementado na `main`; conferência visual e publicação pendentes |
 
 ## Decisão para computadores compartilhados
 
@@ -59,3 +60,14 @@ corretas dos quizzes. Páginas antigas de redirecionamento não recebem controle
 Na conferência visual, verificar legibilidade do menu, formulários, widgets, imagens,
 quiz, Catálogo e Expedição, além de foco de teclado e comportamento em telas pequenas.
 Não há declaração de conformidade integral de acessibilidade baseada nesses testes.
+
+## Busca interna
+
+A busca usa as páginas já listadas no portal e as fichas existentes em
+`data/plantas.json`. Normaliza acentos e pontuação e permite procurar por palavras
+em outra ordem. Resultados de plantas apontam ao filtro do Catálogo. Nenhuma ficha
+ou informação de pesquisa foi acrescentada por essa melhoria.
+
+O carregamento das fichas tem prazo de cinco segundos. Falhas não interrompem a
+busca de páginas e são informadas ao visitante. Reabrir a busca permite tentar
+novamente. A consulta digitada é limpa ao fechar o diálogo.
