@@ -35,6 +35,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Modo de alto contraste | Publicado; teste de uso com alunos pendente |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Publicado; teste de uso com alunos pendente |
 | Busca dentro dos textos, com trecho original e carregamento sob demanda | Publicado em 05/11/2026; exemplo conferido no domínio oficial |
+| Painel para edição de notícias da comunidade e eventos escolares | Levantamento concluído; aguardando definição dos papéis pelo professor |
 
 ## Decisão para computadores compartilhados
 
@@ -76,6 +77,9 @@ uma parada da Expedição com três questões e conclusão por alternativa local
 
 O teste de uso pelos alunos no laboratório permanece como próxima etapa. Não houve
 envio real de contribuição ao Google Forms nem auditoria formal com leitores de tela.
+
+O próximo desenvolvimento do roadmap é detalhado em `PLANO_PAINEL_EDITORIAL.md`,
+com a estrutura atual dos conteúdos e as decisões necessárias para a edição.
 
 A revisão por código e os testes automáticos não substituem a conferência real
 com teclado, leitores de tela e os computadores usados pela escola.
