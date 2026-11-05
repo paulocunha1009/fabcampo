@@ -94,3 +94,48 @@ test('digitação da resposta aberta salva rascunho e falha de armazenamento mos
   assert.equal(state.respostas.m1986, 'Continuo escrevendo');
   assert.match(document.getElementById('aviso-salvamento').textContent, /Não foi possível salvar/);
 });
+
+test('exportação organiza textos reais por parada sem alterar progresso ou inventar respostas', () => {
+  const state = normalizarEstado(null, ids);
+  state.respostas.m1986 = '  Texto do aluno com acentuação: território.\nSegunda linha.  ';
+  state.registro = 'Meu registro de memória';
+  state.feitas.push('m1987');
+  state.sementes = 5;
+  const antes = JSON.stringify(state);
+  const estacoes = [
+    { id:'m1986', local:'1986', titulo:'Terra' },
+    { id:'m1987', local:'1987', titulo:'Memória', memoriaViva:true },
+    { id:'m1991', local:'1991', titulo:'Cooperativa' }
+  ];
+  const arquivo = context.ExpedicaoCore.exportarRegistros(state, estacoes, '05/11/2026');
+  assert.ok(arquivo.includes(state.respostas.m1986));
+  assert.match(arquivo, /rascunho; parada não concluída/);
+  assert.match(arquivo, /Registro de memória \(sem pontuação\):\nMeu registro de memória/);
+  assert.match(arquivo, /Paradas concluídas: 1\/3/);
+  assert.match(arquivo, /Nenhum texto registrado/);
+  assert.equal(JSON.stringify(state), antes);
+});
+
+test('botão cria arquivo de texto com nome definido e avisa se o download falhar', async () => {
+  const html = readFileSync(new URL('../../pages/expedicao.html', import.meta.url), 'utf8');
+  const start = html.indexOf("document.getElementById('baixar-registros').addEventListener");
+  const code = html.slice(start, html.indexOf('\npintarPainel();', start));
+  const aviso = { textContent:'' };
+  let clicar, blob, baixado, removido = false;
+  const ui = vm.createContext({
+    ExpedicaoCore:context.ExpedicaoCore, estado:normalizarEstado(null, ids), ESTACOES:[], Blob,
+    setTimeout:fn => fn(), URL:{ createObjectURL:b => { blob = b; return 'blob:teste'; }, revokeObjectURL(){} },
+    document:{ getElementById:id => id === 'baixar-registros' ? { addEventListener:(_t, fn) => { clicar = fn; } } : aviso,
+      body:{ appendChild(){} }, createElement:() => ({ click(){ baixado = this.download; }, remove(){ removido = true; } }) }
+  });
+  vm.runInContext(code, ui);
+  clicar();
+  assert.equal(baixado, 'fabcampo-meus-registros.txt');
+  assert.match(await blob.text(), /CAMPO DIGITAL · FABCAMPO/);
+  assert.equal(blob.type, 'text/plain;charset=utf-8');
+  assert.equal(removido, true);
+  assert.match(aviso.textContent, /Download solicitado/);
+  ui.URL.createObjectURL = () => { throw new Error('Indisponível'); };
+  clicar();
+  assert.match(aviso.textContent, /Não foi possível iniciar/);
+});

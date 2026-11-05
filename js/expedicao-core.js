@@ -44,5 +44,28 @@
     try { storage.setItem(chave, JSON.stringify(estado)); return true; }
     catch(e){ return false; }
   }
-  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar, salvarEstado };
+  function exportarRegistros(estado, estacoes, data){
+    const atual = normalizarEstado(estado, estacoes.map(e => e.id));
+    const linhas = [
+      'CAMPO DIGITAL · FABCAMPO', 'Expedição — Meus registros',
+      'Exportado em: ' + data, '', 'Estudante: ______________________________',
+      'Turma: _________________________________', '',
+      'Paradas concluídas: ' + atual.feitas.length + '/' + estacoes.length,
+      'Sementes: ' + atual.sementes + ' (pontuação da atividade; não é nota escolar)', '',
+      'Esta cópia reúne as respostas abertas e o registro de memória disponíveis neste navegador.',
+      'Não inclui as perguntas e alternativas dos quizzes nem suas devolutivas.',
+      'Não foi enviada automaticamente ao professor. Pode ser entregue ou usada no caderno de campo.',
+      'Uma resposta marcada como rascunho ainda pode estar incompleta.', ''
+    ];
+    for(const estacao of estacoes){
+      const resposta = estacao.memoriaViva ? atual.registro : atual.respostas[estacao.id];
+      linhas.push('----------------------------------------',
+        estacao.local + ' — ' + estacao.titulo,
+        'Situação: ' + (atual.feitas.includes(estacao.id) ? 'parada concluída' : resposta?.trim() ? 'rascunho; parada não concluída' : 'sem registro'),
+        estacao.memoriaViva ? 'Registro de memória (sem pontuação):' : 'Resposta aberta:',
+        resposta?.trim() ? resposta : 'Nenhum texto registrado.', '');
+    }
+    return linhas.join('\n');
+  }
+  root.ExpedicaoCore = { validarDesafio, normalizarEstado, premiar, salvarEstado, exportarRegistros };
 })(globalThis);

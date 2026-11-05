@@ -218,6 +218,9 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
   </div>
   <p class="secao-apoio">Respostas e progresso ficam neste navegador e neste dispositivo. Em computador compartilhado, outra pessoa pode ver seus registros. Eles não são enviados ao professor automaticamente.</p>
   <p class="secao-apoio" id="aviso-salvamento" role="status" aria-live="polite"></p>
+  <div class="linha-btn"><button class="btn sec" id="baixar-registros" type="button">Baixar meus registros (.txt)</button></div>
+  <p class="secao-apoio">Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo pode ser aberto em um editor de texto.</p>
+  <p class="secao-apoio" id="aviso-download" role="status" aria-live="polite"></p>
 
   <!-- ======== TELA: TRILHA ======== -->
   <section class="tela on" id="tela-trilha">
@@ -257,7 +260,7 @@ textarea:focus{outline:2px solid var(--verde-cl);outline-offset:1px}
 </footer>
 
 <script src="../js/config.js"></script>
-<script src="../js/expedicao-core.js?v=20261105-1"></script>
+<script src="../js/expedicao-core.js?v=20261105-2"></script>
 <script>
 /* =====================================================================
    1. CONFIGURAÇÃO
@@ -764,6 +767,28 @@ async function perguntarGuia(){
 /* =====================================================================
    8. INICIAR
 ===================================================================== */
+document.getElementById('baixar-registros').addEventListener('click', function(){
+  const aviso = document.getElementById('aviso-download');
+  let endereco;
+  let link;
+  try{
+    const data = new Date().toLocaleString('pt-BR', { timeZone:'America/Fortaleza' });
+    const texto = ExpedicaoCore.exportarRegistros(estado, ESTACOES, data);
+    const arquivo = new Blob(['\uFEFF', texto], { type:'text/plain;charset=utf-8' });
+    endereco = URL.createObjectURL(arquivo);
+    link = document.createElement('a');
+    link.href = endereco;
+    link.download = 'fabcampo-meus-registros.txt';
+    document.body.appendChild(link);
+    link.click();
+    aviso.textContent = 'Download solicitado. Confira o arquivo fabcampo-meus-registros.txt na pasta de downloads do navegador.';
+  }catch(e){
+    aviso.textContent = 'Não foi possível iniciar o download. Copie suas respostas antes de sair da página.';
+  }finally{
+    if(link) link.remove();
+    if(endereco) setTimeout(function(){ URL.revokeObjectURL(endereco); }, 1000);
+  }
+});
 pintarPainel();
 pintarTrilha();
 </script>

@@ -2096,11 +2096,15 @@
     {
       "title": "Expedição",
       "url": "pages/expedicao.html",
-      "sha256": "9fc6a8a1a8a9b64e2dc2e5234d15766e0aa837a1b68054412de809a777914016",
+      "sha256": "0738920001aba21d11025cd00ebf8d26be0ebfd783db32d12661984bf98277ec",
       "chunks": [
         {
           "section": "",
           "text": "Respostas e progresso ficam neste navegador e neste dispositivo. Em computador compartilhado, outra pessoa pode ver seus registros. Eles não são enviados ao professor automaticamente."
+        },
+        {
+          "section": "",
+          "text": "Baixe uma cópia das respostas abertas e do registro de memória para guardar, entregar ao professor ou passar ao caderno de campo. O arquivo pode ser aberto em um editor de texto."
         },
         {
           "section": "A linha do tempo",

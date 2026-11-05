@@ -97,6 +97,14 @@ entre dispositivos nem enviados ao professor; limpar os dados do navegador pode
 apagá-los. Retomar um rascunho de resposta aberta ainda exige chegar novamente à
 pergunta aberta da parada. A retomada exata da questão em andamento não é persistida.
 
+O botão `Baixar meus registros (.txt)` gera no navegador uma cópia das respostas
+abertas, do registro de memória e da pontuação atual, organizada por parada. Inclui
+rascunhos identificados e espaços para o aluno preencher nome e turma no arquivo.
+Não exporta perguntas, alternativas ou devolutivas dos quizzes; não envia registros
+ao servidor e não altera o progresso. O arquivo é texto UTF-8 com BOM para preservar
+acentos em editores comuns no Windows. A interface confirma a solicitação do download,
+sem afirmar que o navegador terminou de salvar o arquivo.
+
 Os clientes do assistente aguardam até 25 segundos. Em falha de conexão, demora ou
 limite da API, exibem um aviso de modo local e oferecem o conteúdo local existente.
 Os limites de produção permanecem em 15 pedidos de IA por minuto e 200 por dia.
