@@ -3011,6 +3011,7 @@ body[data-page="materia-ia"] .grade-cards .card-link p {
 .busca-global__resultado { display: block; position: relative; border: 1px solid rgba(36,107,58,.12); border-radius: 14px; background: #fff; color: var(--cor-texto); padding: 12px 44px 12px 14px; font-weight: 700; text-decoration: none; }
 .busca-global__resultado::after { content: "→"; position: absolute; right: 16px; color: #1677b8; }
 .busca-global__resultado:hover { background: var(--cor-superficie-suave); color: var(--cor-primaria-escura); text-decoration: none; transform: translateY(-2px); }
+.busca-global__trecho { display:block; margin-top:6px; font-size:.9rem; font-weight:400; line-height:1.5; color:var(--cor-texto-suave); }
 
 @media (max-width: 720px) {
   .busca-global__texto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
