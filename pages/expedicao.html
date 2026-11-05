@@ -626,6 +626,8 @@ function responder(escolha){
 }
 
 function pintarAberta(){
+  // O rascunho continua vinculado à pergunta que o aluno estava respondendo.
+  if(estado.respostas[atual.id]?.trim() && estado.perguntas[atual.id]) desafio.aberta = estado.perguntas[atual.id];
   document.getElementById('tela-desafio').innerHTML =
     '<button class="btn sec" id="v4">&larr; Sair do desafio</button>' +
     '<div class="bloco" style="margin-top:1rem">' +
@@ -637,8 +639,10 @@ function pintarAberta(){
     '</div>';
   document.getElementById('v4').addEventListener('click', voltarTrilha);
   const idRascunho = atual.id;
+  const perguntaRascunho = desafio.aberta;
   document.getElementById('resp-aberta').addEventListener('input', function(event){
     estado.respostas[idRascunho] = event.target.value;
+    estado.perguntas[idRascunho] = perguntaRascunho;
     salvar();
   });
   document.getElementById('enviar-aberta').addEventListener('click', avaliarAberta);
@@ -671,7 +675,9 @@ async function avaliarAberta(){
   const vez = ++operacao;
   const estacao = atual;
   // Guardar antes da consulta evita perder o texto se a conexão falhar.
-  estado.respostas[estacao.id] = texto; salvar();
+  estado.respostas[estacao.id] = texto;
+  estado.perguntas[estacao.id] = desafio.aberta;
+  salvar();
   botao.disabled = true; botao.textContent = 'Lendo sua resposta...';
   retorno.innerHTML = '';
   const orientacaoLocal = 'A IA não avaliou este registro. Confira o aviso de salvamento nesta página. Compare suas ideias com a reportagem e converse com o professor para aprofundar a reflexão.';

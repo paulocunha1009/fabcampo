@@ -87,6 +87,10 @@ test('digitação da resposta aberta salva rascunho e falha de armazenamento mos
   const escrever = document.getElementById('resp-aberta').listeners.input;
   escrever({ target:{ value:'Rascunho sem enviar' } });
   assert.equal(JSON.parse(dados.get('teste')).respostas.m1986, 'Rascunho sem enviar');
+  assert.equal(JSON.parse(dados.get('teste')).perguntas.m1986, 'Reflexão');
+  ui.desafio.aberta = 'Outra pergunta recém-gerada';
+  vm.runInContext('pintarAberta()', ui);
+  assert.equal(ui.desafio.aberta, 'Reflexão');
   assert.equal(state.sementes, 0);
   assert.match(document.getElementById('aviso-salvamento').textContent, /salvos/);
   ui.localStorage = { setItem(){ throw new Error('Bloqueado'); } };
@@ -166,4 +170,18 @@ test('consulta de registros mostra rascunho como texto e acompanha alterações 
   assert.match(document.getElementById('lista-registros').textContent, /Texto revisado/);
   assert.equal(state.sementes, 0);
   assert.equal(state.feitas.length, 0);
+});
+
+test('pergunta acompanha a resposta na reabertura e exportação; registros antigos não recebem pergunta inventada', () => {
+  const estacoes = [{ id:'m1986', local:'1986', titulo:'Terra' }];
+  const original = normalizarEstado(null, ids);
+  original.respostas.m1986 = 'Minha resposta';
+  original.perguntas.m1986 = 'Qual a sua reflexão sobre o texto?';
+  const restaurado = normalizarEstado(JSON.parse(JSON.stringify(original)), ids);
+  assert.equal(restaurado.perguntas.m1986, original.perguntas.m1986);
+  assert.match(context.ExpedicaoCore.exportarRegistros(restaurado, estacoes, 'teste'), /Pergunta aberta:\nQual a sua reflexão sobre o texto\?/);
+  const antigo = normalizarEstado({ respostas:{ m1986:'Texto antigo' } }, ids);
+  assert.match(context.ExpedicaoCore.exportarRegistros(antigo, estacoes, 'teste'), /A pergunta não foi guardada com este registro/);
+  const invalido = normalizarEstado({ perguntas:{ m1986:{ texto:'Inválido' }, outro:'Não pertence à trilha' } }, ids);
+  assert.equal(Object.keys(invalido.perguntas).length, 0);
 });

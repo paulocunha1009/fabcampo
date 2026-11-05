@@ -19,12 +19,13 @@
     const result = {
       sementes:Number.isSafeInteger(v.sementes) && v.sementes >= 0 ? v.sementes : 0,
       feitas:Array.isArray(v.feitas) ? [...new Set(v.feitas.filter(id => ids.includes(id)))] : [],
-      registro:typeof v.registro === 'string' ? v.registro : '', premiadas:{}, respostas:{}
+      registro:typeof v.registro === 'string' ? v.registro : '', premiadas:{}, respostas:{}, perguntas:{}
     };
     for(const id of ids){
       const p = v.premiadas?.[id];
       result.premiadas[id] = { questoes:Array.isArray(p?.questoes) ? [...new Set(p.questoes.filter(i => Number.isInteger(i) && i >= 0 && i < 3))] : [], aberta:p?.aberta === true };
       if(typeof v.respostas?.[id] === 'string') result.respostas[id] = v.respostas[id];
+      if(typeof v.perguntas?.[id] === 'string') result.perguntas[id] = v.perguntas[id];
     }
     return result;
   }
@@ -61,7 +62,10 @@
       const resposta = estacao.memoriaViva ? atual.registro : atual.respostas[estacao.id];
       linhas.push('----------------------------------------',
         estacao.local + ' — ' + estacao.titulo,
-        'Situação: ' + (atual.feitas.includes(estacao.id) ? 'parada concluída' : resposta?.trim() ? 'rascunho; parada não concluída' : 'sem registro'),
+        'Situação: ' + (atual.feitas.includes(estacao.id) ? 'parada concluída' : resposta?.trim() ? 'rascunho; parada não concluída' : 'sem registro'));
+      if(!estacao.memoriaViva && resposta?.trim()) linhas.push('Pergunta aberta:',
+        atual.perguntas[estacao.id]?.trim() ? atual.perguntas[estacao.id] : 'A pergunta não foi guardada com este registro.');
+      linhas.push(
         estacao.memoriaViva ? 'Registro de memória (sem pontuação):' : 'Resposta aberta:',
         resposta?.trim() ? resposta : 'Nenhum texto registrado.', '');
     }

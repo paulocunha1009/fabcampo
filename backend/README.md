@@ -108,6 +108,9 @@ sem afirmar que o navegador terminou de salvar o arquivo.
 `Ver meus registros` permite consultar e copiar os mesmos textos diretamente na
 página, sem refazer quizzes. A consulta aberta acompanha o salvamento de rascunhos;
 abrir ou fechar a consulta não altera pontuação ou conclusão das paradas.
+Novas respostas abertas guardam também a pergunta exibida. Ao retomar um rascunho,
+a pergunta original é preservada mesmo se a IA gerar outro desafio. Registros antigos
+sem a pergunta continuam legíveis; a cópia informa que ela não foi guardada.
 
 Os clientes do assistente aguardam até 25 segundos. Em falha de conexão, demora ou
 limite da API, exibem um aviso de modo local e oferecem o conteúdo local existente.
