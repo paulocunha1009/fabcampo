@@ -1,5 +1,5 @@
 /* Controle em fluxo normal: não cobre o menu, o conteúdo ou o assistente. */
-.acessibilidade { display:flex; justify-content:flex-end; padding-block:12px; }
+.acessibilidade { display:flex; justify-content:flex-start; padding-block:12px; }
 .acessibilidade__contraste {
   padding:8px 14px; border:2px solid var(--cor-primaria, #1f6f3b);
   border-radius:6px; background:#fff; color:#111; font:inherit; font-weight:700; cursor:pointer;
