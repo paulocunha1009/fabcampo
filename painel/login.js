@@ -24,10 +24,11 @@ const messages = {
   unavailable: 'A configuração de acesso ainda não foi concluída no servidor. Nenhuma publicação foi liberada.',
   error: 'Não foi possível conferir o acesso. Tente novamente. Seu rascunho foi preservado.',
 };
-const access = createGoogleAccess({ endpoint: EDITORIAL_API, onState(state) {
-  status.textContent = state.status === 'authorized'
+const access = createGoogleAccess({ endpoint: EDITORIAL_API, identityEndpoint:EDITORIAL_API.replace(/\/me$/,'/identidade'), onState(state) {
+  status.dataset.googleSubject=state.status === 'pending' ? state.id:'';
+  status.textContent = state.status === 'pending' ? `Conta Google confirmada: ${state.email}. O acesso de editor ainda precisa ser autorizado pelo responsável.` : state.status === 'authorized'
     ? `Conta conferida: ${state.email}. Publicação ainda em preparação.` : messages[state.status];
-  signOut.hidden = !['authorized', 'checking'].includes(state.status);
+  signOut.hidden = !['authorized', 'checking','pending'].includes(state.status);
   // A response to an access check is not a persistent login session.
 } });
 

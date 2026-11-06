@@ -14,8 +14,8 @@ export function createEditorialAuth({
   const subjects = new Set(allowedSubjects.split(',').map(s => s.trim()).filter(Boolean));
   const configured = Boolean(clientId.trim() && subjects.size);
 
-  async function authenticate(authorization) {
-    if (!configured) throw deny(503, 'EDITORIAL_NOT_CONFIGURED');
+  async function identify(authorization) {
+    if (!clientId.trim()) throw deny(503, 'EDITORIAL_NOT_CONFIGURED');
     if (typeof authorization !== 'string' || authorization.length > 12000 ||
         !/^Bearer [A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(authorization)) {
       throw deny(401, 'EDITORIAL_SIGN_IN_REQUIRED');
@@ -37,9 +37,14 @@ export function createEditorialAuth({
         typeof payload.email !== 'string' || !payload.email.includes('@')) {
       throw deny(401, 'EDITORIAL_SIGN_IN_REQUIRED');
     }
-    if (!subjects.has(payload.sub)) throw deny(403, 'EDITORIAL_ACCESS_DENIED');
     return { id: payload.sub, email: payload.email };
   }
+  async function authenticate(authorization) {
+    if (!configured) throw deny(503, 'EDITORIAL_NOT_CONFIGURED');
+    const account = await identify(authorization);
+    if (!subjects.has(account.id)) throw deny(403, 'EDITORIAL_ACCESS_DENIED');
+    return account;
+  }
 
-  return { configured, authenticate };
+  return { configured, authenticate, identify };
 }

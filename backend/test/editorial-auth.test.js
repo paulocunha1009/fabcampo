@@ -37,6 +37,13 @@ test('editorial autoriza somente sub validado, independentemente do nome/e-mail'
   assert.equal((await auth({ ...claims, email: 'novo@example.test' }).authenticate(token)).id, claims.sub);
 });
 
+test('identificação confirma só a própria conta sem conceder acesso editorial',async()=>{
+  const gate=auth(claims,{allowedSubjects:''});
+  assert.equal(gate.configured,false);
+  assert.deepEqual(await gate.identify(token),{id:claims.sub,email:claims.email});
+  await assert.rejects(gate.authenticate(token),{status:503});
+});
+
 test('editorial rejeita expiração, emissor, audiência e identidade inválidos', async () => {
   for (const patch of [{ exp: now / 1000 }, { exp: 'future' }, { aud: 'outro-client' },
     { iss: 'https://evil.test' }, { email_verified: false }, { sub: '' }, { email: null }]) {

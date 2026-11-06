@@ -6,6 +6,21 @@ const nomes = { local:'local', texto:'texto completo', data:'data confirmada', h
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
 let pronto = false;
+export function obterRegistroAtual(){
+  if(!pronto) throw new Error('Aguarde o carregamento dos registros.');
+  const valores=Object.fromEntries(campos.map(id=>[id,$(id).value]));
+  valores.cards=JSON.parse(valores.cards || '[]');valores.fotos=JSON.parse(valores.fotos || '[]');
+  return {tipo,registro:validarRegistro(tipo,valores)};
+}
+export function abrirRascunhoRemoto(documento){
+  if(!pronto) throw new Error('Aguarde o carregamento dos registros.');
+  if(!$('cancelar-edicao').hidden) throw new Error('Guarde a edição local antes de abrir outro rascunho.');
+  const registro=validarRegistro(documento.tipo,documento.registro);
+  document.querySelector(`[data-tipo="${documento.tipo}"]`).click();
+  const indice=conteudo[tipo].length;conteudo[tipo].push(registro);
+  listar(String(indice));escolher();bloquearTroca(false);
+  informar('Rascunho do painel aberto para edição. Nenhum conteúdo foi publicado.');
+}
 function bloquearTroca(alterado){
   document.querySelectorAll('[data-tipo]').forEach(b => { b.disabled = alterado; });
   $('registro-editorial').disabled = alterado;
@@ -106,10 +121,7 @@ $('editorial-form').addEventListener('submit', event => {
   if(!pronto){ informar('Aguarde o carregamento do conteúdo existente antes de preparar o rascunho.'); return; }
   limparErros();
   try {
-    const valores = Object.fromEntries(campos.map(id => [id, $(id).value]));
-    valores.cards = JSON.parse(valores.cards || '[]');
-    valores.fotos = JSON.parse(valores.fotos || '[]');
-    const registro = validarRegistro(tipo, valores);
+    const {registro} = obterRegistroAtual();
     const posicao = $('registro-editorial').value;
     const indice = posicao === '' ? conteudo[tipo].length : Number(posicao);
     conteudo[tipo][indice] = registro;

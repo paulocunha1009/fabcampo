@@ -332,3 +332,40 @@ guardar pela revisão, retomada de registro existente, duas fotos, resumo da rev
 e atualização da prévia. Layout conferido em 1280 e 390 pixels, sem rolagem lateral
 na largura menor; tamanho do navegador restaurado ao final. Os 124 testes existentes
 passaram nesta etapa. As alterações continuam locais, sem publicação do painel.
+
+## Salvamento e primeira identificação Google
+
+Rotas privadas preparadas em `backend/lib/editorial-drafts.js`: listar, abrir e
+salvar um registro por rascunho, somente após autorização de editor. Usam Redis
+existente com chaves separadas por ambiente, sem publicar texto no GitHub. A ativação
+exige `EDITORIAL_DRAFTS_ENABLED=true`; sem isso, não há fallback de memória que possa
+ser confundido com persistência. Nenhuma gravação real foi ativada nesta etapa.
+
+O script Redis compara atomicamente a revisão esperada antes de escrever e mantém
+cinco revisões anteriores. Revisão antiga recebe 409, sem sobrescrever a atual.
+Há limite de 50 rascunhos, até 128 KB de dados por registro; arquivos de foto ficam
+fora do JSON. Não há expiração automática dos rascunhos. A persistência e o script
+Lua ainda precisam ser conferidos no serviço real antes de habilitar o salvamento.
+Os testes de retorno/conflito usam armazenamento simulado e não substituem essa
+validação de integração. O histórico não possui interface de restauração nesta versão.
+
+No painel, `Salvar no painel` é distinto de guardar na página e baixar JSON.
+Rascunhos remotos aparecem em área própria; abrir exige guardar a edição local e
+adiciona o registro à lista da página. O envio aguarda confirmação de revisão do
+servidor; erros e mudanças concorrentes não apagam o texto da página. Não existe
+salvamento automático ou persistência de dados no navegador.
+
+Em 6 de novembro de 2026 o ID público Google foi cadastrado em Production na Vercel,
+como Config `EDITORIAL_GOOGLE_CLIENT_ID`. Nenhuma lista de editores, segredo GitHub
+ou flag de salvamento foi cadastrada. O novo deploy precisa incorporar essa variável.
+
+`GET /api/editorial/identidade` valida o ID token e devolve somente a própria
+identidade com papel `pending`; não cadastra nem autoriza uma conta. A tela usa esse
+retorno quando a conta ainda não pode acessar `/me`. O identificador confirmado
+permite preparar a autorização individual do professor, após a revisão dele.
+
+Validação de preparação: 132 testes Node e três testes Python aprovados, navegação
+existente conferida. Implantação de código e validação da conta real são os próximos
+passos; operações de escrita continuam fechadas enquanto não forem configuradas.
+
+Referência de operação atômica: https://upstash.com/docs/redis/sdks/ts/commands/scripts/eval

@@ -1,5 +1,5 @@
 // This only checks access. It never writes content or creates a browser session.
-export function createGoogleAccess({ endpoint, request = fetch, onState = () => {} }) {
+export function createGoogleAccess({ endpoint, identityEndpoint, request = fetch, onState = () => {} }) {
   let generation = 0;
   let pending;
   function clear() {
@@ -24,6 +24,17 @@ export function createGoogleAccess({ endpoint, request = fetch, onState = () => 
         credentials: 'omit', cache: 'no-store', redirect: 'error', signal: controller.signal });
       if (current !== generation) return;
       if (!response.ok) {
+        if(identityEndpoint && [403,503].includes(response.status)) {
+          const identity = await request(identityEndpoint,{method:'GET',headers:{Authorization:`Bearer ${credential}`},credentials:'omit',cache:'no-store',redirect:'error',signal:controller.signal});
+          if(current !== generation) return;
+          if(identity.ok){
+            const data=await identity.json();
+            if(current !== generation) return;
+            if(data.role==='pending' && typeof data.account?.id==='string' && data.account.id && typeof data.account?.email==='string') {
+              onState({status:'pending',email:data.account.email,id:data.account.id});return;
+            }
+          }
+        }
         onState({ status: ({ 401: 'invalid', 403: 'denied', 503: 'unavailable' })[response.status] || 'error' });
         return;
       }

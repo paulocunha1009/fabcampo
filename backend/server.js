@@ -26,6 +26,7 @@ import { normalizeAnswer } from './lib/assistant-answer.js';
 import { createEditorialAuth } from './lib/editorial-auth.js';
 import { createEditorialImageRouter } from './lib/editorial-images.js';
 import { CARD_PROMPT, validateCardSource, validateCardSuggestions } from './lib/editorial-cards.js';
+import { createDraftRouter } from './lib/editorial-drafts.js';
 
 dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
 
@@ -125,6 +126,7 @@ app.use(cors({
 }));
 
 app.use(createEditorialImageRouter({ auth: editorialAuth }));
+app.use(createDraftRouter({ auth: editorialAuth }));
 app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));
 
@@ -150,6 +152,14 @@ app.post('/api/editorial/cards', async (req, res, next) => {
 });
 
 // Preparação do acesso editorial: não cria sessão nem publica conteúdo.
+app.get('/api/editorial/identidade', async (req, res) => {
+  try {
+    const account = await editorialAuth.identify(req.headers.authorization);
+    return res.json({account,role:'pending'});
+  } catch(error) {
+    return res.status(error.status === 401 ? 401 : 503).json({error:'Não foi possível confirmar sua conta Google.'});
+  }
+});
 app.get('/api/editorial/me', async (req, res) => {
   try {
     const account = await editorialAuth.authenticate(req.headers.authorization);

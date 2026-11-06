@@ -55,3 +55,13 @@ test('entrada nunca considera resposta malformada ou falha de rede como autoriza
     assert.equal(last.status, 'error');
   }
 });
+
+test('identificação pendente nunca executa ação autorizada nem retém token',async()=>{
+  const states=[];let calls=0;
+  const gate=createGoogleAccess({endpoint:'https://api.example.test/me',identityEndpoint:'https://api.example.test/identidade',onState:value=>states.push(value),request:async()=>{
+    calls++;return calls===1?{ok:false,status:503}:{ok:true,json:async()=>({role:'pending',account:{id:'test-id',email:'editor@example.test'}})};
+  }});
+  assert.equal(await gate.signIn('test-token'),undefined);
+  assert.deepEqual(states.at(-1),{status:'pending',id:'test-id',email:'editor@example.test'});
+  assert.ok(!JSON.stringify(states).includes('test-token'));
+});

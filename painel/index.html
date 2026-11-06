@@ -17,6 +17,8 @@
     <div class="painel-acoes"><button type="button" id="preparar-login">Preparar entrada com Google</button><div id="botao-google"></div><button type="button" id="sair-painel" hidden>Limpar identificação</button><button type="button" disabled>Publicar no portal — em preparação</button></div>
     <p id="estado-acesso" role="status" aria-live="polite">Entrada em validação. A prévia de rascunhos não exige login e não publica conteúdo.</p>
     </details>
+    <details class="rascunhos-equipe"><summary>Rascunhos salvos no painel</summary><p class="ajuda">O salvamento da equipe depende da ativação do acesso. Enquanto isso, baixe o arquivo para preservar o texto.</p><button type="button" id="listar-rascunhos">Buscar rascunhos da equipe</button><label for="rascunho-remoto">Escolher rascunho salvo</label><select id="rascunho-remoto"><option value="">Busque os rascunhos para escolher</option></select><button type="button" id="abrir-rascunho-remoto" disabled>Abrir rascunho selecionado</button><p class="ajuda">Guarde a edição local antes de abrir outra. Os rascunhos já guardados nesta página permanecem na lista de registros.</p></details>
+    <p id="estado-salvamento" role="status" aria-live="polite">Salvamento no painel ainda em preparação. Nenhum rascunho foi enviado.</p>
     <p id="estado-painel" role="status" aria-live="polite">Carregando conteúdo existente...</p>
     <div class="painel-acoes" role="group" aria-label="Tipo de conteúdo">
       <button type="button" data-tipo="noticias" aria-pressed="true">Reportagem</button>
@@ -94,7 +96,7 @@
             <p>Confira nomes, datas, fontes, legendas e créditos. Informações não confirmadas permanecem no rascunho.</p>
             <button type="button" class="botao-secundario" id="ver-previa">Ir para a prévia</button>
           </section>
-          <div class="rodape-editor"><div class="navegacao-etapas"><button type="button" id="etapa-anterior" class="botao-secundario" hidden>Voltar</button><button type="button" id="proxima-etapa">Continuar para fotos</button></div><button type="submit" class="botao-secundario" id="guardar-rascunho">Guardar e atualizar prévia</button><button type="button" class="botao-texto" id="cancelar-edicao" hidden>Descartar esta edição</button></div>
+          <div class="rodape-editor"><div class="navegacao-etapas"><button type="button" id="etapa-anterior" class="botao-secundario" hidden>Voltar</button><button type="button" id="proxima-etapa">Continuar para fotos</button></div><button type="submit" class="botao-secundario" id="guardar-rascunho">Guardar e atualizar prévia</button><button type="button" class="botao-secundario" id="salvar-no-painel">Salvar no painel</button><button type="button" class="botao-texto" id="cancelar-edicao" hidden>Descartar esta edição</button></div>
         </form>
       </section>
       <section class="painel-cartao painel-previa" aria-labelledby="titulo-previa">
@@ -112,5 +114,6 @@
   <script type="module" src="cards.js"></script>
   <script type="module" src="galeria.js"></script>
   <script type="module" src="etapas.js"></script>
+  <script type="module" src="rascunhos.js"></script>
 </body>
 </html>

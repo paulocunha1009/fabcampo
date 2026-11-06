@@ -10,6 +10,7 @@ body { background:#f3f5f1; color:#193b2c; }
 .status-rascunho,.etiqueta-local { background:#e6eee3;color:#315a35;border:1px solid #ccdcc5;border-radius:999px;padding:6px 12px;font-size:.75rem;white-space:nowrap;font-weight:700; }
 .painel-aviso { padding:13px 17px;background:#fff7df;border:1px solid #e7dcb5;border-radius:10px;color:#695221;font-size:.85rem;line-height:1.6; }
 .acesso-equipe { font-size:.85rem;margin:12px 0;border-bottom:1px solid #dce3da;padding:0 0 12px; }.acesso-equipe summary { color:#47614e; }
+.rascunhos-equipe { padding:8px 14px;border:1px solid #d4dfcd;border-radius:10px;font-size:.85rem;margin:12px 0;background:#f9fbf7; }.rascunhos-equipe button { margin:10px 6px 0 0; }#estado-salvamento { font-size:.8rem;color:#52664d;line-height:1.6; }
 summary { cursor:pointer;font-weight:700;padding:8px 0; }summary:focus-visible { outline:3px solid #b88620;outline-offset:3px; }
 .painel-acoes { display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:16px 0; }
 button { padding:11px 16px;background:#246940;color:#fff;border:1px solid #246940;border-radius:8px;cursor:pointer;font:inherit;font-size:.88rem;font-weight:650;line-height:1.35;transition:background .15s; }
