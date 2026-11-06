@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Prévia do painel editorial | Campo Digital</title>
+  <link rel="stylesheet" href="../css/portal.css?v=20261105-3">
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+  <a class="link-pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="painel-topo"><div class="container"><img src="../img/logo/campo-digital-logo-header.png" alt="Campo Digital"><a href="../index.html">Voltar ao portal</a></div></header>
+  <main class="container" id="conteudo">
+    <div class="painel-apresentacao"><div><p class="selo">Espaço da equipe</p><h1>Painel editorial</h1><p>Uma boa reportagem começa com um bom registro.</p></div><span class="status-rascunho">Modo rascunho</span></div>
+    <div class="painel-aviso"><strong>Seu trabalho fica nesta página.</strong> Baixe o rascunho antes de sair ou recarregar. Fotos ainda não enviadas precisam ser selecionadas novamente. A publicação está em preparação.</div>
+    <details class="acesso-equipe"><summary>Acesso da equipe e publicação</summary>
+    <div class="painel-acoes"><button type="button" id="preparar-login">Preparar entrada com Google</button><div id="botao-google"></div><button type="button" id="sair-painel" hidden>Limpar identificação</button><button type="button" disabled>Publicar no portal — em preparação</button></div>
+    <p id="estado-acesso" role="status" aria-live="polite">Entrada em validação. A prévia de rascunhos não exige login e não publica conteúdo.</p>
+    </details>
+    <details class="rascunhos-equipe"><summary>Rascunhos salvos no painel</summary><p class="ajuda">O salvamento da equipe depende da ativação do acesso. Enquanto isso, baixe o arquivo para preservar o texto.</p><button type="button" id="listar-rascunhos">Buscar rascunhos da equipe</button><label for="rascunho-remoto">Escolher rascunho salvo</label><select id="rascunho-remoto"><option value="">Busque os rascunhos para escolher</option></select><button type="button" id="abrir-rascunho-remoto" disabled>Abrir rascunho selecionado</button><p class="ajuda">Guarde a edição local antes de abrir outra. Os rascunhos já guardados nesta página permanecem na lista de registros.</p></details>
+    <p id="estado-salvamento" role="status" aria-live="polite">Salvamento no painel ainda em preparação. Nenhum rascunho foi enviado.</p>
+    <p id="estado-painel" role="status" aria-live="polite">Carregando conteúdo existente...</p>
+    <div class="painel-acoes" role="group" aria-label="Tipo de conteúdo">
+      <button type="button" data-tipo="noticias" aria-pressed="true">Reportagem</button>
+      <button type="button" data-tipo="eventos" aria-pressed="false">Eventos da escola</button>
+    </div>
+    <div class="painel-grade">
+      <section class="painel-cartao" aria-labelledby="titulo-edicao">
+        <div class="cabecalho-editor"><div><p class="selo">Sua publicação</p><h2 id="titulo-edicao">Preparar reportagem</h2></div></div>
+        <details class="registros-existentes"><summary>Continuar um registro existente</summary><label for="registro-editorial">Escolher registro</label><select id="registro-editorial"><option value="">Novo registro</option></select><p class="ajuda">Os registros anteriores precisam de revisão de textos e datas.</p></details>
+        <nav class="etapas-editor" aria-label="Etapas de preparação"><button type="button" data-abrir-etapa="conteudo" aria-pressed="true"><span>1</span> Conteúdo</button><button type="button" data-abrir-etapa="midias" aria-pressed="false"><span>2</span> Fotos e vídeo</button><button type="button" data-abrir-etapa="revisao" aria-pressed="false"><span>3</span> Revisão</button></nav>
+        <form id="editorial-form" novalidate>
+          <section data-etapa="conteudo" aria-labelledby="titulo-conteudo"><h3 id="titulo-conteudo" tabindex="-1">Conte a história</h3><p class="ajuda">Comece pelo que aconteceu. Os detalhes podem ser completados depois.</p>
+          <div data-campos="noticias">
+            <label for="modelo">Modelo da reportagem</label><select id="modelo"><option value="destaques">Reportagem com destaques — referência: Educação</option><option value="dados">Reportagem com dados — referência: Clima</option></select><small id="erro-modelo"></small>
+            <label for="titulo">Título</label><input id="titulo" maxlength="160"><small id="erro-titulo"></small>
+            <label for="resumo">Resumo</label><textarea id="resumo" rows="4" maxlength="1200"></textarea><small id="erro-resumo"></small>
+            <p>Apresente o assunto em até duas frases.</p>
+            <label for="texto">Texto completo da notícia</label><textarea id="texto" rows="8" maxlength="12000" aria-describedby="ajuda-texto"></textarea><small id="erro-texto"></small>
+            <p id="ajuda-texto">Use dois a quatro parágrafos: o que aconteceu, quem participou e por que é relevante. Registre somente informações conferidas.</p>
+            <details class="assistencia-ia"><summary>Preparar resumo e cards com IA</summary>
+            <p class="ajuda">Escreva a reportagem primeiro. O Gemini sugere trechos para a equipe revisar.</p>
+            <button type="button" id="sugerir-cards">Preparar sugestões com IA</button>
+            <p id="estado-cards" role="status">A IA usará o texto da reportagem. As sugestões precisam de revisão da equipe.</p>
+            <section id="sugestoes-ia" hidden aria-label="Sugestões da IA para revisão"><div id="sugestoes-conteudo"></div><button type="button" id="aplicar-sugestoes">Usar sugestões no rascunho</button><button type="button" id="descartar-sugestoes">Descartar sugestões</button></section>
+            <input id="cards" type="hidden" value="[]"><small id="erro-cards"></small>
+            <div id="editar-cards"></div>
+            </details>
+            <label for="categoria">Categoria</label><select id="categoria"><option>Portal</option><option>Tecnologia</option><option>Agroecologia</option><option>Educação</option><option>Cultura</option></select><small id="erro-categoria"></small>
+            <label for="fonte">Fonte ou autoria</label><input id="fonte" maxlength="160"><small id="erro-fonte"></small>
+            <label for="link">Link de referência <span class="opcional">opcional</span></label><input id="link" inputmode="url" maxlength="2000" placeholder="Endereço da fonte ou de uma página do portal"><small id="erro-link"></small>
+          </div>
+          <div data-campos="eventos" hidden>
+            <label for="nome">Nome do evento</label><input id="nome" maxlength="160"><small id="erro-nome"></small>
+            <label for="descricao">Descrição</label><textarea id="descricao" rows="4" maxlength="1200"></textarea><small id="erro-descricao"></small>
+            <p>Explique o objetivo da atividade.</p>
+            <label for="horario">Horário confirmado</label><input id="horario" type="time"><small id="erro-horario"></small>
+            <label for="publico">Público da atividade</label><input id="publico" maxlength="400"><small id="erro-publico"></small>
+            <label for="participacao">Como participar</label><textarea id="participacao" rows="3" maxlength="1200"></textarea><small id="erro-participacao"></small>
+            <label for="responsavel">Equipe responsável</label><input id="responsavel" maxlength="240"><small id="erro-responsavel"></small>
+            <label for="contato">Contato institucional</label><input id="contato" maxlength="400"><small id="erro-contato"></small>
+          </div>
+          <label for="local">Local</label><input id="local" maxlength="240"><small id="erro-local"></small>
+          <label for="data">Data</label><input id="data" type="date" aria-describedby="ajuda-data"><small id="erro-data"></small>
+          <p id="ajuda-data">Deixe em branco o que ainda não foi confirmado. Evento só pode seguir para publicação com data e horário confirmados.</p>
+          </section>
+          <section data-etapa="midias" hidden aria-labelledby="titulo-midias"><h3 id="titulo-midias" tabindex="-1">Dê imagem à história</h3><p class="ajuda">Adicione as fotos, escolha a capa e organize a sequência.</p>
+          <section id="midias-reportagem">
+            <h3>Fotos da reportagem</h3><p>De 1 a 10 fotos, incluindo uma capa. As fotos internas preservam seu formato. Foto, legenda, crédito e descrição acessível precisam ser conferidos antes da revisão.</p>
+            <div class="seletor-fotos"><label for="arquivos-galeria">Adicionar fotos à reportagem</label><p>JPEG, PNG ou WebP · até 12 MB por foto · máximo de 10 fotos</p><input id="arquivos-galeria" type="file" multiple accept="image/jpeg,image/png,image/webp"></div>
+            <p id="estado-galeria" role="status">0 de 10 fotos. Fotos selecionadas ficam nesta página até serem enviadas.</p>
+            <div id="lista-galeria"></div>
+            <button id="enviar-galeria" type="button" disabled>Enviar fotos ao GitHub como rascunho</button>
+            <p>As imagens enviadas ao repositório público poderão ser acessadas antes da reportagem ser publicada.</p>
+            <input id="fotos" type="hidden" value="[]"><small id="erro-fotos"></small>
+            <label for="video">Vídeo opcional — link do YouTube</label><input id="video" type="url" maxlength="2000" placeholder="https://www.youtube.com/watch?v=..."><small id="erro-video"></small>
+            <p>Um vídeo por reportagem. O vídeo não começa a tocar automaticamente.</p>
+          </section>
+          <fieldset id="midia-legada" hidden><legend>Imagem opcional do evento</legend>
+            <p>Prepare a capa em WebP, 1200 × 675 pixels. Confira o recorte antes de enviar. A imagem enviada ao repositório público poderá ser acessada antes da reportagem ser publicada.</p>
+            <label for="arquivo-imagem">Selecionar foto (JPEG, PNG ou WebP; até 12 MB)</label><input id="arquivo-imagem" type="file" accept="image/jpeg,image/png,image/webp">
+            <label for="posicao-imagem">Posição do recorte</label><input id="posicao-imagem" type="range" min="0" max="100" value="50">
+            <p>Mova para ajustar o recorte no sentido da parte que sobra da imagem.</p>
+            <canvas id="capa-preparada" width="1200" height="675" hidden role="img" aria-label="Prévia do recorte da capa"></canvas>
+            <p id="estado-imagem" role="status">Nenhuma foto selecionada. O envio ao GitHub depende da ativação do acesso da equipe.</p>
+            <button id="baixar-imagem" type="button" disabled>Baixar capa preparada</button>
+            <button id="enviar-imagem" type="button" disabled>Enviar imagem ao GitHub como rascunho</button>
+            <label for="imagem">Endereço da imagem</label><input id="imagem" maxlength="2000" inputmode="url"><small id="erro-imagem"></small>
+            <label for="legenda">Legenda da imagem</label><input id="legenda" maxlength="400"><small id="erro-legenda"></small>
+            <label for="credito">Crédito da imagem</label><input id="credito" maxlength="240"><small id="erro-credito"></small>
+            <label for="textoAlternativo">Descrição da imagem para acessibilidade</label><textarea id="textoAlternativo" rows="2" maxlength="400"></textarea><small id="erro-textoAlternativo"></small>
+          </fieldset>
+          </section>
+          <section data-etapa="revisao" hidden aria-labelledby="titulo-revisao"><h3 id="titulo-revisao" tabindex="-1">Confira antes de seguir</h3><p class="ajuda">Guardar o rascunho atualiza a prévia. A publicação depende da revisão do professor ou da equipe autorizada.</p>
+            <dl class="resumo-revisao"><div><dt>Conteúdo</dt><dd id="revisao-titulo">Título ainda não informado</dd></div><div><dt>Fotos</dt><dd id="revisao-fotos">Nenhuma foto adicionada</dd></div><div><dt>Vídeo</dt><dd id="revisao-video">Sem vídeo</dd></div></dl>
+            <p>Confira nomes, datas, fontes, legendas e créditos. Informações não confirmadas permanecem no rascunho.</p>
+            <button type="button" class="botao-secundario" id="ver-previa">Ir para a prévia</button>
+          </section>
+          <div class="rodape-editor"><div class="navegacao-etapas"><button type="button" id="etapa-anterior" class="botao-secundario" hidden>Voltar</button><button type="button" id="proxima-etapa">Continuar para fotos</button></div><button type="submit" class="botao-secundario" id="guardar-rascunho">Guardar e atualizar prévia</button><button type="button" class="botao-secundario" id="salvar-no-painel">Salvar no painel</button><button type="button" class="botao-texto" id="cancelar-edicao" hidden>Descartar esta edição</button></div>
+        </form>
+      </section>
+      <section class="painel-cartao painel-previa" aria-labelledby="titulo-previa">
+        <div class="cabecalho-previa"><div><p class="selo">Como vai aparecer</p><h2 id="titulo-previa" tabindex="-1">Prévia da reportagem</h2></div><span class="etiqueta-local">Rascunho</span></div>
+        <p class="ajuda">Atualizada ao guardar. Nada é publicado nesta etapa.</p>
+        <article id="previa-editorial"><div class="previa-vazia"><span aria-hidden="true">✎</span><h3>Sua história aparece aqui</h3><p>Preencha título, resumo e autoria. Depois, guarde para conferir a prévia.</p></div></article>
+        <p id="pendencias-editoriais" role="status"></p>
+        <button id="baixar-rascunho" type="button" disabled>Baixar rascunho</button><p class="ajuda ajuda-download">Arquivo de edição (.json). As fotos locais não estão incluídas.</p>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="painel.js"></script>
+  <script type="module" src="login.js"></script>
+  <script type="module" src="imagem.js"></script>
+  <script type="module" src="cards.js"></script>
+  <script type="module" src="galeria.js"></script>
+  <script type="module" src="etapas.js"></script>
+  <script type="module" src="rascunhos.js"></script>
+</body>
+</html>
