@@ -1,3 +1,4 @@
+import { validarFotos, validarVideo } from './midias-core.js';
 export const CATEGORIAS = {
   Portal:{ icone:'📌', classe:'badge--portal' },
   Tecnologia:{ icone:'🤖', classe:'badge--tech' },
@@ -59,18 +60,29 @@ export function validarRegistro(tipo, value){
   const cards = value.cards || [];
   if(!Array.isArray(cards) || cards.length > 3) erro('cards', 'Use até três cards.');
   const validados = cards.map(card => ({ titulo:texto('cards',card?.titulo,90), texto:texto('cards',card?.texto,500) }));
+  let fotos, video;
+  try { fotos = validarFotos(value.fotos === undefined && comum.imagem ? [{ id:'capa-anterior', ...comum, capa:true, capaImagem:comum.imagem }] : value.fotos || []); }
+  catch(error) { erro('fotos',error.message); }
+  try { video = validarVideo(value.video || ''); } catch(error) { erro('video',error.message); }
+  const capa = fotos.find(foto => foto.capa);
+  if(capa) { comum.imagem = capa.capaImagem || capa.imagem; comum.legenda = capa.legenda; comum.credito = capa.credito; comum.textoAlternativo = capa.textoAlternativo; }
   return { titulo, resumo, data:data(value.data, false), categoria:value.categoria,
-    fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000), modelo, cards:validados };
+    fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000), modelo, cards:validados, fotos, video };
 }
 export function pendenciasPublicacao(tipo, value){
   const registro = validarRegistro(tipo, value);
   const obrigatorios = tipo === 'noticias' ? ['local','texto']
     : ['data','horario','local','publico','participacao','responsavel','contato'];
   if(registro.imagem) obrigatorios.push('legenda','credito','textoAlternativo');
-  return obrigatorios.filter(campo => !registro[campo]);
+  const faltantes = obrigatorios.filter(campo => !registro[campo]);
+  if(tipo === 'noticias') {
+    if(!registro.fotos.length || !registro.fotos.some(foto=>foto.capa) ||
+      registro.fotos.some(foto=>!foto.imagem || (foto.capa && !foto.capaImagem) || !foto.legenda || !foto.credito || !foto.textoAlternativo)) faltantes.push('fotos');
+  }
+  return faltantes;
 }
 export function montarRascunho(value){
   if(!value || !Array.isArray(value.noticias) || !Array.isArray(value.eventos)) erro('', 'As listas de notícias e eventos são obrigatórias.');
-  return { version:2, status:'rascunho', noticias:value.noticias.map(n => validarRegistro('noticias', n)),
+  return { version:3, status:'rascunho', noticias:value.noticias.map(n => validarRegistro('noticias', n)),
     eventos:value.eventos.map(e => validarRegistro('eventos', e)) };
 }

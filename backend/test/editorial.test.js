@@ -11,7 +11,7 @@ test('rascunho usa conteúdo existente, preserva a origem e não inclui outras s
   const antes = JSON.stringify(atual);
   const result = montarRascunho(atual);
   assert.equal(result.status, 'rascunho');
-  assert.equal(result.version, 2);
+  assert.equal(result.version, 3);
   assert.equal(result.noticias.length, atual.noticias.length);
   assert.equal(result.eventos.length, atual.eventos.length);
   for(const [campo, valor] of Object.entries(noticia)) assert.deepEqual(result.noticias[0][campo], valor);
@@ -35,12 +35,12 @@ test('modelo preserva texto completo e metadados no arquivo, sem preencher infor
   assert.equal(result.noticias[0].texto, texto);
   assert.equal(result.noticias[0].local, 'Local informado pela equipe');
   assert.equal(result.noticias[0].imagem, '');
-  assert.deepEqual(pendenciasPublicacao('noticias', result.noticias[0]), []);
+  assert.deepEqual(pendenciasPublicacao('noticias', result.noticias[0]), ['fotos']);
 });
 
 test('imagem opcional exige crédito, legenda e descrição para seguir à revisão', () => {
   const registro = { ...noticia, texto:'Texto registrado.', local:'Local registrado.', imagem:'img/foto.jpg' };
-  assert.deepEqual(pendenciasPublicacao('noticias', registro), ['legenda','credito','textoAlternativo']);
+  assert.deepEqual(pendenciasPublicacao('noticias', registro), ['legenda','credito','textoAlternativo','fotos']);
   for(const imagem of ['javascript:alert(1)', '//outro.test/foto.jpg']) {
     assert.throws(() => validarRegistro('noticias', { ...registro, imagem }), e => e.campo === 'imagem');
   }

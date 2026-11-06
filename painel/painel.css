@@ -16,6 +16,7 @@ input,select,textarea { display:block; width:100%; margin-top:6px; padding:10px;
 textarea { resize:vertical; }small { display:block; color:#9b1c1c; }
 #capa-preparada { display:block; width:100%; height:auto; margin:12px 0; border:1px solid #87998e; }fieldset { margin-top:20px; padding:12px; border:1px solid #b4c2b8; }legend { font-weight:700; }
 .cards-reportagem { display:grid; gap:12px; margin:20px 0; }.cards-reportagem section { padding:16px; border:1px solid #c4d9cb; border-top:4px solid #246b3a; border-radius:12px; background:#f7faf5; }.cards-reportagem--dados section { border-top-color:#c58a16; background:#fffbef; }#sugestoes-ia { padding:12px; margin-top:16px; background:#f1f7f3; border:1px solid #b4c2b8; }
+.foto-editorial { margin:16px 0; padding:12px; border:1px solid #b4c2b8; border-radius:8px; }.foto-editorial img,.foto-previa,.recorte-galeria { display:block;max-width:100%;height:auto; }.foto-editorial button { margin:8px 4px 0 0!important; }.video-reportagem { width:100%;aspect-ratio:16/9;border:0; }#midias-reportagem h3 { margin-top:24px; }
 [aria-invalid="true"] { border:2px solid #9b1c1c; }
 #editorial-form button,#baixar-rascunho { margin-top:20px; }
 #estado-painel { min-height:1.6em; }#previa-editorial { margin-top:20px; padding:20px; border:1px solid var(--cor-borda); border-radius:8px; overflow-wrap:anywhere; }

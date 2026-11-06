@@ -5,23 +5,24 @@ import { createHash } from 'node:crypto';
 const repo = 'paulocunha1009/fabcampo';
 const failure = (status, message) => Object.assign(new Error(message), { status });
 
-export async function normalizeEditorialImage(bytes) {
+export async function normalizeEditorialImage(bytes, usage = 'capa') {
   if(!Buffer.isBuffer(bytes) || !bytes.length || bytes.length > 1024 * 1024)
     throw failure(400, 'Envie uma imagem WebP de até 1 MB.');
   try {
     const image = sharp(bytes, { limitInputPixels: 40000000, animated: false });
     const meta = await image.metadata();
-    if(meta.format !== 'webp' || meta.width !== 1200 || meta.height !== 675 || (meta.pages || 1) !== 1)
+    if(!['capa','galeria'].includes(usage) || meta.format !== 'webp' || (meta.pages || 1) !== 1 ||
+      (usage === 'capa' ? meta.width !== 1200 || meta.height !== 675 : !meta.width || !meta.height || meta.width > 1600 || meta.height > 1600))
       throw new Error();
     // Re-encode on the server: no EXIF, GPS or original file metadata is kept.
     return await image.webp({ quality: 82 }).toBuffer();
-  } catch { throw failure(400, 'Prepare uma imagem WebP de 1200 × 675 pixels no painel.'); }
+  } catch { throw failure(400, 'Prepare a foto no painel: capa 1200 × 675; galeria até 1600 pixels por lado, em WebP.'); }
 }
 
 export function createImageStore({ token = process.env.EDITORIAL_GITHUB_TOKEN || '',
   branch = process.env.EDITORIAL_UPLOAD_BRANCH || '', request = fetch } = {}) {
   const configured = Boolean(token && /^editorial-[a-z0-9-]+$/.test(branch));
-  async function save(bytes) {
+  async function save(bytes, dimensions = {width:1200,height:675}) {
     if(!configured) throw failure(503, 'O envio de imagens ainda não está configurado.');
     const hash = createHash('sha256').update(bytes).digest('hex');
     const path = `img/editorial/${hash}.webp`;
@@ -45,7 +46,7 @@ export function createImageStore({ token = process.env.EDITORIAL_GITHUB_TOKEN ||
         'O GitHub não confirmou o envio. Confira antes de tentar novamente.');
     }
     return { path, previewUrl:`https://raw.githubusercontent.com/${repo}/${branch}/${path}`,
-      status:'rascunho', width:1200, height:675, type:'image/webp', bytes:bytes.length };
+      status:'rascunho', width:dimensions.width, height:dimensions.height, type:'image/webp', bytes:bytes.length };
   }
   return { configured, save };
 }
@@ -61,7 +62,11 @@ export function createEditorialImageRouter({ auth, store = createImageStore() })
     if(!req.is('image/webp')) return res.status(415).json({ error:'Envie uma imagem WebP preparada pelo painel.' });
     next();
   }, express.raw({ type:'image/webp', limit:'1mb' }), async (req, res) => {
-    try { res.status(201).json(await store.save(await normalizeEditorialImage(req.body))); }
+    try {
+      const bytes = await normalizeEditorialImage(req.body, req.query.uso || 'capa');
+      const metadata = await sharp(bytes).metadata();
+      res.status(201).json(await store.save(bytes,{width:metadata.width,height:metadata.height}));
+    }
     catch(error) { res.status([400,409,502,503].includes(error.status) ? error.status : 502)
       .json({ error:error.status ? error.message : 'Não foi possível confirmar o envio. Tente novamente.' }); }
   });

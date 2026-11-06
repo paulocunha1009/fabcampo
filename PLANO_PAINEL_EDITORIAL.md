@@ -267,3 +267,43 @@ arquivo baixado conferido como WebP 1200 × 675 sem EXIF. Auditoria npm sem aler
 após adotar sharp 0.35.5. O código continua local e a publicação permanece bloqueada.
 
 Referência de upload: https://docs.github.com/en/rest/repos/contents
+
+## Galeria e vídeo aprovados pelo professor
+
+A reportagem passa a prever **1 a 10 fotos no total, incluindo uma única capa,
+e no máximo um vídeo opcional por link do YouTube**. Esta seção amplia o limite
+anterior de uma única foto. Eventos mantêm seu formulário de imagem opcional.
+
+A prévia agora permite seleção de várias fotos, escolha de capa, ajuste de posição
+do recorte, reordenação, substituição e remoção do rascunho. Cada foto tem legenda,
+crédito e descrição acessível. A capa continua em 1200 × 675 WebP; a galeria mantém
+a proporção, limitada a 1600 pixels por lado, sem ampliar imagens menores. Cada
+arquivo preparado tem até 1 MB. O backend valida o uso (capa/galeria), as dimensões,
+o formato real e remove metadados antes de gravar. Original da galeria e recorte da
+capa podem ser dois arquivos técnicos, mas contam como uma foto na reportagem.
+
+O fluxo de envio solicita uma verificação Google para o lote e envia os arquivos
+sequencialmente. Confirmações parciais são preservadas se ocorrer falha. Excluir uma
+foto do rascunho não exclui arquivo do GitHub. O upload real continua sem ativação:
+nenhuma imagem foi enviada ao repositório nesta etapa.
+
+O arquivo de rascunho usa `version: 3`, com `fotos` (ordem, capa, endereços e textos)
+e `video`. O mínimo de uma foto é uma pendência de revisão, sem impedir guardar um
+rascunho incompleto. Mais de dez fotos, duas capas, IDs repetidos e endereços
+executáveis são recusados. Fotos sem envio, sem recorte da capa ou sem metadados
+necessários aparecem como pendência. Fotos locais e seus bytes não são incorporados
+ao download JSON: permanecem apenas nesta página até o envio. Recarregar perde os
+arquivos ainda não enviados, mesmo com um JSON salvo. Salvar e retomar no servidor
+continua pendente, conforme as etapas anteriores.
+
+Vídeo: aceita um link HTTPS de vídeo YouTube, normaliza o endereço e descarta opções
+de autoplay do link recebido. A prévia só carrega o player após clique, usando
+youtube-nocookie.com e autoplay=0. Não recebe upload de arquivo de vídeo nem valida
+disponibilidade/permissão de incorporação do vídeo; isso deve ser conferido na revisão.
+
+Validação: 124 testes Node aprovados; duas fotos existentes do portal preparadas e
+conferidas na interface, com reordenação, troca de capa e prévia do recorte e da foto
+interna. Permanecem pendentes ativação do acesso, credencial GitHub, persistência de
+rascunhos e geração/publicação da página final.
+
+Referência do player: https://support.google.com/youtube/answer/171780

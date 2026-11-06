@@ -1,7 +1,8 @@
 import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
+import { videoEmbed } from './midias-core.js';
 const $ = id => document.getElementById(id);
-const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards'];
-const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade' };
+const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
+const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade', fotos:'1 a 10 fotos enviadas, com uma capa, legendas, créditos e descrições acessíveis' };
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
 let pronto = false;
@@ -25,6 +26,17 @@ function previa(registro){
   const detalhes = document.createElement('p'); detalhes.textContent = registro.data ? 'Data: '+registro.data : 'Data não informada';
   const texto = document.createElement('p'); texto.textContent = registro.resumo || registro.descricao;
   area.append(titulo, detalhes, texto);
+  if(tipo === 'noticias') {
+    document.dispatchEvent(new CustomEvent('editorial-preview-media',{detail:{area,registro}}));
+    if(registro.video){
+      try {
+        const src = videoEmbed(registro.video);
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = 'Carregar vídeo da reportagem';
+        button.addEventListener('click',()=>{const iframe=document.createElement('iframe'); iframe.src=src; iframe.title='Vídeo da reportagem'; iframe.className='video-reportagem'; iframe.allowFullscreen=true; iframe.referrerPolicy='strict-origin-when-cross-origin'; button.replaceWith(iframe);});
+        area.append(button);
+      } catch {}
+    }
+  }
   if(Array.isArray(registro.cards) && registro.cards.length){
     const grid = document.createElement('div'); grid.className = 'cards-reportagem cards-reportagem--'+(registro.modelo === 'dados' ? 'dados':'destaques');
     registro.cards.forEach(card => { const box = document.createElement('section'); const h = document.createElement('h4'); h.textContent = card.titulo;
@@ -67,7 +79,8 @@ function previa(registro){
 function escolher(){
   limparErros();
   const registro = conteudo[tipo][$('registro-editorial').value];
-  campos.forEach(id => { $(id).value = id === 'cards' ? JSON.stringify(registro?.cards || []) : (registro?.[id] || ({categoria:'Portal',modelo:'destaques'}[id] || '')); });
+  campos.forEach(id => { $(id).value = ['cards','fotos'].includes(id) ? JSON.stringify(registro?.[id] || []) : (registro?.[id] || ({categoria:'Portal',modelo:'destaques'}[id] || '')); });
+  $('midias-reportagem').hidden = tipo !== 'noticias'; $('midia-legada').hidden = tipo === 'noticias';
   document.dispatchEvent(new Event('editorial-record-loaded'));
   if(registro) previa(registro);
   else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; $('pendencias-editoriais').textContent = ''; }
@@ -95,6 +108,7 @@ $('editorial-form').addEventListener('submit', event => {
   try {
     const valores = Object.fromEntries(campos.map(id => [id, $(id).value]));
     valores.cards = JSON.parse(valores.cards || '[]');
+    valores.fotos = JSON.parse(valores.fotos || '[]');
     const registro = validarRegistro(tipo, valores);
     const posicao = $('registro-editorial').value;
     const indice = posicao === '' ? conteudo[tipo].length : Number(posicao);
@@ -105,7 +119,7 @@ $('editorial-form').addEventListener('submit', event => {
     $('titulo-previa').focus();
   } catch(error){
     informar('Confira os campos indicados.');
-    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; $(error.campo).focus(); }
+    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; (error.campo === 'fotos' ? $('arquivos-galeria') : error.campo === 'cards' ? $('sugerir-cards') : $(error.campo)).focus(); }
   }
 });
 $('baixar-rascunho').addEventListener('click', () => {

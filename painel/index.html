@@ -57,7 +57,18 @@
           <label for="local">Local</label><input id="local" maxlength="240"><small id="erro-local"></small>
           <label for="data">Data</label><input id="data" type="date" aria-describedby="ajuda-data"><small id="erro-data"></small>
           <p id="ajuda-data">Deixe em branco o que ainda não foi confirmado. Evento só pode seguir para publicação com data e horário confirmados.</p>
-          <fieldset><legend>Imagem opcional</legend>
+          <section id="midias-reportagem">
+            <h3>Fotos da reportagem</h3><p>De 1 a 10 fotos, incluindo uma capa. As fotos internas preservam seu formato. Foto, legenda, crédito e descrição acessível precisam ser conferidos antes da revisão.</p>
+            <label for="arquivos-galeria">Adicionar fotos (JPEG, PNG ou WebP; até 12 MB por foto)</label><input id="arquivos-galeria" type="file" multiple accept="image/jpeg,image/png,image/webp">
+            <p id="estado-galeria" role="status">0 de 10 fotos. Fotos selecionadas ficam nesta página até serem enviadas.</p>
+            <div id="lista-galeria"></div>
+            <button id="enviar-galeria" type="button" disabled>Enviar fotos ao GitHub como rascunho</button>
+            <p>As imagens enviadas ao repositório público poderão ser acessadas antes da reportagem ser publicada.</p>
+            <input id="fotos" type="hidden" value="[]"><small id="erro-fotos"></small>
+            <label for="video">Vídeo opcional — link do YouTube</label><input id="video" type="url" maxlength="2000" placeholder="https://www.youtube.com/watch?v=..."><small id="erro-video"></small>
+            <p>Um vídeo por reportagem. O vídeo não começa a tocar automaticamente.</p>
+          </section>
+          <fieldset id="midia-legada" hidden><legend>Imagem opcional do evento</legend>
             <p>Prepare a capa em WebP, 1200 × 675 pixels. Confira o recorte antes de enviar. A imagem enviada ao repositório público poderá ser acessada antes da reportagem ser publicada.</p>
             <label for="arquivo-imagem">Selecionar foto (JPEG, PNG ou WebP; até 12 MB)</label><input id="arquivo-imagem" type="file" accept="image/jpeg,image/png,image/webp">
             <label for="posicao-imagem">Posição do recorte</label><input id="posicao-imagem" type="range" min="0" max="100" value="50">
@@ -88,5 +99,6 @@
   <script type="module" src="login.js"></script>
   <script type="module" src="imagem.js"></script>
   <script type="module" src="cards.js"></script>
+  <script type="module" src="galeria.js"></script>
 </body>
 </html>
