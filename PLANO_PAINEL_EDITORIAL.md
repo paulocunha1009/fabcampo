@@ -369,3 +369,34 @@ existente conferida. Implantação de código e validação da conta real são o
 passos; operações de escrita continuam fechadas enquanto não forem configuradas.
 
 Referência de operação atômica: https://upstash.com/docs/redis/sdks/ts/commands/scripts/eval
+
+## Implantação e conta confirmada — 6 de novembro de 2026
+
+- API implantada a partir de `defc64c27fc38b9357cba96355668313473b1772`, deployment
+  Vercel `57vcmQerTkWq9NmfC3m7VjMnzGy7`, promovido ao domínio oficial após conferir
+  a saúde da versão protegida. CI GitHub `42277227633` concluído com sucesso.
+- Frontend: somente os 13 arquivos de `painel/` foram adicionados ao master,
+  commit `db1cf2b16f782e9dce4515207884ada3a6d10e7d`. GitHub Pages `42277662367`
+  concluído com sucesso; todos os 13 arquivos publicados conferidos contra a versão
+  local, normalizando apenas finais de linha. As demais páginas não foram alteradas.
+- Referência de retorno do frontend preservada em
+  `codex/backup-antes-editorial-20261106` (master anterior `eb3de2a`).
+- Endereço disponível: https://fabcampo.com.br/painel/index.html . Sem inclusão na
+  navegação principal ou no sitemap; esse detalhe não constitui proteção de acesso.
+  Campos e prévia local são acessíveis; operações no servidor continuam protegidas.
+- API oficial conferida: health 200, IA configurada, Upstash e limites 30/IP/min,
+  15 globais/min e 200/dia; identidade sem token 401; `/me` e rascunhos 503;
+  diagnóstico 404.
+- A conta indicada pelo professor foi confirmada pelo fluxo real Google no painel,
+  com papel pendente. O identificador estável foi usado apenas para preparar a
+  configuração no console; não foi registrado em arquivos do repositório.
+- Preparados, mas **não salvos**, no formulário de variáveis Production da Vercel:
+  `EDITORIAL_GOOGLE_SUBJECTS` somente com a identidade confirmada do professor e
+  `EDITORIAL_DRAFTS_ENABLED=true`. A aplicação depende de confirmação do professor
+  por conceder acesso de editor. Depois será necessário novo deploy e teste real de
+  persistência/conflito. A flag de salvamento segue desativada no ambiente publicado.
+- Nenhuma credencial GitHub de escrita foi criada; upload, IA editorial e publicação
+  de matérias não foram usados nessa conferência. Publicar continua indisponível.
+
+O estado desta seção substitui as anotações anteriores que diziam que todo o painel
+permanecia local. Persistência e autorização continuam pendentes conforme descrito.
