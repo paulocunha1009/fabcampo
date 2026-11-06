@@ -162,3 +162,26 @@ no backend e vincular o `sub` confirmado à lista aprovada, configurar o ambient
 validar acesso permitido/negado. Depois conectar armazenamento e publicação com
 histórico recuperável. O painel e o backend alterados permanecem locais nesta etapa;
 não há login editorial ativo no portal público.
+
+## Conexão do botão Google preparada
+
+`painel/login.js` carrega o SDK oficial somente após o clique do usuário e somente
+nas duas origens HTTPS cadastradas. Usa seleção explícita de conta, sem One Tap ou
+entrada automática. A prévia em localhost apresenta a limitação sem tentar o login.
+
+`painel/google-access.js` envia o ID token em cabeçalho Bearer para a rota de
+verificação do backend, sem cookies, redirecionamentos ou cache. Não retém token em
+localStorage, sessionStorage ou memória de sessão após a requisição. A identificação
+exibida pode ser limpa pelo usuário; sair da página cancela verificações e ignora
+respostas atrasadas. Isso ainda não cria uma sessão editorial para gravações.
+
+Respostas 401, 403, 503 e falhas de rede têm mensagens distintas. Uma resposta válida
+mostra que a conta foi conferida, mas não habilita o botão de publicação. Nenhum
+rascunho é apagado em falha do login. A origem de produção e o fluxo real com a conta
+do professor ainda precisam ser conferidos após implantação/configuração do backend.
+
+Validação desta etapa: 107 testes Node aprovados, incluindo autorização, assinatura
+Google, erros de acesso e cancelamento; prévia local conferida no navegador. Os
+testes de interface não substituem a validação da entrada real do professor.
+
+Referência do botão: https://developers.google.com/identity/gsi/web/reference/js-reference

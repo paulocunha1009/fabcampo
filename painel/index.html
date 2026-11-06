@@ -15,7 +15,8 @@
     <p>Notícias da comunidade e agenda da escola.</p>
     <div class="painel-aviso"><strong>Prévia em desenvolvimento.</strong> As alterações ficam somente nesta página. Baixe o rascunho antes de sair. A publicação direta e a entrada da equipe ainda serão conectadas.</div>
     <p class="painel-origem">Os textos e as datas carregados vêm do arquivo atual do portal e precisam de revisão da equipe antes de qualquer publicação.</p>
-    <div class="painel-acoes"><button type="button" disabled>Entrar no painel — em preparação</button><button type="button" disabled>Publicar no portal — em preparação</button></div>
+    <div class="painel-acoes"><button type="button" id="preparar-login">Preparar entrada com Google</button><div id="botao-google"></div><button type="button" id="sair-painel" hidden>Limpar identificação</button><button type="button" disabled>Publicar no portal — em preparação</button></div>
+    <p id="estado-acesso" role="status" aria-live="polite">Entrada em validação. A prévia de rascunhos não exige login e não publica conteúdo.</p>
     <p id="estado-painel" role="status" aria-live="polite">Carregando conteúdo existente...</p>
     <div class="painel-acoes" role="group" aria-label="Tipo de conteúdo">
       <button type="button" data-tipo="noticias" aria-pressed="true">Notícias da comunidade</button>
@@ -52,5 +53,6 @@
     </div>
   </main>
   <script type="module" src="painel.js"></script>
+  <script type="module" src="login.js"></script>
 </body>
 </html>
