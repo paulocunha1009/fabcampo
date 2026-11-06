@@ -32,7 +32,7 @@ test('editorial exige Bearer válido e nunca aceita e-mail digitado como prova',
 });
 
 test('editorial autoriza somente sub validado, independentemente do nome/e-mail', async () => {
-  assert.deepEqual(await auth().authenticate(token), { id: claims.sub, email: claims.email });
+  assert.deepEqual(await auth().authenticate(token), { id: claims.sub, email: claims.email, expiresAt:claims.exp*1000 });
   await assert.rejects(auth({ ...claims, sub: 'outro', email: claims.email }).authenticate(token), { status: 403 });
   assert.equal((await auth({ ...claims, email: 'novo@example.test' }).authenticate(token)).id, claims.sub);
 });
@@ -40,7 +40,7 @@ test('editorial autoriza somente sub validado, independentemente do nome/e-mail'
 test('identificação confirma só a própria conta sem conceder acesso editorial',async()=>{
   const gate=auth(claims,{allowedSubjects:''});
   assert.equal(gate.configured,false);
-  assert.deepEqual(await gate.identify(token),{id:claims.sub,email:claims.email});
+  assert.deepEqual(await gate.identify(token),{id:claims.sub,email:claims.email,expiresAt:claims.exp*1000});
   await assert.rejects(gate.authenticate(token),{status:503});
 });
 

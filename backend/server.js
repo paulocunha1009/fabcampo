@@ -155,7 +155,7 @@ app.post('/api/editorial/cards', async (req, res, next) => {
 app.get('/api/editorial/identidade', async (req, res) => {
   try {
     const account = await editorialAuth.identify(req.headers.authorization);
-    return res.json({account,role:'pending'});
+    return res.json({account:{id:account.id,email:account.email},role:'pending'});
   } catch(error) {
     return res.status(error.status === 401 ? 401 : 503).json({error:'Não foi possível confirmar sua conta Google.'});
   }

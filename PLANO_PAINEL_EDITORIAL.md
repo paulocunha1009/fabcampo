@@ -414,3 +414,24 @@ aplicativo autenticador. A etapa foi entregue ao professor para preenchimento di
 nenhum código foi solicitado na conversa ou inserido pelo assistente. A nova
 implantação e sua promoção ainda não foram confirmadas. O teste real de persistência
 e conflito continua pendente até essa confirmação de identidade.
+
+## Ativação aprovada e ajuste de entrada por operação
+
+A confirmação MFA foi concluída pelo professor. Redeploy Vercel
+`DHEdf7HRS9r1ix3gZnm5TpSKvF6s` foi promovido com as duas configurações aprovadas;
+API saudável e rotas de editor retornando 401 sem autenticação, conforme esperado.
+O teste real de rascunho começou com um registro já existente no portal, sem
+publicação. Não houve confirmação de persistência ainda nesta verificação.
+
+Foi identificado que a tela reinicializava o SDK Google a cada ação. O login passa
+a inicializar uma vez por ciclo da página, e o acesso de editor pode permanecer
+somente em memória por até dez minutos, limitado também pela expiração Google
+confirmada pelo servidor. Sair ou deixar a página limpa essa credencial. Não há
+localStorage, sessionStorage ou cookie de sessão. Cada requisição continua exigindo
+verificação Google e autorização no backend. Essa sessão é apenas para a equipe;
+as atividades dos estudantes não foram modificadas.
+
+Ajuste validado com 134 testes Node, incluindo expiração e limpeza. O teste real de
+salvar, reabrir e recusar revisão antiga continua em andamento após implantar esse
+ajuste de acesso. As revisões reais confirmadas devem ser registradas na próxima
+atualização deste documento.

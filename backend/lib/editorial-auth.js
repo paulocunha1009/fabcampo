@@ -37,7 +37,7 @@ export function createEditorialAuth({
         typeof payload.email !== 'string' || !payload.email.includes('@')) {
       throw deny(401, 'EDITORIAL_SIGN_IN_REQUIRED');
     }
-    return { id: payload.sub, email: payload.email };
+    return { id: payload.sub, email: payload.email, expiresAt:payload.exp*1000 };
   }
   async function authenticate(authorization) {
     if (!configured) throw deny(503, 'EDITORIAL_NOT_CONFIGURED');
