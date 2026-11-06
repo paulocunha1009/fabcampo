@@ -144,3 +144,21 @@ O ID do cliente criado anteriormente no projeto compartilhado foi retirado da
 configuração ativa em `painel/auth-config.js`, que fica vazio até a criação de um
 cliente no novo projeto. Nenhum cliente antigo foi excluído. Backend, login público
 e publicação editorial continuam sem ativação.
+
+## Identidade independente e cliente concluídos
+
+Em 6 de novembro de 2026 o professor concluiu a política e a criação da identidade
+no novo projeto, e depois criou o cliente Web `Campo Digital — Painel editorial`.
+A criação foi conferida na lista de clientes do projeto `campo-digital-513918`.
+O ID público independente está em `painel/auth-config.js`. Não foi copiado segredo
+de cliente para o projeto. As origens são os dois endereços HTTPS oficiais do portal.
+
+A conta indicada pelo professor foi cadastrada e conferida como o único usuário
+de teste desse novo projeto. O status continua `Testando`. Esse cadastro permite
+validar a entrada Google, mas não concede autorização editorial no backend.
+
+Próximos passos técnicos: conectar o botão Google no painel, validar a identidade
+no backend e vincular o `sub` confirmado à lista aprovada, configurar o ambiente e
+validar acesso permitido/negado. Depois conectar armazenamento e publicação com
+histórico recuperável. O painel e o backend alterados permanecem locais nesta etapa;
+não há login editorial ativo no portal público.
