@@ -8,6 +8,12 @@ const status = document.getElementById('estado-acesso');
 let sdk;
 let loading;
 let pageVersion = 0;
+let pendingAction;
+export function requestAuthorizedAction(action) {
+  pendingAction = action;
+  start.hidden = false;
+  start.click();
+}
 const messages = {
   'signed-out': 'Nenhuma conta conectada. A prévia local de rascunhos continua disponível.',
   checking: 'Conferindo sua conta no servidor...',
@@ -55,8 +61,12 @@ start.addEventListener('click', async () => {
     const google = await loadSdk();
     if (version !== pageVersion) return;
     google.initialize({ client_id: GOOGLE_CLIENT_ID, auto_select: false,
-      ux_mode: 'popup', callback: response => {
-        if (version === pageVersion) void access.signIn(response?.credential);
+      ux_mode: 'popup', callback: async response => {
+        if (version !== pageVersion) return;
+        const action = pendingAction;
+        pendingAction = null;
+        const account = await access.signIn(response?.credential);
+        if(account && action && version === pageVersion) await action(response.credential);
       } });
     slot.replaceChildren();
     google.renderButton(slot, { type: 'standard', theme: 'outline', size: 'large',
@@ -70,7 +80,9 @@ start.addEventListener('click', async () => {
 
 function leave() {
   pageVersion++;
+  pendingAction = null;
   access.clear();
+  document.dispatchEvent(new Event('editorial-access-cleared'));
   sdk?.cancel();
   sdk?.disableAutoSelect();
   slot.replaceChildren();

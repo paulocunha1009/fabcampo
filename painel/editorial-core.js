@@ -54,8 +54,13 @@ export function validarRegistro(tipo, value){
   if(!Object.hasOwn(CATEGORIAS, value.categoria)) erro('categoria', 'Escolha uma categoria.');
   const fonte = texto('fonte', value.fonte, 160);
   const link = endereco('link', value.link);
+  const modelo = value.modelo || 'destaques';
+  if(!['destaques','dados'].includes(modelo)) erro('modelo', 'Escolha um modelo de reportagem.');
+  const cards = value.cards || [];
+  if(!Array.isArray(cards) || cards.length > 3) erro('cards', 'Use até três cards.');
+  const validados = cards.map(card => ({ titulo:texto('cards',card?.titulo,90), texto:texto('cards',card?.texto,500) }));
   return { titulo, resumo, data:data(value.data, false), categoria:value.categoria,
-    fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000) };
+    fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000), modelo, cards:validados };
 }
 export function pendenciasPublicacao(tipo, value){
   const registro = validarRegistro(tipo, value);

@@ -24,6 +24,8 @@ import { validateRequest } from './lib/validate-request.js';
 import { buildAcervoContext } from './lib/acervo.js';
 import { normalizeAnswer } from './lib/assistant-answer.js';
 import { createEditorialAuth } from './lib/editorial-auth.js';
+import { createEditorialImageRouter } from './lib/editorial-images.js';
+import { CARD_PROMPT, validateCardSource, validateCardSuggestions } from './lib/editorial-cards.js';
 
 dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
 
@@ -122,7 +124,30 @@ app.use(cors({
   methods: ['POST', 'GET'],
 }));
 
+app.use(createEditorialImageRouter({ auth: editorialAuth }));
+app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));
+
+app.post('/api/editorial/cards', async (req, res, next) => {
+  try { await editorialAuth.authenticate(req.headers.authorization); next(); }
+  catch(error) { return res.status([401,403,503].includes(error.status) ? error.status : 503)
+    .json({ error:'Entre com uma conta autorizada para preparar os cards.' }); }
+}, (req, res, next) => {
+  try { req.editorialSource = validateCardSource(req.body); next(); }
+  catch(error) { res.status(400).json({ error:error.message }); }
+}, rateLimiter.middleware, async (req, res) => {
+  if(!aiClient) return res.status(503).json({ error:'A IA ainda não está disponível.' });
+  try {
+    const result = await aiClient.models.generateContent({ model:GEMINI_MODEL,
+      contents:JSON.stringify(req.editorialSource), config:{ systemInstruction:CARD_PROMPT,
+        responseMimeType:'application/json', maxOutputTokens:MAX_TOKENS, temperature:0.2,
+        httpOptions:{ timeout:20000 } } });
+    return res.json(validateCardSuggestions(result.text || '', req.editorialSource));
+  } catch(error) {
+    return res.status(error.status === 429 ? 429 : 502).json({
+      error:'Não foi possível preparar sugestões conferidas. O texto original foi preservado.' });
+  }
+});
 
 // Preparação do acesso editorial: não cria sessão nem publica conteúdo.
 app.get('/api/editorial/me', async (req, res) => {

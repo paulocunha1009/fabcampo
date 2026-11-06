@@ -1,6 +1,6 @@
 import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
 const $ = id => document.getElementById(id);
-const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo'];
+const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards'];
 const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade' };
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
@@ -25,6 +25,12 @@ function previa(registro){
   const detalhes = document.createElement('p'); detalhes.textContent = registro.data ? 'Data: '+registro.data : 'Data não informada';
   const texto = document.createElement('p'); texto.textContent = registro.resumo || registro.descricao;
   area.append(titulo, detalhes, texto);
+  if(Array.isArray(registro.cards) && registro.cards.length){
+    const grid = document.createElement('div'); grid.className = 'cards-reportagem cards-reportagem--'+(registro.modelo === 'dados' ? 'dados':'destaques');
+    registro.cards.forEach(card => { const box = document.createElement('section'); const h = document.createElement('h4'); h.textContent = card.titulo;
+      const p = document.createElement('p'); p.textContent = card.texto; box.append(h,p); grid.append(box); });
+    area.append(grid);
+  }
   for(const campo of ['local','horario','publico','participacao','responsavel','contato']){
     if(registro[campo]){ const p = document.createElement('p'); p.textContent = nomes[campo]+': '+registro[campo]; area.append(p); }
   }
@@ -61,7 +67,8 @@ function previa(registro){
 function escolher(){
   limparErros();
   const registro = conteudo[tipo][$('registro-editorial').value];
-  campos.forEach(id => { $(id).value = registro?.[id] || (id === 'categoria' ? 'Portal' : ''); });
+  campos.forEach(id => { $(id).value = id === 'cards' ? JSON.stringify(registro?.cards || []) : (registro?.[id] || ({categoria:'Portal',modelo:'destaques'}[id] || '')); });
+  document.dispatchEvent(new Event('editorial-record-loaded'));
   if(registro) previa(registro);
   else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; $('pendencias-editoriais').textContent = ''; }
 }
@@ -86,7 +93,9 @@ $('editorial-form').addEventListener('submit', event => {
   if(!pronto){ informar('Aguarde o carregamento do conteúdo existente antes de preparar o rascunho.'); return; }
   limparErros();
   try {
-    const registro = validarRegistro(tipo, Object.fromEntries(campos.map(id => [id, $(id).value])));
+    const valores = Object.fromEntries(campos.map(id => [id, $(id).value]));
+    valores.cards = JSON.parse(valores.cards || '[]');
+    const registro = validarRegistro(tipo, valores);
     const posicao = $('registro-editorial').value;
     const indice = posicao === '' ? conteudo[tipo].length : Number(posicao);
     conteudo[tipo][indice] = registro;

@@ -29,11 +29,17 @@
         <label for="registro-editorial">Escolher registro</label><select id="registro-editorial"><option value="">Novo registro</option></select>
         <form id="editorial-form" novalidate>
           <div data-campos="noticias">
+            <label for="modelo">Modelo da reportagem</label><select id="modelo"><option value="destaques">Reportagem com destaques — referência: Educação</option><option value="dados">Reportagem com dados — referência: Clima</option></select><small id="erro-modelo"></small>
             <label for="titulo">Título</label><input id="titulo" maxlength="160"><small id="erro-titulo"></small>
             <label for="resumo">Resumo</label><textarea id="resumo" rows="4" maxlength="1200"></textarea><small id="erro-resumo"></small>
             <p>Apresente o assunto em até duas frases.</p>
             <label for="texto">Texto completo da notícia</label><textarea id="texto" rows="8" maxlength="12000" aria-describedby="ajuda-texto"></textarea><small id="erro-texto"></small>
             <p id="ajuda-texto">Use dois a quatro parágrafos: o que aconteceu, quem participou e por que é relevante. Registre somente informações conferidas.</p>
+            <button type="button" id="sugerir-cards">Preparar sugestões com IA</button>
+            <p id="estado-cards" role="status">A IA usará o texto da reportagem. As sugestões precisam de revisão da equipe.</p>
+            <section id="sugestoes-ia" hidden aria-label="Sugestões da IA para revisão"><div id="sugestoes-conteudo"></div><button type="button" id="aplicar-sugestoes">Usar sugestões no rascunho</button><button type="button" id="descartar-sugestoes">Descartar sugestões</button></section>
+            <input id="cards" type="hidden" value="[]"><small id="erro-cards"></small>
+            <div id="editar-cards"></div>
             <label for="categoria">Categoria</label><select id="categoria"><option>Portal</option><option>Tecnologia</option><option>Agroecologia</option><option>Educação</option><option>Cultura</option></select><small id="erro-categoria"></small>
             <label for="fonte">Fonte ou autoria</label><input id="fonte" maxlength="160"><small id="erro-fonte"></small>
             <label for="link">Link da notícia ou página do portal</label><input id="link" inputmode="url" maxlength="2000" placeholder="Cole o endereço ou caminho da página"><small id="erro-link"></small>
@@ -52,7 +58,14 @@
           <label for="data">Data</label><input id="data" type="date" aria-describedby="ajuda-data"><small id="erro-data"></small>
           <p id="ajuda-data">Deixe em branco o que ainda não foi confirmado. Evento só pode seguir para publicação com data e horário confirmados.</p>
           <fieldset><legend>Imagem opcional</legend>
-            <p>Use o endereço de uma imagem já disponível. O envio de arquivos será conectado em outra etapa.</p>
+            <p>Prepare a capa em WebP, 1200 × 675 pixels. Confira o recorte antes de enviar. A imagem enviada ao repositório público poderá ser acessada antes da reportagem ser publicada.</p>
+            <label for="arquivo-imagem">Selecionar foto (JPEG, PNG ou WebP; até 12 MB)</label><input id="arquivo-imagem" type="file" accept="image/jpeg,image/png,image/webp">
+            <label for="posicao-imagem">Posição do recorte</label><input id="posicao-imagem" type="range" min="0" max="100" value="50">
+            <p>Mova para ajustar o recorte no sentido da parte que sobra da imagem.</p>
+            <canvas id="capa-preparada" width="1200" height="675" hidden role="img" aria-label="Prévia do recorte da capa"></canvas>
+            <p id="estado-imagem" role="status">Nenhuma foto selecionada. O envio ao GitHub depende da ativação do acesso da equipe.</p>
+            <button id="baixar-imagem" type="button" disabled>Baixar capa preparada</button>
+            <button id="enviar-imagem" type="button" disabled>Enviar imagem ao GitHub como rascunho</button>
             <label for="imagem">Endereço da imagem</label><input id="imagem" maxlength="2000" inputmode="url"><small id="erro-imagem"></small>
             <label for="legenda">Legenda da imagem</label><input id="legenda" maxlength="400"><small id="erro-legenda"></small>
             <label for="credito">Crédito da imagem</label><input id="credito" maxlength="240"><small id="erro-credito"></small>
@@ -73,5 +86,7 @@
   </main>
   <script type="module" src="painel.js"></script>
   <script type="module" src="login.js"></script>
+  <script type="module" src="imagem.js"></script>
+  <script type="module" src="cards.js"></script>
 </body>
 </html>

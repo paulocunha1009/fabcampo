@@ -213,3 +213,57 @@ pendentes. Não há importação de arquivo nesta versão.
 
 Validação: 110 testes Node aprovados; notícia e evento existentes conferidos na
 interface com suas pendências reais, sem conteúdo fictício adicionado ao portal.
+
+## Editor de postagem, capa e cards com Gemini
+
+O professor esclareceu o objetivo: experiência de criar uma postagem, com foto,
+texto, modelo da reportagem, cards e prévia; depois publicação no site por decisão
+da equipe autorizada. Autorizou usar o Gemini atual para as sugestões editoriais.
+As referências existentes são `reportagem-educacao.html` (destaques) e
+`reportagem-clima.html` (dados). A prévia tem duas apresentações de cards inspiradas
+nessas referências; ainda não gera nem publica uma página HTML completa.
+
+### Capa
+
+- Seleção local de JPEG/PNG/WebP até 12 MB, com pelo menos 1200 × 675 pixels e
+  até 40 megapixels. Ajuste de posição do recorte, conversão WebP e download.
+- Saída: 1200 × 675 pixels, qualidade 82, até 1 MB. É a capa horizontal da matéria,
+  não um carrossel ou uma galeria de várias fotos nesta versão.
+- O backend verifica o arquivo real, as dimensões e o tamanho, e recodifica sem EXIF.
+- `POST /api/editorial/imagens` exige conta autorizada antes de receber a imagem.
+  Grava somente em `img/editorial/<hash-do-conteúdo>.webp`, no repositório fabcampo,
+  em branch previamente criada com nome `editorial-*`. Não escreve em main/master,
+  não sobrescreve imagem diferente nem publica reportagem.
+- A branch do repositório público permite acesso à imagem antes da publicação;
+  isso está explicado no formulário. Rascunho não significa arquivo privado.
+- O token de escrita deve ficar somente no ambiente do backend, restrito ao
+  repositório e permissão Contents: write. Nenhuma credencial foi criada ou copiada.
+  A branch de rascunhos e `EDITORIAL_GITHUB_TOKEN`/`EDITORIAL_UPLOAD_BRANCH` ainda
+  não estão configurados; nenhum upload real foi feito.
+
+### Sugestões de IA
+
+`POST /api/editorial/cards` exige editor autorizado e usa o mesmo cliente Gemini,
+modelo, teto de tokens e limitador global do SabIA. O backend mantém o prompt fixo;
+o navegador envia só título e texto. Até três cards e um resumo são sugeridos.
+Resumo e trechos precisam constar literalmente no texto recebido; uma resposta
+fora desse critério é recusada. Rótulos, pertinência dos trechos e conteúdo final
+continuam sujeitos à revisão humana.
+
+Os cards não são imagens inventadas: a IA seleciona trechos, e o painel os apresenta
+nos modelos visuais do portal. A equipe pode aceitar as sugestões e editar os cards
+no rascunho. A IA não substitui o texto original, não confirma fatos e não publica.
+Modelo e cards são preservados no JSON do rascunho.
+
+Cada operação solicita uma verificação Google explícita; o token fica somente
+durante a verificação e a requisição seguinte, sem persistência no navegador. Como
+o backend ainda não está configurado/implantado para o acesso editorial, essas
+operações reais permanecem indisponíveis. Não houve consumo real da cota Gemini.
+
+Validação: 120 testes Node aprovados, incluindo processamento real WebP, recusa de
+arquivos inválidos, destino fixo de upload, recusa de sobrescrita, autorização e
+limites compartilhados da IA. Foto existente do portal preparada no navegador e
+arquivo baixado conferido como WebP 1200 × 675 sem EXIF. Auditoria npm sem alertas
+após adotar sharp 0.35.5. O código continua local e a publicação permanece bloqueada.
+
+Referência de upload: https://docs.github.com/en/rest/repos/contents

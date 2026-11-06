@@ -76,3 +76,12 @@ test('categoria controla apresentação e não aceita propriedades herdadas como
   assert.equal(result.classe, 'badge--tech');
   assert.equal(result.icone, '🤖');
 });
+
+test('rascunho preserva modelo e cards editados sem aceitar modelos arbitrários', () => {
+  const cards = [{titulo:'Rótulo de teste',texto:'Trecho informado pela equipe para teste.'}];
+  const result = montarRascunho({noticias:[{...noticia,modelo:'dados',cards}],eventos:[]});
+  assert.equal(result.noticias[0].modelo,'dados');
+  assert.deepEqual(result.noticias[0].cards,cards);
+  assert.throws(()=>validarRegistro('noticias',{...noticia,modelo:'outro'}));
+  assert.throws(()=>validarRegistro('noticias',{...noticia,cards:Array(4).fill(cards[0])}));
+});

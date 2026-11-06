@@ -15,7 +15,7 @@ process.env.RATE_LIMIT_GLOBAL_MIN = '50';
 process.env.RATE_LIMIT_GLOBAL_DAY = '200';
 process.env.REQUIRE_PERSISTENT_RATE_LIMIT = 'false';
 
-const { default: app } = await import('../server.js');
+const { default: app, createApp } = await import('../server.js');
 const { createRateLimiter } = await import('../lib/rate-limit.js');
 let server;
 let baseUrl;
@@ -39,6 +39,36 @@ test('acesso editorial sem configuração fica fechado e não expõe contas', as
   assert.equal(response.status, 503);
   assert.equal(response.headers.get('cache-control'), 'no-store');
   assert.deepEqual(await response.json(), { error: 'O acesso editorial ainda não está disponível.' });
+});
+
+test('upload sem acesso configurado não recebe autorização de escrita', async () => {
+  const response = await fetch(`${baseUrl}/api/editorial/imagens`, {
+    method:'POST',headers:{'Content-Type':'image/webp'},body:Buffer.from('test-only'),
+  });
+  assert.equal(response.status,503);
+});
+
+test('cards verificam acesso antes de consumir a cota Gemini e usam o limitador compartilhado', async () => {
+  let allowed = false, calls = 0, limits = 0;
+  const texto = 'Trecho de teste para conferir o processamento da reportagem sem acrescentar informações. Este texto será preservado.';
+  const editorialApp = createApp({
+    editorialAuth:{ authenticate:async()=>{ if(!allowed) throw Object.assign(new Error(),{status:403}); return {id:'test-only'}; } },
+    aiClient:{ models:{ generateContent:async options=>{
+      calls++; assert.equal(options.config.responseMimeType,'application/json');
+      return {text:JSON.stringify({resumo:texto,cards:[{titulo:'Destaque de teste',trecho:texto}]})};
+    } } },
+    rateLimiter:{ middleware:(_req,_res,next)=>{limits++;next();} },
+  });
+  const instance = await new Promise(resolve=>{const current=editorialApp.listen(0,'127.0.0.1',()=>resolve(current));});
+  try {
+    const url = `http://127.0.0.1:${instance.address().port}/api/editorial/cards`;
+    const send = ()=>fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({titulo:'Teste',texto})});
+    assert.equal((await send()).status,403); assert.equal(calls,0); assert.equal(limits,0);
+    allowed = true;
+    const response = await send();
+    assert.equal(response.status,200); assert.equal((await response.json()).requiresReview,true);
+    assert.equal(calls,1); assert.equal(limits,1);
+  } finally { await new Promise(resolve=>instance.close(resolve)); }
 });
 
 test('health informa serviço, modelo e limites sem expor segredos', async () => {
