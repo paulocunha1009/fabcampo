@@ -400,3 +400,17 @@ Referência de operação atômica: https://upstash.com/docs/redis/sdks/ts/comma
 
 O estado desta seção substitui as anotações anteriores que diziam que todo o painel
 permanecia local. Persistência e autorização continuam pendentes conforme descrito.
+
+## Autorização recebida e implantação aguardando MFA
+
+O professor autorizou explicitamente sua conta como único editor e o salvamento
+privado. `EDITORIAL_GOOGLE_SUBJECTS` e `EDITORIAL_DRAFTS_ENABLED=true` foram salvos
+em Production na Vercel, sem credenciais ou identificadores registrados no código.
+A Vercel confirmou o cadastro das duas variáveis.
+
+Foi solicitado redeploy do código atual de main com as configurações aprovadas.
+Antes de concluir, a Vercel abriu `Verify Your Identity`, pedindo o código do
+aplicativo autenticador. A etapa foi entregue ao professor para preenchimento direto;
+nenhum código foi solicitado na conversa ou inserido pelo assistente. A nova
+implantação e sua promoção ainda não foram confirmadas. O teste real de persistência
+e conflito continua pendente até essa confirmação de identidade.
