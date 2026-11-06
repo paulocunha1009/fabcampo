@@ -103,3 +103,27 @@ local, adulteração do token, configuração ausente e recusa de conta não aut
 Não equivalem à validação com a conta real da escola, ainda pendente.
 
 Referência: https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+
+## Cliente Google criado em 6 de novembro de 2026
+
+O professor concluiu a criação de `Campo Digital — Painel editorial` no projeto
+Google Cloud `gen-lang-client-0478559212`. O ID público foi registrado em
+`painel/auth-config.js`; o segredo do cliente não foi copiado nem incorporado ao
+projeto. O fluxo de Google Identity Services com ID token não precisa desse segredo.
+
+Origens cadastradas: `https://fabcampo.com.br` e `https://www.fabcampo.com.br`.
+O acesso por localhost não foi autorizado nesse cliente.
+
+A conta indicada pelo professor já consta como usuário de teste do projeto. Isso
+não substitui a lista de autorização editorial por `sub` no backend. O ID Google
+estável dessa conta ainda precisa ser obtido por uma entrada validada.
+
+Foi identificado que a marca da tela de consentimento é `AISTUDYTEC`, compartilhada
+com outro cliente existente. Não foi alterada para evitar mudar a identificação do
+outro aplicativo. Antes da liberação definitiva, resolver a identidade do login:
+uma marca independente para Campo Digital exige projeto OAuth separado, enquanto
+o cliente atual pode servir para a validação técnica inicial com esse nome visível.
+
+Estado: cliente criado e conferido no console, mas botão de entrada ainda não
+conectado, variáveis do backend não configuradas e painel não publicado. Não houve
+ativação de publicação ou gravação de conteúdo.
