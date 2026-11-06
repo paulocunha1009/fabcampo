@@ -82,7 +82,7 @@ function escolher(){
   campos.forEach(id => { $(id).value = ['cards','fotos'].includes(id) ? JSON.stringify(registro?.[id] || []) : (registro?.[id] || ({categoria:'Portal',modelo:'destaques'}[id] || '')); });
   $('midias-reportagem').hidden = tipo !== 'noticias'; $('midia-legada').hidden = tipo === 'noticias';
   document.dispatchEvent(new Event('editorial-record-loaded'));
-  if(registro) previa(registro);
+  if(registro){ previa(registro); informar('Registro carregado para revisão. Nenhuma alteração foi publicada.'); }
   else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; $('pendencias-editoriais').textContent = ''; }
 }
 document.querySelectorAll('[data-tipo]').forEach(botao => botao.addEventListener('click', () => {
@@ -119,7 +119,7 @@ $('editorial-form').addEventListener('submit', event => {
     $('titulo-previa').focus();
   } catch(error){
     informar('Confira os campos indicados.');
-    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; (error.campo === 'fotos' ? $('arquivos-galeria') : error.campo === 'cards' ? $('sugerir-cards') : $(error.campo)).focus(); }
+    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; const target = error.campo === 'fotos' ? $('arquivos-galeria') : error.campo === 'cards' ? $('sugerir-cards') : $(error.campo); document.dispatchEvent(new CustomEvent('editorial-field-error',{detail:target})); target.focus(); }
   }
 });
 $('baixar-rascunho').addEventListener('click', () => {

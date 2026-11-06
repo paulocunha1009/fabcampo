@@ -11,7 +11,9 @@ let pageVersion = 0;
 let pendingAction;
 export function requestAuthorizedAction(action) {
   pendingAction = action;
+  start.closest('details').open = true;
   start.hidden = false;
+  start.scrollIntoView({block:'center'});
   start.click();
 }
 const messages = {

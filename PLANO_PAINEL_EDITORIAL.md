@@ -307,3 +307,28 @@ interna. Permanecem pendentes ativação do acesso, credencial GitHub, persistê
 rascunhos e geração/publicação da página final.
 
 Referência do player: https://support.google.com/youtube/answer/171780
+
+## Usabilidade do editor
+
+Tela reorganizada em três etapas sem apagar campos ao navegar: **Conteúdo**,
+**Fotos e vídeo** e **Revisão**. A etapa de revisão resume título, quantidade de
+fotos, escolha de capa e presença de vídeo. Guardar continua atualizando a prévia;
+não foi transformado em publicação ou salvamento persistente.
+
+Acesso da equipe, retomada de registros existentes e assistência de IA ficam em
+áreas expansíveis. Uma operação que pede Google abre a área de acesso. A galeria
+usa cartões compactos: legenda/crédito/descrição, recorte e troca de arquivo podem
+ser abertos por foto; mover e remover continuam disponíveis. Todas as ações
+mantêm nomes acessíveis; campos com erro abrem a etapa e o detalhe correspondentes
+antes de receber foco.
+
+Em telas maiores, a prévia fica ao lado do formulário e acompanha a rolagem. Abaixo
+de 1100 pixels fica depois do editor; há atalho para ir até ela. No celular, as fotos
+e os botões se acomodam em uma coluna. Aviso de rascunho local e de perda dos arquivos
+não enviados permanece visível no início; o download explica que não inclui fotos.
+
+Conferidos no navegador: mudança de etapas, retorno ao título vazio após tentar
+guardar pela revisão, retomada de registro existente, duas fotos, resumo da revisão
+e atualização da prévia. Layout conferido em 1280 e 390 pixels, sem rolagem lateral
+na largura menor; tamanho do navegador restaurado ao final. Os 124 testes existentes
+passaram nesta etapa. As alterações continuam locais, sem publicação do painel.

@@ -6,7 +6,7 @@ const files = new Map();
 const key = () => document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo+':'+$('registro-editorial').value;
 function info(text) { $('estado-galeria').textContent = `${photos.length} de 10 fotos. ${text}`; }
 function save() { $('fotos').value = JSON.stringify(photos); $('fotos').dispatchEvent(new Event('input',{bubbles:true})); }
-function button(text, action, disabled = false) { const node=document.createElement('button'); node.type='button'; node.textContent=text; node.disabled=disabled; node.addEventListener('click',action); return node; }
+function button(text, action, disabled = false) { const node=document.createElement('button'); node.type='button'; node.className='botao-secundario'; node.textContent=text; node.disabled=disabled; if(text.startsWith('Mover foto')){node.textContent=text.endsWith('cima') ? '↑':'↓';node.setAttribute('aria-label',text);node.title=text;} if(text.startsWith('Remover foto')){node.textContent='Remover';node.setAttribute('aria-label',text);} node.addEventListener('click',action); return node; }
 function draw() {
   const list=$('lista-galeria'); list.replaceChildren();
   photos.forEach((photo,index)=>{
@@ -14,28 +14,31 @@ function draw() {
     const title=document.createElement('h4'); title.textContent=`Foto ${index+1}${photo.capa ? ' — capa':''}`; box.append(title);
     const local=files.get(photo.id);
     if(local?.url || photo.imagem){ const image=document.createElement('img'); image.src=local?.url || new URL(photo.imagem,'https://fabcampo.com.br/').href; image.alt=photo.textoAlternativo || 'Foto em preparação'; image.referrerPolicy='no-referrer'; box.append(image); }
+    const metadata=document.createElement('details');const metadataTitle=document.createElement('summary');metadataTitle.textContent='Legenda, crédito e descrição';metadata.append(metadataTitle);box.append(metadata);
     for(const [field,name,max] of [['legenda','Legenda',400],['credito','Crédito',240],['textoAlternativo','Descrição acessível',400]]) {
       const label=document.createElement('label'); label.textContent=name+' da foto '+(index+1);
       const input=document.createElement('input'); input.value=photo[field] || ''; input.maxLength=max; input.disabled=busy;
-      input.addEventListener('input',()=>{photo[field]=input.value; save();}); label.append(input); box.append(label);
+      input.addEventListener('input',()=>{photo[field]=input.value; save();}); label.append(input); metadata.append(label);
     }
     box.append(button(photo.capa ? 'Foto de capa':'Usar como capa',()=>{
       if(local && (local.width<1200 || local.height<675)){info('Para a capa, escolha uma foto com pelo menos 1200 × 675 pixels.');return;}
       photos.forEach(item=>{item.capa=item===photo;}); save();draw();
     },photo.capa || busy));
     if(local && photo.capa){
+      const crop=document.createElement('details');const cropTitle=document.createElement('summary');cropTitle.textContent='Ajustar recorte da capa';crop.append(cropTitle);box.append(crop);
       const label=document.createElement('label'); label.textContent='Posição do recorte da capa';
       const range=document.createElement('input'); range.type='range';range.min='0';range.max='100';range.value=String(local.position ?? 50);range.disabled=busy;
       const canvas=document.createElement('canvas'); canvas.width=1200;canvas.height=675;canvas.className='recorte-galeria';canvas.setAttribute('aria-label','Prévia do recorte da capa');canvas.setAttribute('role','img');
       const render=()=>{ const scale=Math.max(1200/local.width,675/local.height);const w=1200/scale,h=675/scale;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1200,675);ctx.drawImage(local.bitmap,(local.width-w)*Number(range.value)/100,(local.height-h)*Number(range.value)/100,w,h,0,0,1200,675); };
-      range.addEventListener('input',()=>{local.position=Number(range.value);photo.capaImagem='';render();save();});label.append(range);box.append(label,canvas); render(); local.canvas=canvas;
+      range.addEventListener('input',()=>{local.position=Number(range.value);photo.capaImagem='';render();save();});label.append(range);crop.append(label,canvas); render(); local.canvas=canvas;
     }
     box.append(button('Mover foto '+(index+1)+' para cima',()=>{[photos[index-1],photos[index]]=[photos[index],photos[index-1]];save();draw();},index===0 || busy),
       button('Mover foto '+(index+1)+' para baixo',()=>{[photos[index],photos[index+1]]=[photos[index+1],photos[index]];save();draw();},index===photos.length-1 || busy),
       button('Remover foto '+(index+1),()=>{photos.splice(index,1);save();draw();info('Foto removida do rascunho. Nenhum arquivo foi excluído do GitHub.');},busy));
+    const replacement=document.createElement('details');const replaceTitle=document.createElement('summary');replaceTitle.textContent='Trocar esta foto';replacement.append(replaceTitle);box.append(replacement);
     const replaceLabel=document.createElement('label');replaceLabel.textContent='Substituir foto '+(index+1);
     const replace=document.createElement('input');replace.type='file';replace.accept='image/jpeg,image/png,image/webp';replace.disabled=busy;
-    replace.addEventListener('change',()=>{if(replace.files[0]) void add([replace.files[0]],index);});replaceLabel.append(replace);box.append(replaceLabel);
+    replace.addEventListener('change',()=>{if(replace.files[0]) void add([replace.files[0]],index);});replaceLabel.append(replace);replacement.append(replaceLabel);
     const status=document.createElement('p');status.textContent=photo.imagem ? 'Foto enviada ou endereço registrado.' : 'Foto local: envio ao GitHub pendente.';box.append(status);list.append(box);
   });
   $('enviar-galeria').disabled=busy || !photos.some(photo=>files.has(photo.id) && (!photo.imagem || (photo.capa && !photo.capaImagem)));
