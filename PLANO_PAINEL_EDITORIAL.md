@@ -435,3 +435,21 @@ Ajuste validado com 134 testes Node, incluindo expiração e limpeza. O teste re
 salvar, reabrir e recusar revisão antiga continua em andamento após implantar esse
 ajuste de acesso. As revisões reais confirmadas devem ser registradas na próxima
 atualização deste documento.
+
+## Ajuste de acesso publicado; entrada do professor pendente
+
+API do ajuste: `ec971cf8b2a7877a301d906e5f61abe78c984a7d`, deployment pronto
+`2RWsFuvjv9bEUjY3G1MeR7ya7fJK`, com promoção solicitada para o domínio oficial.
+Frontend: `91a0dcbfcd5b05b0c1311cd8150bb00348d83616`. Validação GitHub
+`42279366062` e GitHub Pages `42279382275` concluídos com sucesso; novo `login.js`
+conferido no endereço público. Autorização individual e flag privada foram mantidas.
+
+A página oficial foi recarregada, e o botão Google reconhece a conta do professor.
+A automação não conseguiu concluir o novo clique no botão incorporado: a tentativa
+por coordenadas foi recusada pelo controle do navegador por não conseguir inspecionar
+com segurança as coordenadas do iframe. A aba foi entregue ao professor para clicar
+diretamente; não houve tentativa de contornar esse bloqueio nem de ler tokens da página.
+
+Ainda não há confirmação de rascunho salvo no Redis. Não informar salvamento real,
+retomada ou proteção de conflito como validados até concluir a entrada e conferir
+essas operações pela interface. Nenhuma matéria ou foto foi publicada nessa etapa.
