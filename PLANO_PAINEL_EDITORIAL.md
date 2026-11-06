@@ -185,3 +185,31 @@ Google, erros de acesso e cancelamento; prévia local conferida no navegador. Os
 testes de interface não substituem a validação da entrada real do professor.
 
 Referência do botão: https://developers.google.com/identity/gsi/web/reference/js-reference
+
+## Modelo editorial aprovado pelo professor
+
+Fluxo adotado: **rascunho → revisão do professor/equipe → publicação**. O painel
+ainda opera somente a primeira etapa; conferir campos não aprova nem publica.
+
+Notícia: título, resumo recomendado de até duas frases, texto completo recomendado
+de dois a quatro parágrafos, local, data quando conhecida, categoria, fonte/autoria
+e referência opcional. Evento: nome, descrição do objetivo, data e horário
+confirmados, local, público, orientações de participação, equipe responsável e
+contato institucional. Os dois modelos têm imagem opcional com legenda, crédito e
+descrição acessível. Nesta versão, usa-se endereço de imagem já disponível; não há
+upload de arquivo nem inclusão automática da imagem na prévia.
+
+O rascunho pode manter campos novos e datas não confirmadas em branco. A lista de
+pendências aponta o necessário antes da revisão: notícia exige local e texto
+completo, enquanto evento exige data, horário e informações práticas. Se houver
+imagem, exige legenda, crédito e descrição acessível. Uma notícia sem data conhecida
+não recebe uma data inventada. Os registros anteriores são carregados sem completar
+informações por suposição.
+
+O download agora usa envelope `version: 2`, `status: rascunho` e preserva todos os
+novos campos. Não modifica `data/site.json`. O armazenamento continua em memória
+com download local; salvar/retomar pelo servidor e histórico de revisão continuam
+pendentes. Não há importação de arquivo nesta versão.
+
+Validação: 110 testes Node aprovados; notícia e evento existentes conferidos na
+interface com suas pendências reais, sem conteúdo fictício adicionado ao portal.

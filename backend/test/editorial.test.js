@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { readFileSync } from 'node:fs';
-import { validarRegistro, montarRascunho } from '../../painel/editorial-core.js';
+import { validarRegistro, montarRascunho, pendenciasPublicacao } from '../../painel/editorial-core.js';
 
 const atual = JSON.parse(readFileSync(new URL('../../data/site.json', import.meta.url), 'utf8'));
 const noticia = atual.noticias[0];
@@ -11,21 +11,47 @@ test('rascunho usa conteúdo existente, preserva a origem e não inclui outras s
   const antes = JSON.stringify(atual);
   const result = montarRascunho(atual);
   assert.equal(result.status, 'rascunho');
-  assert.equal(result.version, 1);
+  assert.equal(result.version, 2);
   assert.equal(result.noticias.length, atual.noticias.length);
   assert.equal(result.eventos.length, atual.eventos.length);
-  assert.deepEqual(result.noticias[0], noticia);
-  assert.deepEqual(result.eventos[0], evento);
+  for(const [campo, valor] of Object.entries(noticia)) assert.deepEqual(result.noticias[0][campo], valor);
+  for(const [campo, valor] of Object.entries(evento)) assert.deepEqual(result.eventos[0][campo], valor);
   assert.equal('plantasNativas' in result, false);
   assert.equal(JSON.stringify(atual), antes);
 });
 
-test('datas inexistentes e evento sem data são recusados, sem substituir por hoje', () => {
+test('datas inexistentes são recusadas e datas não confirmadas permanecem em branco no rascunho', () => {
   for(const data of ['2026-02-30', '2026-13-01', 'texto', '2026-1-1']){
     assert.throws(() => validarRegistro('noticias', { ...noticia, data }), error => error.campo === 'data');
   }
-  assert.throws(() => validarRegistro('eventos', { ...evento, data:'' }), error => error.campo === 'data');
+  assert.equal(validarRegistro('eventos', { ...evento, data:'' }).data, '');
+  assert.ok(pendenciasPublicacao('eventos', { ...evento, data:'' }).includes('data'));
   assert.equal(validarRegistro('noticias', { ...noticia, data:'' }).data, '');
+});
+
+test('modelo preserva texto completo e metadados no arquivo, sem preencher informações desconhecidas', () => {
+  const texto = 'Primeiro parágrafo.\n\nSegundo parágrafo.';
+  const result = montarRascunho({ noticias:[{ ...noticia, texto, local:'Local informado pela equipe', link:'' }], eventos:[] });
+  assert.equal(result.noticias[0].texto, texto);
+  assert.equal(result.noticias[0].local, 'Local informado pela equipe');
+  assert.equal(result.noticias[0].imagem, '');
+  assert.deepEqual(pendenciasPublicacao('noticias', result.noticias[0]), []);
+});
+
+test('imagem opcional exige crédito, legenda e descrição para seguir à revisão', () => {
+  const registro = { ...noticia, texto:'Texto registrado.', local:'Local registrado.', imagem:'img/foto.jpg' };
+  assert.deepEqual(pendenciasPublicacao('noticias', registro), ['legenda','credito','textoAlternativo']);
+  for(const imagem of ['javascript:alert(1)', '//outro.test/foto.jpg']) {
+    assert.throws(() => validarRegistro('noticias', { ...registro, imagem }), e => e.campo === 'imagem');
+  }
+});
+
+test('evento confere horário e informações práticas sem converter rascunho em publicação', () => {
+  assert.throws(() => validarRegistro('eventos', { ...evento, horario:'24:00' }), e => e.campo === 'horario');
+  const registro = { ...evento, horario:'09:30', local:'Local informado', publico:'Público informado',
+    participacao:'Orientação informada', responsavel:'Equipe informada', contato:'Contato institucional informado' };
+  assert.deepEqual(pendenciasPublicacao('eventos', registro), []);
+  assert.equal(montarRascunho({ noticias:[], eventos:[registro] }).status, 'rascunho');
 });
 
 test('links executáveis, com credenciais ou ambíguos não entram no rascunho', () => {

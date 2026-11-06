@@ -1,6 +1,7 @@
-import { validarRegistro, montarRascunho } from './editorial-core.js';
+import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
 const $ = id => document.getElementById(id);
-const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data'];
+const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo'];
+const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade' };
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
 let pronto = false;
@@ -17,13 +18,19 @@ function listar(selecionado = ''){
   conteudo[tipo].forEach((registro, indice) => lista.append(new Option(registro.titulo || registro.nome, String(indice))));
   lista.value = selecionado;
 }
-function limparErros(){ campos.forEach(id => { $(id).removeAttribute('aria-invalid'); $(id).setAttribute('aria-describedby', 'erro-'+id+(id === 'data' ? ' ajuda-data' : '')); $('erro-'+id).textContent = ''; }); }
+function limparErros(){ campos.forEach(id => { $(id).removeAttribute('aria-invalid'); $(id).setAttribute('aria-describedby', 'erro-'+id+({data:' ajuda-data',texto:' ajuda-texto'}[id] || '')); $('erro-'+id).textContent = ''; }); }
 function previa(registro){
   const area = $('previa-editorial'); area.replaceChildren();
   const titulo = document.createElement('h3'); titulo.textContent = registro.titulo || registro.nome;
   const detalhes = document.createElement('p'); detalhes.textContent = registro.data ? 'Data: '+registro.data : 'Data não informada';
   const texto = document.createElement('p'); texto.textContent = registro.resumo || registro.descricao;
   area.append(titulo, detalhes, texto);
+  for(const campo of ['local','horario','publico','participacao','responsavel','contato']){
+    if(registro[campo]){ const p = document.createElement('p'); p.textContent = nomes[campo]+': '+registro[campo]; area.append(p); }
+  }
+  if(registro.texto){
+    registro.texto.split(/\n\s*\n/).forEach(trecho => { const p = document.createElement('p'); p.textContent = trecho; p.style.whiteSpace = 'pre-wrap'; area.append(p); });
+  }
   if(registro.fonte){ const fonte = document.createElement('p'); fonte.textContent = 'Fonte: '+registro.fonte; area.append(fonte); }
   if(registro.link){
     try {
@@ -33,13 +40,30 @@ function previa(registro){
       link.target = '_blank'; link.rel = 'noopener noreferrer'; area.append(link);
     } catch {}
   }
+  if(registro.imagem){
+    try {
+      const seguro = validarRegistro(tipo, registro);
+      const link = document.createElement('a'); link.textContent = 'Conferir imagem de referência';
+      link.href = new URL(seguro.imagem, 'https://fabcampo.com.br/').href;
+      link.target = '_blank'; link.rel = 'noopener noreferrer'; area.append(link);
+    } catch {}
+  }
+  for(const campo of ['legenda','credito','textoAlternativo']){
+    if(registro[campo]){ const p = document.createElement('p'); p.textContent = nomes[campo]+': '+registro[campo]; area.append(p); }
+  }
+  try {
+    const pendencias = pendenciasPublicacao(tipo, registro);
+    $('pendencias-editoriais').textContent = pendencias.length
+      ? 'Rascunho incompleto. Antes da revisão, confira: '+pendencias.map(campo => nomes[campo]).join(', ')+'.'
+      : 'Campos preenchidos. A revisão do professor/equipe ainda é necessária. Nenhuma publicação foi liberada.';
+  } catch { $('pendencias-editoriais').textContent = 'Confira os campos deste registro antes da revisão.'; }
 }
 function escolher(){
   limparErros();
   const registro = conteudo[tipo][$('registro-editorial').value];
   campos.forEach(id => { $(id).value = registro?.[id] || (id === 'categoria' ? 'Portal' : ''); });
   if(registro) previa(registro);
-  else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; }
+  else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; $('pendencias-editoriais').textContent = ''; }
 }
 document.querySelectorAll('[data-tipo]').forEach(botao => botao.addEventListener('click', () => {
   tipo = botao.dataset.tipo;
