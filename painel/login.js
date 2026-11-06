@@ -1,5 +1,6 @@
 import { GOOGLE_CLIENT_ID, EDITORIAL_API, GOOGLE_ALLOWED_ORIGINS } from './auth-config.js';
 import { createGoogleAccess } from './google-access.js';
+import { createEditorSession } from './editor-session.js';
 
 const start = document.getElementById('preparar-login');
 const signOut = document.getElementById('sair-painel');
@@ -9,7 +10,11 @@ let sdk;
 let loading;
 let pageVersion = 0;
 let pendingAction;
+let initializedVersion=-1;
+const session=createEditorSession();
 export function requestAuthorizedAction(action) {
+  const credential=session.get();
+  if(credential){void action(credential);return;}
   pendingAction = action;
   start.closest('details').open = true;
   start.hidden = false;
@@ -63,16 +68,16 @@ start.addEventListener('click', async () => {
   try {
     const google = await loadSdk();
     if (version !== pageVersion) return;
-    google.initialize({ client_id: GOOGLE_CLIENT_ID, auto_select: false,
+    if(initializedVersion!==version){google.initialize({ client_id: GOOGLE_CLIENT_ID, auto_select: false,
       ux_mode: 'popup', callback: async response => {
         if (version !== pageVersion) return;
+        session.clear();
         const action = pendingAction;
         pendingAction = null;
         const account = await access.signIn(response?.credential);
-        if(account && action && version === pageVersion) await action(response.credential);
-      } });
-    slot.replaceChildren();
-    google.renderButton(slot, { type: 'standard', theme: 'outline', size: 'large',
+        if(account && version === pageVersion){session.remember(response.credential,account.expiresAt);if(action)await action(response.credential);}
+      } });initializedVersion=version;}
+    if(!slot.childElementCount)google.renderButton(slot, { type: 'standard', theme: 'outline', size: 'large',
       text: 'signin_with', locale: 'pt-BR' });
     start.hidden = true;
     status.textContent = 'Use o botão Google para escolher sua conta. Somente a equipe autorizada terá acesso.';
@@ -83,6 +88,7 @@ start.addEventListener('click', async () => {
 
 function leave() {
   pageVersion++;
+  session.clear();
   pendingAction = null;
   access.clear();
   document.dispatchEvent(new Event('editorial-access-cleared'));
