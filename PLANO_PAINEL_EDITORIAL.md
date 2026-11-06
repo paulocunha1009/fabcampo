@@ -127,3 +127,20 @@ o cliente atual pode servir para a validação técnica inicial com esse nome vi
 Estado: cliente criado e conferido no console, mas botão de entrada ainda não
 conectado, variáveis do backend não configuradas e painel não publicado. Não houve
 ativação de publicação ou gravação de conteúdo.
+
+## Separação dos projetos autorizada pelo professor
+
+Em 6 de novembro de 2026 foi criado e conferido no console o projeto independente
+`Campo Digital`, ID `campo-digital-513918`, na organização já selecionada da conta,
+`aluno.ce.gov.br`. A marca e o cliente AISTUDYTEC do projeto anterior foram mantidos.
+
+O assistente de identidade está preenchido com nome `Campo Digital`, contato do
+professor e público externo em modo de testes (acesso limitado aos usuários de
+teste a cadastrar). A conclusão está pendente da revisão e aceitação, pelo
+professor, da política de dados do usuário dos serviços de API do Google. Nenhuma
+concordância foi marcada pelo assistente e a identidade ainda não foi concluída.
+
+O ID do cliente criado anteriormente no projeto compartilhado foi retirado da
+configuração ativa em `painel/auth-config.js`, que fica vazio até a criação de um
+cliente no novo projeto. Nenhum cliente antigo foi excluído. Backend, login público
+e publicação editorial continuam sem ativação.
