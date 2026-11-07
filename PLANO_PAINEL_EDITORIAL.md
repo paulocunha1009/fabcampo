@@ -635,3 +635,28 @@ atuais também passaram, incluindo duas verificações da UI para aplicação ex
 preservação do original, edição durante geração e saída da conta. Prévia local
 conferida no navegador. Teste real de geração completa e persistência real dos
 novos campos ainda pendente; aguardar publicação Pages e nova entrada Google.
+
+Publicação concluída: GitHub Pages 42386785989 success; os seis arquivos frontend
+foram comparados ao domínio oficial sem divergências. CI main 42386781804 success.
+Nova aba pública 21 preparada com os mesmos seis parágrafos públicos de Educação
+usados no teste anterior. Nenhum texto novo foi inventado. Geração completa aguarda
+clique Google do professor nessa aba. Pesquisa ainda é edição local, sem nova
+revisão privada. A revisão 3 e a aba anterior não foram alteradas nesta conferência.
+
+## Geração completa e recuperação real confirmadas — 07/11/2026
+
+Após login na aba 21, Gemini gerou título, subtítulo, abertura, três seções e três
+cards usando os seis parágrafos públicos da reportagem Educação. Os apoios de cada
+parte foram abertos para comparação. O modelo não apontou lacunas; a interface
+explica que isso não substitui conferência humana. O material de teste é conceitual,
+sem entrevista/evento novo, e não estabelece local ou data de nova apuração.
+
+A proposta foi aplicada à edição de teste, mantendo `pesquisa` byte a byte no DOM.
+Fonte/autoria foi registrada como nos créditos da página existente, com link para
+`pages/reportagem-educacao.html`. Novo rascunho privado salvo e reaberto: título
+`Escola do Campo: Conectada à Cultura e à Vida da Comunidade`, revisão 1. A pesquisa
+recuperada do servidor é idêntica à original; subtítulo, texto com intertítulos e
+cards também aparecem após a retomada. A revisão 3 do primeiro rascunho com foto
+permanece separada. Agora há dois rascunhos privados, nenhum publicado.
+Evidências: `tmp/validacao/reportagem-completa-proposta.png` e
+`tmp/validacao/reportagem-completa-salva.png`.
