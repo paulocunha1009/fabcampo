@@ -67,6 +67,7 @@ export function validarRegistro(tipo, value){
   const capa = fotos.find(foto => foto.capa);
   if(capa) { comum.imagem = capa.capaImagem || capa.imagem; comum.legenda = capa.legenda; comum.credito = capa.credito; comum.textoAlternativo = capa.textoAlternativo; }
   return { titulo, resumo, data:data(value.data, false), categoria:value.categoria,
+    pesquisa:opcional('pesquisa',value.pesquisa,12000), subtitulo:opcional('subtitulo',value.subtitulo,240),
     fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000), modelo, cards:validados, fotos, video };
 }
 export function pendenciasPublicacao(tipo, value){

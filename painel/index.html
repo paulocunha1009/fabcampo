@@ -32,12 +32,19 @@
         <form id="editorial-form" novalidate>
           <section data-etapa="conteudo" aria-labelledby="titulo-conteudo"><h3 id="titulo-conteudo" tabindex="-1">Conte a história</h3><p class="ajuda">Comece pelo que aconteceu. Os detalhes podem ser completados depois.</p>
           <div data-campos="noticias">
+            <section class="pesquisa-aluno" aria-labelledby="titulo-pesquisa"><h3 id="titulo-pesquisa">Da pesquisa à reportagem</h3>
+            <label for="pesquisa">Pesquisa original do aluno</label><textarea id="pesquisa" rows="8" maxlength="12000" aria-describedby="ajuda-pesquisa"></textarea><small id="erro-pesquisa"></small>
+            <p id="ajuda-pesquisa">Reúna anotações, entrevistas e fontes. Informe quem falou, onde e quando. Marque o que ainda precisa ser confirmado. Não inclua senhas ou contatos pessoais.</p>
+            <button type="button" id="estruturar-reportagem">Organizar pesquisa em reportagem</button><p id="estado-reportagem" role="status">O Gemini recebe esta pesquisa para sugerir a estrutura. Confira cada informação antes de aplicar. A pesquisa original permanece preservada no rascunho.</p>
+            <section id="proposta-reportagem" hidden aria-label="Reportagem sugerida para revisão"><h3>Compare a proposta com a pesquisa</h3><p>A IA pode cometer erros. Confira nomes, datas, atribuições e sentido das falas nos trechos de apoio. As lacunas apontadas também precisam de revisão.</p><div id="conteudo-proposta"></div><button type="button" id="aplicar-reportagem">Usar reportagem no rascunho</button><button type="button" id="descartar-reportagem">Descartar proposta</button></section>
+            </section>
             <label for="modelo">Modelo da reportagem</label><select id="modelo"><option value="destaques">Reportagem com destaques — referência: Educação</option><option value="dados">Reportagem com dados — referência: Clima</option></select><small id="erro-modelo"></small>
             <label for="titulo">Título</label><input id="titulo" maxlength="160"><small id="erro-titulo"></small>
+            <label for="subtitulo">Subtítulo</label><input id="subtitulo" maxlength="240"><small id="erro-subtitulo"></small>
             <label for="resumo">Resumo</label><textarea id="resumo" rows="4" maxlength="1200"></textarea><small id="erro-resumo"></small>
             <p>Apresente o assunto em até duas frases.</p>
             <label for="texto">Texto completo da notícia</label><textarea id="texto" rows="8" maxlength="12000" aria-describedby="ajuda-texto"></textarea><small id="erro-texto"></small>
-            <p id="ajuda-texto">Use dois a quatro parágrafos: o que aconteceu, quem participou e por que é relevante. Registre somente informações conferidas.</p>
+            <p id="ajuda-texto">Comece pela informação principal e desenvolva os fatos. Para separar assuntos, escreva um intertítulo com ## no começo da linha. Use somente informações da pesquisa.</p>
             <details class="assistencia-ia"><summary>Preparar resumo e cards com IA</summary>
             <p class="ajuda">Escreva a reportagem primeiro. O Gemini sugere trechos para a equipe revisar.</p>
             <button type="button" id="sugerir-cards">Preparar sugestões com IA</button>
@@ -112,6 +119,7 @@
   <script type="module" src="login.js"></script>
   <script type="module" src="imagem.js"></script>
   <script type="module" src="cards.js"></script>
+  <script type="module" src="reportagem.js"></script>
   <script type="module" src="galeria.js"></script>
   <script type="module" src="etapas.js"></script>
   <script type="module" src="rascunhos.js"></script>

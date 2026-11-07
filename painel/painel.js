@@ -1,7 +1,7 @@
 import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
 import { videoEmbed, imagemPrevia } from './midias-core.js';
 const $ = id => document.getElementById(id);
-const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
+const campos = ['titulo','subtitulo','pesquisa','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
 const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade', fotos:'1 a 10 fotos enviadas, com uma capa, legendas, créditos e descrições acessíveis' };
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
@@ -41,6 +41,7 @@ function previa(registro){
   const detalhes = document.createElement('p'); detalhes.textContent = registro.data ? 'Data: '+registro.data : 'Data não informada';
   const texto = document.createElement('p'); texto.textContent = registro.resumo || registro.descricao;
   area.append(titulo, detalhes, texto);
+  if(registro.subtitulo && registro.subtitulo!==registro.resumo){const sub=document.createElement('p');sub.textContent=registro.subtitulo;area.insertBefore(sub,detalhes);}
   if(tipo === 'noticias') {
     document.dispatchEvent(new CustomEvent('editorial-preview-media',{detail:{area,registro}}));
     if(registro.video){
@@ -62,7 +63,7 @@ function previa(registro){
     if(registro[campo]){ const p = document.createElement('p'); p.textContent = nomes[campo]+': '+registro[campo]; area.append(p); }
   }
   if(registro.texto){
-    registro.texto.split(/\n\s*\n/).forEach(trecho => { const p = document.createElement('p'); p.textContent = trecho; p.style.whiteSpace = 'pre-wrap'; area.append(p); });
+    registro.texto.split(/\n/).forEach(trecho => { if(!trecho.trim())return;const heading=/^##\s+(.+)$/.exec(trecho);const p = document.createElement(heading?'h4':'p'); p.textContent = heading?heading[1]:trecho; p.style.whiteSpace = 'pre-wrap'; area.append(p); });
   }
   if(registro.fonte){ const fonte = document.createElement('p'); fonte.textContent = 'Fonte: '+registro.fonte; area.append(fonte); }
   if(registro.link){

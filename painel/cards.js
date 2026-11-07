@@ -56,5 +56,6 @@ $('aplicar-sugestoes').addEventListener('click', () => {
 });
 $('descartar-sugestoes').addEventListener('click', reset);
 document.addEventListener('editorial-record-loaded', () => { reset(); editCards(); });
+document.addEventListener('editorial-cards-updated', () => { reset(); editCards(); });
 document.addEventListener('editorial-access-cleared', reset);
 window.addEventListener('pagehide', reset);
