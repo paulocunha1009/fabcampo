@@ -2,6 +2,10 @@ import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 const $=id=>document.getElementById(id);
 let pending,proposal,version=0;
+function countResearch(){const count=$('pesquisa').value.length;$('contador-pesquisa').textContent=count.toLocaleString('pt-BR')+' de 12.000 caracteres'+(count===12000?' — limite atingido.':'');}
+$('pesquisa').addEventListener('input',countResearch);
+document.addEventListener('editorial-record-loaded',countResearch);
+countResearch();
 const snapshot=()=>JSON.stringify(['pesquisa','titulo','subtitulo','resumo','texto','cards'].map(id=>$(id).value));
 function reset(){version++;pending?.abort();proposal=null;$('proposta-reportagem').hidden=true;}
 function block(label,part){

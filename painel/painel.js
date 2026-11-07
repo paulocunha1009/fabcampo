@@ -34,7 +34,7 @@ function listar(selecionado = ''){
   conteudo[tipo].forEach((registro, indice) => lista.append(new Option(registro.titulo || registro.nome, String(indice))));
   lista.value = selecionado;
 }
-function limparErros(){ campos.forEach(id => { $(id).removeAttribute('aria-invalid'); $(id).setAttribute('aria-describedby', 'erro-'+id+({data:' ajuda-data',texto:' ajuda-texto'}[id] || '')); $('erro-'+id).textContent = ''; }); }
+function limparErros(){ campos.forEach(id => { $(id).removeAttribute('aria-invalid'); $(id).setAttribute('aria-describedby', 'erro-'+id+({data:' ajuda-data',texto:' ajuda-texto',pesquisa:' limite-pesquisa contador-pesquisa ajuda-pesquisa'}[id] || '')); $('erro-'+id).textContent = ''; }); }
 function previa(registro){
   const area = $('previa-editorial'); area.replaceChildren();
   const titulo = document.createElement('h3'); titulo.textContent = registro.titulo || registro.nome;
