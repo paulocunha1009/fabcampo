@@ -710,3 +710,29 @@ A cota diária usa bucket UTC e renova às 21h de Fortaleza; o limite não garan
 qualidade editorial, que depende de pesquisa, evidências e revisão humana.
 Evidências: tmp/validacao/importacao-pdf-oficial.png,
 importacao-oficial-aguardando-google.png e importacao-pesquisa-markdown.png.
+
+## Incidente de inicialização e restauração — 07/11/2026
+
+A implantação 13da100 estava Ready, mas a função falhava ao iniciar: a importação
+nomeada de ../../painel/pesquisa-core.js não expunha o export na raiz de execução
+ESM da Vercel. /health e preflight /api/editorial/me retornaram 500. A conferência
+anterior de Ready e frontend foi insuficiente: não considerar serviço validado sem
+/health JSON ok e operação protegida real. O erro foi informado ao professor.
+
+Correção ebd91c77f82e36f37f4c8a97b81b70c33bed52c1: validação do servidor movida
+para backend/lib/editorial-research-file.js; report e drafts importam módulo local.
+146 testes passaram. Deployment 92dbo9Vaq6oCtMz7Cgtd6kjiAdqU, domínio
+fabcampo-hl7bwq4pn-sidep-ce.vercel.app, /health JSON ok conferido com sessão Vercel
+ANTES de promover. Após promoção, /health oficial HTTP 200 application/json, ok true,
+Upstash e limites 200/dia/15 global/min/30IP/min conferidos por shell e navegador.
+Teste de regressão adicional importa report/drafts com somente arquivos do backend
+em diretório temporário isolado, sem painel: passou. Não repetir a dependência de
+módulos frontend .js sem fronteira ESM explícita na implantação.
+
+A aba 23 agora contém arquivo escolhido pelo usuário, `AMC — Aula 3 Estudo
+Aplicado — Armazenamento e Mapa da Placa-mãe do AgroVida.md`, 21.356 caracteres,
+não o Markdown Educação de teste. Não substituir a seleção nem marcar conferência
+por ele. Texto foi preservado. Ele precisa conferir o texto, marcar confirmação,
+solicitar geração e fazer login de novo; a tentativa anterior ocorreu durante 500.
+Geração com arquivo e salvamento real de pesquisaArquivo continuam pendentes.
+Evidência: tmp/validacao/api-restaurada-pesquisa.png.
