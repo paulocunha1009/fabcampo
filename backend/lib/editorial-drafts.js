@@ -1,6 +1,7 @@
 import express from 'express';
 import { Redis } from '@upstash/redis';
 import { randomUUID } from 'node:crypto';
+import {validarPesquisaArquivo} from '../../painel/pesquisa-core.js';
 
 const fail = (status, message) => Object.assign(new Error(message), {status});
 const validId = id => typeof id === 'string' && /^[a-f0-9-]{36}$/.test(id);
@@ -18,15 +19,16 @@ export function validateDraftInput(value) {
   const title=value.registro[value.tipo === 'noticias' ? 'titulo':'nome'];
   if(typeof title !== 'string' || !title.trim() || title.length>160)
     throw fail(400,'Informe o título do rascunho.');
-  if(Buffer.byteLength(JSON.stringify(value.registro),'utf8')>128*1024)
-    throw fail(413,'Este rascunho ultrapassa 128 KB. As fotos devem ser enviadas separadamente.');
+  if(Buffer.byteLength(JSON.stringify(value.registro),'utf8')>256*1024)
+    throw fail(413,'Este rascunho ultrapassa 256 KB. As fotos devem ser enviadas separadamente.');
   if(value.registro.fotos !== undefined && (!Array.isArray(value.registro.fotos) || value.registro.fotos.length>10))
     throw fail(400,'Use no máximo dez fotos no rascunho.');
   // Drafts are private editorial data, not approved/publishable HTML. Full
   // publication validation is a separate step; no route here publishes content.
-  const allowed=['titulo','subtitulo','pesquisa','nome','resumo','texto','descricao','categoria','fonte','link','data','local','horario',
+  const allowed=['titulo','subtitulo','pesquisa','pesquisaArquivo','nome','resumo','texto','descricao','categoria','fonte','link','data','local','horario',
     'publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video','icone','classe'];
   const registro=Object.fromEntries(allowed.filter(key=>Object.hasOwn(value.registro,key)).map(key=>[key,value.registro[key]]));
+  if(registro.pesquisaArquivo){try{registro.pesquisaArquivo=validarPesquisaArquivo(registro.pesquisaArquivo);}catch{throw fail(400,'Confira o arquivo de pesquisa e seus limites.');}}
   return {id:value.id,tipo:value.tipo,revisao:value.revisao,registro};
 }
 
@@ -85,6 +87,6 @@ export function createDraftRouter({auth,store=createDraftStore()}) {
   const execute=action=>async(req,res)=>{try{res.json(await action(req));}catch(error){res.status([400,404,409,413,502,503].includes(error.status)?error.status:503).json({error:error.status?error.message:'Não foi possível confirmar o acesso ao rascunho. Tente novamente.'});}};
   router.get('/api/editorial/rascunhos',execute(async()=>({rascunhos:await store.list()})));
   router.get('/api/editorial/rascunhos/:id',execute(req=>store.get(req.params.id)));
-  router.post('/api/editorial/rascunhos',express.json({limit:'160kb'}),execute(req=>store.save(req.body)));
+  router.post('/api/editorial/rascunhos',express.json({limit:'320kb'}),execute(req=>store.save(req.body)));
   return router;
 }

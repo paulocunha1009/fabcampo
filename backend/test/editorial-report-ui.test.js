@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
+import {validarPesquisaArquivo} from '../../painel/pesquisa-core.js';
 const script=(await readFile(new URL('../../painel/reportagem.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'');
 class Element {
   value='';hidden=false;disabled=false;textContent='';children=[];listeners={};
@@ -13,7 +14,7 @@ class Element {
 }
 function setup(request){
   const nodes=new Map(),doc=new Element();doc.getElementById=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};doc.createElement=()=>new Element();
-  const actions=[];vm.runInNewContext(script,{document:doc,window:new Element(),requestAuthorizedAction:action=>actions.push(action),EDITORIAL_API:'https://api.example.test/me',fetch:request,AbortController,setTimeout,clearTimeout,Event});
+  const actions=[];vm.runInNewContext(script,{document:doc,window:new Element(),validarPesquisaArquivo,requestAuthorizedAction:action=>actions.push(action),EDITORIAL_API:'https://api.example.test/me',fetch:request,AbortController,setTimeout,clearTimeout,Event});
   return {get:doc.getElementById,actions,doc};
 }
 const part=texto=>({texto,fontes:[{id:0,texto:'Trecho original da pesquisa.'}]});

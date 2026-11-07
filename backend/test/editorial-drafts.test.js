@@ -8,7 +8,7 @@ const input={id,tipo:'noticias',revisao:0,registro:{titulo:'Rascunho de teste',t
 test('rascunho recusa dados inválidos, excesso de fotos e arquivo embutido grande',()=>{
   for(const value of [null,{}, {...input,tipo:'outro'}, {...input,revisao:-1}, {...input,id:'../fora'},
     {...input,registro:{...input.registro,fotos:Array(11).fill({})}},
-    {...input,registro:{...input.registro,texto:'x'.repeat(128*1024+1)}}])assert.throws(()=>validateDraftInput(value));
+    {...input,registro:{...input.registro,texto:'x'.repeat(256*1024+1)}}])assert.throws(()=>validateDraftInput(value));
   const clean=validateDraftInput({...input,registro:{...input.registro,segredo:'não armazenar'}});
   assert.ok(!('segredo' in clean.registro));
 });

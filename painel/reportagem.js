@@ -1,12 +1,13 @@
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
+import { validarPesquisaArquivo } from './pesquisa-core.js';
 const $=id=>document.getElementById(id);
 let pending,proposal,version=0;
 function countResearch(){const count=$('pesquisa').value.length;$('contador-pesquisa').textContent=count.toLocaleString('pt-BR')+' de 12.000 caracteres'+(count===12000?' — limite atingido.':'');}
 $('pesquisa').addEventListener('input',countResearch);
 document.addEventListener('editorial-record-loaded',countResearch);
 countResearch();
-const snapshot=()=>JSON.stringify(['pesquisa','titulo','subtitulo','resumo','texto','cards'].map(id=>$(id).value));
+const snapshot=()=>JSON.stringify(['pesquisa','pesquisaArquivo','titulo','subtitulo','resumo','texto','cards'].map(id=>$(id).value));
 function reset(){version++;pending?.abort();proposal=null;$('proposta-reportagem').hidden=true;}
 function block(label,part){
   const section=document.createElement('section');section.className='parte-reportagem';
@@ -19,7 +20,10 @@ function block(label,part){
 $('estruturar-reportagem').addEventListener('click',()=>{
   if(pending)return;
   const pesquisa=$('pesquisa').value.trim(),original=snapshot(),current=version;
-  if(pesquisa.length<120){$('estado-reportagem').textContent='Registre pelo menos 120 caracteres de pesquisa antes de solicitar a reportagem.';return;}
+  let arquivo;
+  try{arquivo=validarPesquisaArquivo(JSON.parse($('pesquisaArquivo').value||'null'));}catch{$('estado-reportagem').textContent='Confira o texto e os limites do arquivo importado.';return;}
+  if(arquivo && !arquivo.conferido){$('estado-reportagem').textContent='Confira o texto do arquivo e marque a confirmação antes de usar a IA.';return;}
+  if((pesquisa+'\n'+(arquivo?.texto||'')).trim().length<120){$('estado-reportagem').textContent='Registre ou importe pelo menos 120 caracteres de pesquisa antes de solicitar a reportagem.';return;}
   $('estado-reportagem').textContent='Confirme sua conta Google para organizar a pesquisa.';
   requestAuthorizedAction(async credential=>{
     if(current!==version || original!==snapshot())return;
@@ -27,7 +31,7 @@ $('estruturar-reportagem').addEventListener('click',()=>{
     $('estruturar-reportagem').disabled=true;proposal=null;$('proposta-reportagem').hidden=true;
     $('estado-reportagem').textContent='Organizando a pesquisa. O original permanece preservado.';
     try{
-      const response=await fetch(EDITORIAL_API.replace(/\/me$/,'/reportagem'),{method:'POST',headers:{Authorization:`Bearer ${credential}`,'Content-Type':'application/json'},body:JSON.stringify({pesquisa}),credentials:'omit',cache:'no-store',redirect:'error',signal:controller.signal});
+      const response=await fetch(EDITORIAL_API.replace(/\/me$/,'/reportagem'),{method:'POST',headers:{Authorization:`Bearer ${credential}`,'Content-Type':'application/json'},body:JSON.stringify({pesquisa,arquivo}),credentials:'omit',cache:'no-store',redirect:'error',signal:controller.signal});
       if(!response.ok)throw new Error();
       const value=await response.json();
       if(controller.signal.aborted || current!==version || original!==snapshot())return;
@@ -55,4 +59,5 @@ $('aplicar-reportagem').addEventListener('click',()=>{
 $('descartar-reportagem').addEventListener('click',()=>{reset();$('estado-reportagem').textContent='Proposta descartada. A pesquisa e a reportagem foram preservadas.';});
 document.addEventListener('editorial-record-loaded',reset);
 document.addEventListener('editorial-access-cleared',reset);
+document.addEventListener('editorial-research-changed',reset);
 window.addEventListener('pagehide',reset);
