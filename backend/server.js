@@ -140,16 +140,23 @@ app.post('/api/editorial/cards', async (req, res, next) => {
 }, rateLimiter.middleware, async (req, res) => {
   if(!aiClient) return res.status(503).json({ error:'A IA ainda não está disponível.' });
   let phase = 'provider';
+  let finishReason = null;
   try {
     const result = await aiClient.models.generateContent({ model:GEMINI_MODEL,
       contents:JSON.stringify(cardSelectionSource(req.editorialSource)), config:{ systemInstruction:CARD_PROMPT,
         responseMimeType:'application/json', maxOutputTokens:MAX_TOKENS, temperature:0.2,
+        responseJsonSchema:{type:'object',required:['resumoId','cards'],properties:{
+          resumoId:{type:'integer',minimum:0}, cards:{type:'array',minItems:1,maxItems:3,
+            items:{type:'object',required:['titulo','trechoId'],properties:{titulo:{type:'string',maxLength:90},trechoId:{type:'integer',minimum:0}}}}}},
         httpOptions:{ timeout:20000 } } });
+    finishReason = result.candidates?.[0]?.finishReason || null;
     phase = 'validation';
     return res.json(validateCardSelection(result.text || '', req.editorialSource));
   } catch(error) {
     // Diagnóstico sem texto da reportagem, resposta do modelo ou credenciais.
     console.warn('editorial_cards_failed', { phase,
+      reason:phase==='validation' ? (error instanceof SyntaxError ? 'invalid-json' : 'invalid-selection') : null,
+      finishReason,
       status:Number.isInteger(error.status) ? error.status : null });
     return res.status(error.status === 429 ? 429 : 502).json({
       error:'Não foi possível preparar sugestões conferidas. O texto original foi preservado.' });
