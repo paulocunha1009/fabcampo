@@ -56,3 +56,6 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .parte-reportagem h4{margin:.25rem 0 .5rem}
 .parte-reportagem blockquote{margin:.7rem 0;padding:.7rem 1rem;border-left:3px solid #43805b;background:#fff;white-space:pre-wrap}
 #proposta-reportagem button{margin:.75rem .4rem .2rem 0}
+.arquivo-pesquisa{margin:1rem 0;padding:1rem;border:1px solid #cbded1;border-radius:10px;background:#fff}
+.arquivo-pesquisa input[type="checkbox"]{display:inline-block;width:auto;margin:0 .5rem 0 0;vertical-align:middle;accent-color:#246940}
+#texto-arquivo-pesquisa{white-space:pre-wrap;min-height:220px}

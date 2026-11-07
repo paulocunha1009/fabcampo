@@ -1,7 +1,7 @@
 import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
 import { videoEmbed, imagemPrevia } from './midias-core.js';
 const $ = id => document.getElementById(id);
-const campos = ['titulo','subtitulo','pesquisa','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
+const campos = ['titulo','subtitulo','pesquisa','pesquisaArquivo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
 const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade', fotos:'1 a 10 fotos enviadas, com uma capa, legendas, créditos e descrições acessíveis' };
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
@@ -10,6 +10,7 @@ export function obterRegistroAtual(){
   if(!pronto) throw new Error('Aguarde o carregamento dos registros.');
   const valores=Object.fromEntries(campos.map(id=>[id,$(id).value]));
   valores.cards=JSON.parse(valores.cards || '[]');valores.fotos=JSON.parse(valores.fotos || '[]');
+  valores.pesquisaArquivo=JSON.parse(valores.pesquisaArquivo || 'null');
   return {tipo,registro:validarRegistro(tipo,valores)};
 }
 export function abrirRascunhoRemoto(documento){
@@ -95,7 +96,7 @@ function previa(registro){
 function escolher(){
   limparErros();
   const registro = conteudo[tipo][$('registro-editorial').value];
-  campos.forEach(id => { $(id).value = ['cards','fotos'].includes(id) ? JSON.stringify(registro?.[id] || []) : (registro?.[id] || ({categoria:'Portal',modelo:'destaques'}[id] || '')); });
+  campos.forEach(id => { $(id).value = id==='pesquisaArquivo' ? JSON.stringify(registro?.[id] || null) : ['cards','fotos'].includes(id) ? JSON.stringify(registro?.[id] || []) : (registro?.[id] || ({categoria:'Portal',modelo:'destaques'}[id] || '')); });
   $('midias-reportagem').hidden = tipo !== 'noticias'; $('midia-legada').hidden = tipo === 'noticias';
   document.dispatchEvent(new Event('editorial-record-loaded'));
   if(registro){ previa(registro); informar('Registro carregado para revisão. Nenhuma alteração foi publicada.'); }
@@ -132,7 +133,7 @@ $('editorial-form').addEventListener('submit', event => {
     $('titulo-previa').focus();
   } catch(error){
     informar('Confira os campos indicados.');
-    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; const target = error.campo === 'fotos' ? $('arquivos-galeria') : error.campo === 'cards' ? $('sugerir-cards') : $(error.campo); document.dispatchEvent(new CustomEvent('editorial-field-error',{detail:target})); target.focus(); }
+    if(error.campo){ $(error.campo).setAttribute('aria-invalid', 'true'); $('erro-'+error.campo).textContent = error.message; const target = error.campo === 'pesquisaArquivo' ? $('texto-arquivo-pesquisa') : error.campo === 'fotos' ? $('arquivos-galeria') : error.campo === 'cards' ? $('sugerir-cards') : $(error.campo); target.closest('details')?.setAttribute('open',''); document.dispatchEvent(new CustomEvent('editorial-field-error',{detail:target})); target.focus(); }
   }
 });
 $('baixar-rascunho').addEventListener('click', () => {

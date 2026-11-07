@@ -33,9 +33,17 @@
           <section data-etapa="conteudo" aria-labelledby="titulo-conteudo"><h3 id="titulo-conteudo" tabindex="-1">Conte a história</h3><p class="ajuda">Comece pelo que aconteceu. Os detalhes podem ser completados depois.</p>
           <div data-campos="noticias">
             <section class="pesquisa-aluno" aria-labelledby="titulo-pesquisa"><h3 id="titulo-pesquisa">Da pesquisa à reportagem</h3>
-            <label for="pesquisa">Pesquisa original do aluno</label><p id="limite-pesquisa"><strong>Use de 120 a 12.000 caracteres, incluindo espaços.</strong> Se a pesquisa for maior, selecione os registros e trechos relevantes para esta reportagem.</p><textarea id="pesquisa" rows="8" maxlength="12000" aria-describedby="limite-pesquisa contador-pesquisa ajuda-pesquisa"></textarea><p id="contador-pesquisa">0 de 12.000 caracteres</p><small id="erro-pesquisa"></small>
+            <label for="pesquisa">Pesquisa original do aluno</label><p id="limite-pesquisa"><strong>Use de 120 a 12.000 caracteres, incluindo espaços.</strong> Também é possível importar um arquivo maior como referência, abaixo. Para gerar a reportagem, o conjunto deve ter pelo menos 120 caracteres.</p><textarea id="pesquisa" rows="8" maxlength="12000" aria-describedby="limite-pesquisa contador-pesquisa ajuda-pesquisa"></textarea><p id="contador-pesquisa">0 de 12.000 caracteres</p><small id="erro-pesquisa"></small>
             <p id="ajuda-pesquisa">Reúna anotações, entrevistas e fontes. Informe quem falou, onde e quando. Marque o que ainda precisa ser confirmado. Não inclua senhas ou contatos pessoais.</p>
+            <details class="arquivo-pesquisa"><summary>Importar pesquisa completa em PDF ou Markdown</summary>
+            <label for="arquivo-pesquisa">Selecionar arquivo de referência</label><input id="arquivo-pesquisa" type="file" accept=".pdf,.md,.markdown,application/pdf,text/markdown">
+            <p>Um arquivo de até <strong>5 MB</strong>; PDF com texto de até <strong>50 páginas</strong>; até <strong>40.000 caracteres</strong> e 96 KB de texto extraído. Arquivos acima dos limites são recusados, sem cortes. PDF escaneado precisa de reconhecimento de texto (OCR).</p>
+            <p>A leitura ocorre neste computador. O arquivo original não é enviado nem guardado no portal. O texto conferido pode ser salvo no rascunho privado e é enviado ao Gemini somente ao solicitar a reportagem.</p>
+            <p id="estado-arquivo-pesquisa" role="status">Nenhum arquivo de pesquisa importado.</p>
+            <section id="revisao-arquivo-pesquisa" hidden aria-label="Conferência do arquivo de pesquisa"><p id="nome-arquivo-pesquisa"></p><label for="texto-arquivo-pesquisa">Texto extraído — confira e corrija a leitura, se necessário</label><textarea id="texto-arquivo-pesquisa" rows="10" maxlength="40000"></textarea><label><input id="conferir-arquivo-pesquisa" type="checkbox"> Conferi o texto extraído e quero usá-lo como referência.</label><button type="button" id="remover-arquivo-pesquisa">Remover referência desta edição</button></section>
+            <input id="pesquisaArquivo" type="hidden" value="null"><small id="erro-pesquisaArquivo"></small></details>
             <button type="button" id="estruturar-reportagem">Organizar pesquisa em reportagem</button><p id="estado-reportagem" role="status">O Gemini recebe esta pesquisa para sugerir a estrutura. Confira cada informação antes de aplicar. A pesquisa original permanece preservada no rascunho.</p>
+            <p id="cota-reportagem" class="ajuda">Cada geração ou nova tentativa usa uma solicitação da cota compartilhada com o SabIA e os cards. Importar e ler arquivos não usa IA. A qualidade depende das fontes e da revisão, não da quantidade diária.</p>
             <section id="proposta-reportagem" hidden aria-label="Reportagem sugerida para revisão"><h3>Compare a proposta com a pesquisa</h3><p>A IA pode cometer erros. Confira nomes, datas, atribuições e sentido das falas nos trechos de apoio. As lacunas apontadas também precisam de revisão.</p><div id="conteudo-proposta"></div><button type="button" id="aplicar-reportagem">Usar reportagem no rascunho</button><button type="button" id="descartar-reportagem">Descartar proposta</button></section>
             </section>
             <label for="modelo">Modelo da reportagem</label><select id="modelo"><option value="destaques">Reportagem com destaques — referência: Educação</option><option value="dados">Reportagem com dados — referência: Clima</option></select><small id="erro-modelo"></small>
@@ -120,6 +128,7 @@
   <script type="module" src="imagem.js"></script>
   <script type="module" src="cards.js"></script>
   <script type="module" src="reportagem.js"></script>
+  <script type="module" src="pesquisa-arquivo.js"></script>
   <script type="module" src="galeria.js"></script>
   <script type="module" src="etapas.js"></script>
   <script type="module" src="rascunhos.js"></script>
