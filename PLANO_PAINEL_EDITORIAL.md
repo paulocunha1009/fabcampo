@@ -574,3 +574,29 @@ Evidência local: `tmp/validacao/retomada-revisao3-fotos-confirmadas.png`.
 Próxima etapa: testar sugestões Gemini com texto real conferido; o rascunho atual
 continua sem texto completo, local e metadados editoriais das fotos, portanto não
 está pronto para publicação.
+
+## Teste Gemini e correção por seleção de trechos — 07/11/2026
+
+O teste real usou os seis parágrafos já públicos de `.pilar-card__desc` da
+reportagem Educação. Foram colocados somente na edição local, sem salvar nova
+revisão nem publicar. A primeira chamada retornou 502. Diagnóstico seguro foi
+implantado (7c662aa; deployment a3bv4Q4dEznsixLTpdSJngJWvDd6 promovido):
+`phase: validation, status: null`. A resposta Gemini foi recebida, mas recusada
+pela validação de trechos. Não registrar texto da reportagem, resposta ou tokens.
+
+A correção cf2a9c7 passa ao Gemini trechos originais numerados e pede IDs. O
+servidor resolve os IDs para o texto original e mantém a validação de extração.
+IDs inválidos são rejeitados e a revisão humana permanece obrigatória.
+136 testes Node passaram. A validação real dessa correção ainda está em andamento.
+
+Teste real concluído: ded4d90 / deployment EgUG9xL8tcDTMi72vsp3yAK2rS1F
+promovido ao domínio oficial. Seleção por IDs isolada ainda teve falha de validação;
+a resposta estruturada obrigatória (`responseJsonSchema`) resolveu a chamada real.
+O painel exibiu resumo e três cards; os quatro trechos foram comparados com o
+texto de entrada e são literais. Os títulos continuam sujeitos à revisão humana.
+Não foi clicado Usar sugestões, não foi salva uma nova revisão e nada foi publicado.
+A revisão privada 3 continua intacta; texto de teste e sugestões estão só na aba.
+Evidência: `tmp/validacao/gemini-cards-confirmados.png`.
+Referência técnica: https://ai.google.dev/gemini-api/docs/structured-output
+Próxima etapa: construir a página final da reportagem conforme os modelos existentes,
+antes de habilitar publicação/atualização/reversão com acesso autorizado.
