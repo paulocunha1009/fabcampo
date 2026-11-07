@@ -497,3 +497,23 @@ foi publicado, e nenhuma sugestão Gemini foi solicitada nesse teste.
 Permanecem pendentes a credencial de escrita GitHub e a branch de imagens, envio
 real das fotos, geração da página pública e seu fluxo final de publicação/reversão.
 A revisão de fontes, fatos e imagens continua com o professor e a equipe autorizada.
+
+## Avisos de salvamento publicados e conferidos
+
+A atualização dos dois arquivos de orientação (`b14a15b`) teve build aprovado, mas
+o deployment GitHub Pages `42323992809` encerrou com `Timeout reached, aborting!`.
+A tentativa de ler logs com a credencial Git foi bloqueada pela revisão automática
+por não haver autorização específica para esse uso; nenhum token foi obtido ou
+reaproveitado. A conferência prosseguiu pelos estados e anotações públicos, que
+informaram o timeout. Não repetir a sondagem de credenciais.
+
+Foi feita uma única nova tentativa, sem mudar conteúdo: master
+`64babcaad6f1888c8dc56ed77a640676b8eb43f4`, GitHub Pages `42325005278`, concluído
+com sucesso. Todos os 14 arquivos de `painel/` no domínio oficial foram comparados
+à versão local, normalizando somente finais de linha: nenhuma divergência.
+
+Estado entregue: rascunho privado aberto na revisão 2, salvamento/retomada e conflito
+conferidos no Redis real. Nenhuma publicação editorial ou upload de foto foi feito.
+Os avisos atualizados aparecem ao recarregar a página; uma aba antiga pode manter
+os textos anteriores até recarregar. Recarregar também limpa a sessão em memória;
+os rascunhos confirmados no servidor permanecem recuperáveis após nova entrada.

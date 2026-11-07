@@ -35,7 +35,7 @@ atual abaixo não deve ser confundido com o estado publicado naquela data.
 | Modo de alto contraste | Publicado; teste de uso com alunos pendente |
 | Busca interna: links das páginas temáticas, termos em outra ordem e atualização das fichas | Publicado; teste de uso com alunos pendente |
 | Busca dentro dos textos, com trecho original e carregamento sob demanda | Publicado em 05/11/2026; exemplo conferido no domínio oficial |
-| Painel para edição de notícias da comunidade e eventos escolares | Publicado; autorização individual e salvamento privado implantados; validação real de salvar/retomar aguardando entrada Google do professor |
+| Painel para edição de notícias da comunidade e eventos escolares | Publicado; conta do professor autorizada; salvar, retomar e recusar revisão antiga confirmados no servidor; fotos GitHub e publicação de matérias pendentes |
 
 ## Decisão para computadores compartilhados
 
