@@ -453,3 +453,24 @@ diretamente; não houve tentativa de contornar esse bloqueio nem de ler tokens d
 Ainda não há confirmação de rascunho salvo no Redis. Não informar salvamento real,
 retomada ou proteção de conflito como validados até concluir a entrada e conferir
 essas operações pela interface. Nenhuma matéria ou foto foi publicada nessa etapa.
+
+## Primeiro salvamento real confirmado
+
+Após o professor concluir a entrada no Google, a interface exibiu `Conta conferida`
+com a conta autorizada. Foi selecionado o primeiro registro já existente no portal
+e salvo como rascunho privado. O servidor confirmou na tela:
+`Rascunho salvo no painel — revisão 1. Nenhuma publicação foi feita.`
+Isso confirma a primeira gravação real pelo script Redis; não confirma ainda a
+retomada, a recusa de edição antiga ou a retenção de cinco revisões.
+
+Na retomada algumas horas depois, a versão oficial da API foi conferida na Vercel:
+`2RWsFuvjv9bEUjY3G1MeR7ya7fJK` / `ec971cf`, pronta e associada ao domínio oficial.
+O acesso em memória da página havia expirado. A busca de rascunhos solicitou nova
+entrada Google, e essa etapa foi entregue ao professor. A recuperação da lista e o
+teste de conflito continuam pendentes; não recriar o mesmo rascunho para mascarar
+uma falha de retomada.
+
+Os avisos da interface foram corrigidos para distinguir `Guardar e atualizar prévia`
+(somente a página), `Salvar no painel` (aguardar confirmação de revisão) e download
+JSON. Removidas mensagens iniciais que diziam que o salvamento ainda estava em
+preparação, pois a função já foi ativada. Fotos ainda não enviadas continuam locais.
