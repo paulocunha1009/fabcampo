@@ -59,3 +59,8 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .arquivo-pesquisa{margin:1rem 0;padding:1rem;border:1px solid #cbded1;border-radius:10px;background:#fff}
 .arquivo-pesquisa input[type="checkbox"]{display:inline-block;width:auto;margin:0 .5rem 0 0;vertical-align:middle;accent-color:#246940}
 #texto-arquivo-pesquisa{white-space:pre-wrap;min-height:220px}
+#pagina-reportagem-dialog{width:96vw;max-width:1500px;padding:0;border:1px solid #b6cdbd;border-radius:14px;background:#eef2ed}
+#pagina-reportagem-dialog::backdrop{background:#102d24b8}
+.barra-pagina-reportagem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;background:#fff;flex-wrap:wrap}
+.barra-pagina-reportagem h2{font-size:1rem;margin:0}.barra-pagina-reportagem button{margin:4px;font-size:.8rem;padding:8px 12px}
+#pagina-reportagem-frame{display:block;width:100%;max-width:100%;height:78vh;margin:auto;border:0;background:#fff}

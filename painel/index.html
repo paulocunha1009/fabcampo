@@ -119,11 +119,14 @@
         <p class="ajuda">Atualizada ao guardar. Nada é publicado nesta etapa.</p>
         <article id="previa-editorial"><div class="previa-vazia"><span aria-hidden="true">✎</span><h3>Sua história aparece aqui</h3><p>Preencha título, resumo e autoria. Depois, guarde para conferir a prévia.</p></div></article>
         <p id="pendencias-editoriais" role="status"></p>
+        <button id="abrir-pagina-reportagem" type="button" class="botao-secundario">Conferir página completa da reportagem</button><p id="estado-pagina-reportagem" class="ajuda" role="status">Veja a edição atual com cabeçalho, rodapé e adaptação para celular. Nada é publicado.</p>
         <button id="baixar-rascunho" type="button" disabled>Baixar rascunho</button><p class="ajuda ajuda-download">Arquivo de edição (.json). As fotos locais não estão incluídas.</p>
       </section>
     </div>
   </main>
+  <dialog id="pagina-reportagem-dialog" aria-labelledby="titulo-pagina-reportagem"><div class="barra-pagina-reportagem"><h2 id="titulo-pagina-reportagem">Página da reportagem — prévia</h2><div><button id="pagina-desktop" type="button">Computador</button><button id="pagina-celular" type="button">Celular</button><button id="fechar-pagina-reportagem" type="button">Fechar prévia</button></div></div><iframe id="pagina-reportagem-frame" title="Prévia completa da reportagem" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></dialog>
   <script type="module" src="painel.js"></script>
+  <script type="module" src="previa-reportagem.js"></script>
   <script type="module" src="login.js"></script>
   <script type="module" src="imagem.js"></script>
   <script type="module" src="cards.js"></script>
