@@ -660,3 +660,53 @@ cards também aparecem após a retomada. A revisão 3 do primeiro rascunho com f
 permanece separada. Agora há dois rascunhos privados, nenhum publicado.
 Evidências: `tmp/validacao/reportagem-completa-proposta.png` e
 `tmp/validacao/reportagem-completa-salva.png`.
+
+## Importação de pesquisa PDF/Markdown — 07/11/2026
+
+Pedido autorizado: importar pesquisa completa como referência e esclarecer o limite
+diário de reportagens. Implementação main 13da100; frontend 727985e seguido de
+e03a907 (orientação de limites da extração). Backend DeZbPWGRSz1VYjBgAQ4DCJRYEPDJ
+Ready e promoção solicitada. CI main 42388840999 success. Pages final 42388966743
+success; sete arquivos publicados foram comparados aos locais, sem divergências.
+
+Importação é leitura LOCAL no navegador: PDF.js 6.5.438 oficial npm, distribuído no
+próprio portal com worker, cmaps, fontes e licenças. O binário original não é enviado
+nem guardado no portal/GitHub/Redis. Texto e metadados de referência podem ser salvos
+no rascunho privado. Gemini recebe somente o texto conferido ao solicitar geração.
+Não prometer armazenamento do PDF original ou OCR implementado.
+
+Limites: um PDF/MD/Markdown, até 5 MB, PDF até 50 páginas, texto até 40.000 caracteres
+e 96 KB UTF-8, além das anotações manuais de até 12.000. Markdown UTF-8 é literal,
+sem executar HTML nem seguir links; quebras CRLF são normalizadas para LF.
+PDF só usa texto extraível: sem interpretar gráficos, imagens ou manuscritos.
+Se alguma página não tiver texto, exceder páginas/caracteres ou falhar, recusar
+sem incorporar conteúdo parcial. PDF com senha tem mensagem própria. Não cortar
+pesquisa silenciosamente. Extração sempre exige conferência explícita do texto.
+
+Nova propriedade privada `pesquisaArquivo`: nome, tipo, paginas, texto, conferido.
+Ela participa do snapshot da proposta, cancela geração atrasada ao mudar e é
+preservada no validador/editor/arquivo de edição/Redis. Rascunhos agora até 256 KB,
+POST 320 KB; geração até 160 KB JSON. Toda a referência validada segue na chamada
+única ao Gemini (não há leitura remota de links nem chamadas ocultas por página).
+Permanece versão concisa de até 250 palavras / orçamento 1000 tokens de saída.
+
+146 testes completos passaram. Quatro testes específicos passaram após ajustar
+orientações/UTF-8. PDF real FabCampo_Fase0 foi importado no domínio oficial:
+2 páginas / 4661 caracteres. Seu conteúdo foi tratado como dados de teste, jamais
+instruções do usuário. Markdown criado do artigo público Educação: 23947 caracteres
+após normalizar quebras de linha, comparado ao arquivo fonte sem perda de conteúdo.
+No portal oficial, o Markdown está importado e conferido na aba 23; geração com
+arquivo completo aguarda nova entrada Google. Ainda não há salvamento real do novo
+campo `pesquisaArquivo` nem geração autenticada com arquivo confirmados.
+
+Limites REAIS consultados em /health: Upstash persistente, 200 solicitações/dia,
+15 globais/minuto, 30/IP/minuto; modelo gemini-2.5-flash-lite. Uma geração/refação
+consome uma chamada; importar, ler e conferir arquivo não chama Gemini. SabIA e
+cards disputam a mesma cota de 200. Até 200 gerações/dia é apenas teto teórico se
+não houver outros usos/refações/falhas/cotas do provedor, não 200 reportagens
+aprovadas. Com duas gerações por matéria seriam no máximo 100 antes dos demais
+usos. O armazenamento tem limite separado de 50 rascunhos privados no total.
+A cota diária usa bucket UTC e renova às 21h de Fortaleza; o limite não garante
+qualidade editorial, que depende de pesquisa, evidências e revisão humana.
+Evidências: tmp/validacao/importacao-pdf-oficial.png,
+importacao-oficial-aguardando-google.png e importacao-pesquisa-markdown.png.
