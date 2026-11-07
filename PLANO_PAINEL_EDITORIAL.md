@@ -600,3 +600,38 @@ Evidência: `tmp/validacao/gemini-cards-confirmados.png`.
 Referência técnica: https://ai.google.dev/gemini-api/docs/structured-output
 Próxima etapa: construir a página final da reportagem conforme os modelos existentes,
 antes de habilitar publicação/atualização/reversão com acesso autorizado.
+
+## Pesquisa original → reportagem completa — 07/11/2026
+
+Pedido do professor: a IA deve estruturar a reportagem inteira a partir da pesquisa
+do aluno, sem criar fatos externos, e conservar a pesquisa para comparação.
+Implementação main dd0215b, frontend master 1aae6f6. Backend deployment
+9yy13izLvKxbioyUjYqgKcvLA4H3 Ready e promoção solicitada no domínio oficial.
+
+Novo campo privado `pesquisa` (até 12.000 caracteres), subtítulo, botão Organizar
+pesquisa em reportagem e proposta separada com título, subtítulo, abertura, até
+três seções com intertítulos, cards de trechos e lacunas. Cada parte mostra os
+trechos originais associados. IDs são validados pelo servidor, e números e falas
+entre aspas ausentes na pesquisa são recusados. Isso não comprova semanticamente
+nomes, atribuições, relações ou toda paráfrase: revisão humana continua necessária.
+O prompt exige preservar incerteza/atribuição e não completar dados ausentes.
+
+Nova rota autenticada `/api/editorial/reportagem`: autorização antes de leitura,
+limite JSON 64 KB, mesma cota SabIA/Gemini e orçamento de 1000 tokens, JSON Schema,
+nenhum texto de pesquisa/resposta em logs. Sem busca ou ferramentas externas.
+A pesquisa é enviada ao Gemini somente ao solicitar a proposta. Não publicar
+`pesquisa` em futuras páginas públicas; ela pertence ao rascunho privado e ao
+arquivo de edição baixado pela equipe.
+
+Usar reportagem no rascunho altera somente a edição local: título, subtítulo,
+resumo, texto com intertítulos ## e cards. Não altera pesquisa, data, local, fonte,
+fotos ou vídeo. Salvar no painel continua sendo uma ação separada com revisão.
+Mudanças na pesquisa ou edição invalidam a proposta; trocar registro/sair cancela
+requisições em andamento. Cards continuam editáveis. Pesquisa/subtítulo são
+preservados pelo validador local e pela lista permitida do armazenamento privado.
+
+140 testes completos passaram antes da implantação; os seis testes específicos
+atuais também passaram, incluindo duas verificações da UI para aplicação explícita,
+preservação do original, edição durante geração e saída da conta. Prévia local
+conferida no navegador. Teste real de geração completa e persistência real dos
+novos campos ainda pendente; aguardar publicação Pages e nova entrada Google.
