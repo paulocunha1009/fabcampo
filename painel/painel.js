@@ -127,7 +127,7 @@ $('editorial-form').addEventListener('submit', event => {
     conteudo[tipo][indice] = registro;
     listar(String(indice)); previa(registro);
     bloquearTroca(false);
-    informar('Registro guardado somente neste rascunho. Confira a prévia e baixe o arquivo antes de sair.');
+    informar('Prévia atualizada nesta página. Para retomar depois, use “Salvar no painel” e aguarde a confirmação ou baixe o rascunho.');
     $('titulo-previa').focus();
   } catch(error){
     informar('Confira os campos indicados.');
