@@ -36,7 +36,7 @@ $('arquivo-pesquisa').addEventListener('change',async event=>{
     const result=tipo==='pdf'?await extrairPDF(bytes,{onTask:task=>{loadingTask=task;}}):{texto:decodificarMarkdown(bytes),paginas:0};
     const next=validarPesquisaArquivo({nome:file.name,tipo,...result,conferido:false});
     if(current!==version)return;
-    attachment=next;commit();draw();notify('Arquivo lido por completo. Confira o texto abaixo e marque a confirmação antes de solicitar a reportagem.');
+    attachment=next;commit();draw();notify('Texto importado sem cortes. Confira a leitura abaixo e marque a confirmação antes de solicitar a reportagem.');
   }catch(error){if(current===version)notify((error.message||'Não foi possível ler o arquivo.')+' A pesquisa anterior foi preservada.');}
   finally{clearTimeout(timer);loadingTask=null;$('arquivo-pesquisa').disabled=false;$('estruturar-reportagem').disabled=false;}
 });
