@@ -1,5 +1,5 @@
 import express from 'express';
-import {validarPesquisaArquivo} from '../../painel/pesquisa-core.js';
+import {validarPesquisaArquivo} from './editorial-research-file.js';
 
 export function validateResearch(value) {
   if(typeof value?.pesquisa!=='string' || value.pesquisa.length>12000)throw new Error('Use até 12.000 caracteres nas anotações da pesquisa.');

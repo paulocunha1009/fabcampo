@@ -1,7 +1,7 @@
 import express from 'express';
 import { Redis } from '@upstash/redis';
 import { randomUUID } from 'node:crypto';
-import {validarPesquisaArquivo} from '../../painel/pesquisa-core.js';
+import {validarPesquisaArquivo} from './editorial-research-file.js';
 
 const fail = (status, message) => Object.assign(new Error(message), {status});
 const validId = id => typeof id === 'string' && /^[a-f0-9-]{36}$/.test(id);
