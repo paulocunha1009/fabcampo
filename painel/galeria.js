@@ -1,5 +1,6 @@
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
+import { imagemPrevia } from './midias-core.js';
 const $ = id => document.getElementById(id);
 let photos = [], version = 0, busy = false, upload;
 const files = new Map();
@@ -13,7 +14,7 @@ function draw() {
     const box=document.createElement('section'); box.className='foto-editorial';
     const title=document.createElement('h4'); title.textContent=`Foto ${index+1}${photo.capa ? ' — capa':''}`; box.append(title);
     const local=files.get(photo.id);
-    if(local?.url || photo.imagem){ const image=document.createElement('img'); image.src=local?.url || new URL(photo.imagem,'https://fabcampo.com.br/').href; image.alt=photo.textoAlternativo || 'Foto em preparação'; image.referrerPolicy='no-referrer'; box.append(image); }
+    if(local?.url || photo.imagem){ const image=document.createElement('img'); image.src=local?.url || imagemPrevia(photo.imagem); image.alt=photo.textoAlternativo || 'Foto em preparação'; image.referrerPolicy='no-referrer'; box.append(image); }
     const metadata=document.createElement('details');const metadataTitle=document.createElement('summary');metadataTitle.textContent='Legenda, crédito e descrição';metadata.append(metadataTitle);box.append(metadata);
     for(const [field,name,max] of [['legenda','Legenda',400],['credito','Crédito',240],['textoAlternativo','Descrição acessível',400]]) {
       const label=document.createElement('label'); label.textContent=name+' da foto '+(index+1);
@@ -108,7 +109,7 @@ document.addEventListener('editorial-preview-media',event=>{
   for(const photo of [...(registro.fotos || [])].sort((a,b)=>Number(b.capa)-Number(a.capa))){
     const local=files.get(photo.id),path=photo.capa ? photo.capaImagem || photo.imagem:photo.imagem;
     if(!local?.url && !path)continue;
-    const figure=document.createElement('figure');const img=document.createElement('img');img.src=photo.capa && local?.canvas ? local.canvas.toDataURL('image/webp',0.82) : local?.url || new URL(path,'https://fabcampo.com.br/').href;img.alt=photo.textoAlternativo || '';img.loading='lazy';img.referrerPolicy='no-referrer';img.className='foto-previa';
+    const figure=document.createElement('figure');const img=document.createElement('img');img.src=photo.capa && local?.canvas ? local.canvas.toDataURL('image/webp',0.82) : local?.url || imagemPrevia(path);img.alt=photo.textoAlternativo || '';img.loading='lazy';img.referrerPolicy='no-referrer';img.className='foto-previa';
     const caption=document.createElement('figcaption');caption.textContent=[photo.capa ? 'Capa':'',photo.legenda,photo.credito ? 'Crédito: '+photo.credito:''].filter(Boolean).join(' — ');figure.append(img,caption);area.append(figure);
   }
 });

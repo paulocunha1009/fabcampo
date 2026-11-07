@@ -1,5 +1,5 @@
 import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
-import { videoEmbed } from './midias-core.js';
+import { videoEmbed, imagemPrevia } from './midias-core.js';
 const $ = id => document.getElementById(id);
 const campos = ['titulo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
 const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade', fotos:'1 a 10 fotos enviadas, com uma capa, legendas, créditos e descrições acessíveis' };
@@ -77,7 +77,7 @@ function previa(registro){
     try {
       const seguro = validarRegistro(tipo, registro);
       const link = document.createElement('a'); link.textContent = 'Conferir imagem de referência';
-      link.href = new URL(seguro.imagem, 'https://fabcampo.com.br/').href;
+      link.href = imagemPrevia(seguro.imagem);
       link.target = '_blank'; link.rel = 'noopener noreferrer'; area.append(link);
     } catch {}
   }

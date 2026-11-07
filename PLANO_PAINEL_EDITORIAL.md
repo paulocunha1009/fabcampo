@@ -517,3 +517,47 @@ conferidos no Redis real. Nenhuma publicação editorial ou upload de foto foi f
 Os avisos atualizados aparecem ao recarregar a página; uma aba antiga pode manter
 os textos anteriores até recarregar. Recarregar também limpa a sessão em memória;
 os rascunhos confirmados no servidor permanecem recuperáveis após nova entrada.
+
+## Ativação do envio de imagens — 07/11/2026
+
+A credencial fina `FabCampo - Upload de imagens` foi criada após autorização
+explícita: apenas o repositório `paulocunha1009/fabcampo`, Contents leitura/escrita,
+Metadata leitura, nenhuma permissão de conta, expiração em 07/12/2026.
+Foi armazenada como Secret de Production `EDITORIAL_GITHUB_TOKEN` na Vercel.
+Nenhum valor de credencial foi escrito nos arquivos do projeto.
+`EDITORIAL_UPLOAD_BRANCH=editorial-rascunhos` foi salvo como Config de Production.
+
+A branch de imagens foi preparada em `fba6b2b`, com README e configuração que
+impede builds Vercel dessa branch. Não mesclar essa branch inteira em main/master.
+O backend limita o uso da credencial a imagens WebP em `img/editorial/` nessa
+branch; a credencial GitHub em si concede escrita em conteúdo do repositório.
+
+Redeploy `54cKdFDWqEVYLGFm7msxSAJnHBCJ`, fonte main `a506d75`, build Ready,
+promovido com sucesso ao domínio `fabcampo-api.vercel.app`.
+Foto pública existente `img/galeria/educacao-escola.jpg` foi preparada no painel
+como uma foto e capa. O envio real aguarda nova entrada Google do professor;
+nenhum upload está confirmado ainda. Não afirmar validação ponta a ponta.
+A prévia de fotos retomadas precisa também conferir os caminhos da branch de
+rascunhos, pois eles ainda não existem no domínio público até a publicação.
+
+## Upload real confirmado e prévia corrigida — 07/11/2026
+
+Após a entrada Google, o painel confirmou o envio da foto existente de Educação.
+A API pública GitHub confirmou dois arquivos na branch `editorial-rascunhos`:
+- `ca46a51d77422ab4845de9866bd1c7e6a668a3136f5bd321227a17c00984a2f5.webp`:
+  1600 × 1200, 247172 bytes, foto interna.
+- `f5a3d83231aa59acf35de4412c10cefc13054df5a36919de0d4e0cecb6c8b8ef.webp`:
+  1200 × 675, 122792 bytes, capa.
+Os downloads públicos foram inspecionados com Sharp: WebP, EXIF e XMP ausentes.
+O painel confirmou salvamento privado na revisão 3. A foto de teste já era pública;
+nenhum texto novo foi inventado e nenhuma reportagem foi publicada.
+
+Corrigida a resolução de imagens editoriais na prévia e no link de referência:
+endereços canônicos continuam no rascunho, mas a prévia do painel busca hashes
+editoriais na branch de preparação. Fotos antigas mantêm endereços do portal.
+Master `be5044ab7d17a3c5961186bea07a14a8ebd438f0`, Pages `42384949285` success.
+Os três arquivos publicados foram comparados com os locais: idênticos após
+normalizar finais de linha. 41 testes editoriais passaram; a primeira execução
+teve acesso localhost bloqueado pelo sandbox, e a execução autorizada passou.
+A retomada visual em uma sessão nova ainda precisa ser conferida; o login atual
+expirou durante a conferência. Não há perda do salvamento já confirmado.

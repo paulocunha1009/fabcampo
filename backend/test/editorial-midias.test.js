@@ -1,11 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import sharp from 'sharp';
-import { validarFotos, validarVideo, videoEmbed } from '../../painel/midias-core.js';
+import { validarFotos, validarVideo, videoEmbed, imagemPrevia } from '../../painel/midias-core.js';
 import { validarRegistro, pendenciasPublicacao, montarRascunho } from '../../painel/editorial-core.js';
 import { normalizeEditorialImage } from '../lib/editorial-images.js';
 const photo = (index=0) => ({id:'foto-'+index,imagem:'img/foto-'+index+'.webp',capaImagem:index===0 ? 'img/capa.webp':'',capa:index===0,legenda:'Legenda de teste',credito:'Crédito de teste',textoAlternativo:'Descrição de teste'});
 const news = {titulo:'Título de teste',resumo:'Resumo de teste',categoria:'Portal',fonte:'Autoria de teste',local:'Local de teste',texto:'Texto de teste',fotos:[photo()]};
+
+test('prévia recupera fotos ainda não publicadas sem alterar caminhos do rascunho',()=>{
+  const path='img/editorial/'+'a'.repeat(64)+'.webp';
+  assert.equal(imagemPrevia(path),'https://raw.githubusercontent.com/paulocunha1009/fabcampo/editorial-rascunhos/'+path);
+  assert.equal(imagemPrevia('img/galeria/educacao-escola.jpg'),'https://fabcampo.com.br/img/galeria/educacao-escola.jpg');
+  assert.throws(()=>imagemPrevia('javascript:alert(1)'));
+});
 test('reportagem aceita uma a dez fotos, mas rascunho incompleto continua possível',()=>{
   assert.deepEqual(pendenciasPublicacao('noticias',news),[]);
   assert.equal(validarRegistro('noticias',{...news,fotos:Array.from({length:10},(_,i)=>photo(i))}).fotos.length,10);
