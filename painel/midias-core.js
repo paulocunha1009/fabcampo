@@ -46,3 +46,13 @@ export function validarFotos(value = []) {
       legenda:text(photo.legenda,400),credito:text(photo.credito,240),textoAlternativo:text(photo.textoAlternativo,400) };
   });
 }
+// Imagens editoriais permanecem na branch de preparação até a publicação.
+export function imagemPrevia(value) {
+  if (/^img\/editorial\/[a-f0-9]{64}\.webp$/.test(value)) {
+    return 'https://raw.githubusercontent.com/paulocunha1009/fabcampo/editorial-rascunhos/' + value;
+  }
+  const url = new URL(value, 'https://fabcampo.com.br/');
+  if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) throw new Error('Endereço de imagem inválido.');
+  return url.href;
+}
+
