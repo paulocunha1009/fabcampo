@@ -25,7 +25,7 @@ import { buildAcervoContext } from './lib/acervo.js';
 import { normalizeAnswer } from './lib/assistant-answer.js';
 import { createEditorialAuth } from './lib/editorial-auth.js';
 import { createEditorialImageRouter } from './lib/editorial-images.js';
-import { CARD_PROMPT, validateCardSource, validateCardSuggestions } from './lib/editorial-cards.js';
+import { CARD_PROMPT, validateCardSource, cardSelectionSource, validateCardSelection } from './lib/editorial-cards.js';
 import { createDraftRouter } from './lib/editorial-drafts.js';
 
 dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
@@ -142,11 +142,11 @@ app.post('/api/editorial/cards', async (req, res, next) => {
   let phase = 'provider';
   try {
     const result = await aiClient.models.generateContent({ model:GEMINI_MODEL,
-      contents:JSON.stringify(req.editorialSource), config:{ systemInstruction:CARD_PROMPT,
+      contents:JSON.stringify(cardSelectionSource(req.editorialSource)), config:{ systemInstruction:CARD_PROMPT,
         responseMimeType:'application/json', maxOutputTokens:MAX_TOKENS, temperature:0.2,
         httpOptions:{ timeout:20000 } } });
     phase = 'validation';
-    return res.json(validateCardSuggestions(result.text || '', req.editorialSource));
+    return res.json(validateCardSelection(result.text || '', req.editorialSource));
   } catch(error) {
     // Diagnóstico sem texto da reportagem, resposta do modelo ou credenciais.
     console.warn('editorial_cards_failed', { phase,

@@ -55,7 +55,7 @@ test('cards verificam acesso antes de consumir a cota Gemini e usam o limitador 
     editorialAuth:{ authenticate:async()=>{ if(!allowed) throw Object.assign(new Error(),{status:403}); return {id:'test-only'}; } },
     aiClient:{ models:{ generateContent:async options=>{
       calls++; assert.equal(options.config.responseMimeType,'application/json');
-      return {text:JSON.stringify({resumo:texto,cards:[{titulo:'Destaque de teste',trecho:texto}]})};
+      return {text:JSON.stringify({resumoId:0,cards:[{titulo:'Destaque de teste',trechoId:0}]})};
     } } },
     rateLimiter:{ middleware:(_req,_res,next)=>{limits++;next();} },
   });
