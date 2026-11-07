@@ -20,6 +20,14 @@ test('proposta exige evidências existentes, números e citações registrados',
     const value=output();change(value);assert.throws(()=>validateReport(JSON.stringify(value),source));
   }
 });
+test('plano de aula não se transforma em relato de atividades já realizadas',()=>{
+  const planejamento={pesquisa:'# AMC — Aula 3: Plano de aula\n\n'+pesquisa};
+  assert.equal(researchSource(planejamento).tipoMaterial,'planejamento');
+  const proposta=output();proposta.titulo.texto='Proposta de aula sobre a comunidade';proposta.abertura.texto='O plano prevê uma entrevista sobre a escola em 2026.';
+  assert.equal(validateReport(JSON.stringify(proposta),planejamento).requiresReview,true);
+  proposta.secoes[0].texto='Os estudantes realizaram uma entrevista.';
+  assert.throws(()=>validateReport(JSON.stringify(proposta),planejamento));
+});
 test('pesquisa original e subtítulo sobrevivem ao rascunho local e privado',()=>{
   const registro={titulo:'Teste',resumo:'Resumo',categoria:'Portal',fonte:'Equipe',pesquisa,subtitulo:'Subtítulo de teste'};
   assert.equal(validarRegistro('noticias',registro).pesquisa,pesquisa);
