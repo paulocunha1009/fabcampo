@@ -15,7 +15,9 @@ export function validarArquivoSelecionado(file){
   return /\.pdf$/i.test(file.name)?'pdf':'markdown';
 }
 export function decodificarMarkdown(bytes){
-  const texto=new TextDecoder('utf-8',{fatal:true}).decode(bytes).replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');
+  let texto;
+  try{texto=new TextDecoder('utf-8',{fatal:true}).decode(bytes).replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n');}
+  catch{throw new Error('Salve o Markdown como texto UTF-8 e tente novamente.');}
   if(texto.includes('\0'))throw new Error('O Markdown deve ser um arquivo de texto UTF-8.');
   return texto;
 }
