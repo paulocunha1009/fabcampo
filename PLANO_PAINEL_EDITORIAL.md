@@ -474,3 +474,26 @@ Os avisos da interface foram corrigidos para distinguir `Guardar e atualizar pr�
 (somente a página), `Salvar no painel` (aguardar confirmação de revisão) e download
 JSON. Removidas mensagens iniciais que diziam que o salvamento ainda estava em
 preparação, pois a função já foi ativada. Fotos ainda não enviadas continuam locais.
+
+## Retomada e conflito conferidos no serviço real
+
+Após nova entrada do professor, a listagem privada recuperou o mesmo rascunho como
+revisão 1. O registro foi aberto pelo painel, incluindo título, resumo, fonte e data
+existentes. Uma segunda cópia de edição da revisão 1 foi aberta para testar conflito.
+
+Essa segunda cópia foi salva e o servidor confirmou revisão 2. Ao tentar salvar a
+primeira cópia, que ainda esperava revisão 1, o painel exibiu:
+`Existe uma versão mais recente. Seu texto foi preservado: baixe-o antes de abrir a versão do painel.`
+Nova busca no servidor manteve revisão 2; essa revisão foi aberta novamente e ficou
+selecionada na tela. Portanto foram confirmados em produção: gravação, recuperação,
+incremento de revisão, recusa de versão antiga e preservação da versão mais recente.
+O limite de cinco revisões anteriores ainda não foi exercitado com seis salvamentos.
+
+O teste usou somente o primeiro registro já existente no portal, copiado para um
+único rascunho privado. As cópias abertas durante a conferência são entradas locais
+temporárias, não rascunhos duplicados no servidor. Nenhuma matéria, foto ou vídeo
+foi publicado, e nenhuma sugestão Gemini foi solicitada nesse teste.
+
+Permanecem pendentes a credencial de escrita GitHub e a branch de imagens, envio
+real das fotos, geração da página pública e seu fluxo final de publicação/reversão.
+A revisão de fontes, fatos e imagens continua com o professor e a equipe autorizada.
