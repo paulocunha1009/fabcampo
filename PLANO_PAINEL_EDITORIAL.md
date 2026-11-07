@@ -736,3 +736,34 @@ por ele. Texto foi preservado. Ele precisa conferir o texto, marcar confirmaçã
 solicitar geração e fazer login de novo; a tentativa anterior ocorreu durante 500.
 Geração com arquivo e salvamento real de pesquisaArquivo continuam pendentes.
 Evidência: tmp/validacao/api-restaurada-pesquisa.png.
+
+## Importação, geração e retomada reais concluídas — 07/11/2026
+
+O login foi validado. A confirmação da referência estava desmarcada; após conferir
+texto Markdown legível, foi marcada e a geração solicitada com os 21.356 caracteres.
+A primeira proposta interpretou o plano de aula como execução passada. Ela foi
+DESCARTADA sem aplicar/salvar. O problema foi informado ao professor.
+
+Correção c5d2bdf031773dbcfc7f2891384366eda316b5aa: prompt distingue planos,
+roteiros, exemplos/simulações de fatos apurados; sinais de plano geram
+`tipoMaterial=planejamento`. Título e abertura precisam identificar proposta/plano,
+e verbos de execução passada conhecidos são recusados nesse caso. Trata-se de
+proteção adicional conservadora, não prova semântica universal: revisão continua
+obrigatória. 148 testes passaram, incluindo regressão de plano vs execução.
+Deployment 2KiMyDBTCeZrvehyEuri8DAgcWVJ / fabcampo-n4czc5vos-sidep-ce.vercel.app
+teve /health JSON ok ANTES de promover. Depois da promoção, geração autenticada,
+salvamento e recuperação confirmaram operação do domínio oficial.
+
+Segunda proposta reconheceu `Plano de Aula: Missão Técnico do AgroVida -
+Armazenamento e Placa-mãe`, com abertura de proposta e atividades previstas.
+Foi aplicada ao rascunho privado com fonte `AMC — Aula 3: Estudo Aplicado — AgroVida
+(documento de referência)`, sem preencher local, data, fotos ou URL desconhecidos.
+Salvamento confirmado revisão 1. Após nova busca e abertura do servidor, o texto
+extraído recuperado foi comparado à referência anterior: 21.356 caracteres,
+igualdade integral. Texto/subtítulo/cards também retomados.
+Agora são três rascunhos privados separados, nenhum publicado. O arquivo binário
+original continua só no computador; não foi enviado ao GitHub nem armazenado.
+Evidências: tmp/validacao/proposta-arquivo-plano-aula.png e
+arquivo-pesquisa-salvo-recuperado.png. Importação/geração/persistência real concluídas.
+Limites de uso continuam 200 chamadas/dia compartilhadas e 15 globais/minuto;
+nenhuma mudança de cota foi feita. Não confundir chamadas com matérias aprovadas.
