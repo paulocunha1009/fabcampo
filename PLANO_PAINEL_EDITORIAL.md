@@ -561,3 +561,16 @@ normalizar finais de linha. 41 testes editoriais passaram; a primeira execução
 teve acesso localhost bloqueado pelo sandbox, e a execução autorizada passou.
 A retomada visual em uma sessão nova ainda precisa ser conferida; o login atual
 expirou durante a conferência. Não há perda do salvamento já confirmado.
+
+## Retomada visual confirmada — 07/11/2026
+
+Em uma sessão nova da página oficial, após entrada Google, a listagem retornou o
+rascunho único na revisão 3. O registro foi aberto e a galeria e prévia carregaram
+as imagens diretamente da branch de preparação: foto interna 1600 × 1200 e capa
+1200 × 675, ambas com `complete=true` e dimensões naturais positivas no DOM.
+Não foi preciso selecionar novamente arquivos locais. O título e resumo foram
+recuperados. Nenhuma revisão adicional, alteração editorial ou publicação ocorreu.
+Evidência local: `tmp/validacao/retomada-revisao3-fotos-confirmadas.png`.
+Próxima etapa: testar sugestões Gemini com texto real conferido; o rascunho atual
+continua sem texto completo, local e metadados editoriais das fotos, portanto não
+está pronto para publicação.

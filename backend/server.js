@@ -139,13 +139,18 @@ app.post('/api/editorial/cards', async (req, res, next) => {
   catch(error) { res.status(400).json({ error:error.message }); }
 }, rateLimiter.middleware, async (req, res) => {
   if(!aiClient) return res.status(503).json({ error:'A IA ainda não está disponível.' });
+  let phase = 'provider';
   try {
     const result = await aiClient.models.generateContent({ model:GEMINI_MODEL,
       contents:JSON.stringify(req.editorialSource), config:{ systemInstruction:CARD_PROMPT,
         responseMimeType:'application/json', maxOutputTokens:MAX_TOKENS, temperature:0.2,
         httpOptions:{ timeout:20000 } } });
+    phase = 'validation';
     return res.json(validateCardSuggestions(result.text || '', req.editorialSource));
   } catch(error) {
+    // Diagnóstico sem texto da reportagem, resposta do modelo ou credenciais.
+    console.warn('editorial_cards_failed', { phase,
+      status:Number.isInteger(error.status) ? error.status : null });
     return res.status(error.status === 429 ? 429 : 502).json({
       error:'Não foi possível preparar sugestões conferidas. O texto original foi preservado.' });
   }
