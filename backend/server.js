@@ -26,6 +26,7 @@ import { normalizeAnswer } from './lib/assistant-answer.js';
 import { createEditorialAuth } from './lib/editorial-auth.js';
 import { createEditorialImageRouter } from './lib/editorial-images.js';
 import { CARD_PROMPT, validateCardSource, cardSelectionSource, validateCardSelection } from './lib/editorial-cards.js';
+import { createReportRouter } from './lib/editorial-report.js';
 import { createDraftRouter } from './lib/editorial-drafts.js';
 
 dotenv.config({ path: process.env.DOTENV_CONFIG_PATH || '.env' });
@@ -127,6 +128,7 @@ app.use(cors({
 
 app.use(createEditorialImageRouter({ auth: editorialAuth }));
 app.use(createDraftRouter({ auth: editorialAuth }));
+app.use(createReportRouter({auth:editorialAuth,aiClient,rateLimiter,model:GEMINI_MODEL,maxTokens:MAX_TOKENS}));
 app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));
 

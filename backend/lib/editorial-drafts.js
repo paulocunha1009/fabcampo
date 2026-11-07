@@ -24,7 +24,7 @@ export function validateDraftInput(value) {
     throw fail(400,'Use no máximo dez fotos no rascunho.');
   // Drafts are private editorial data, not approved/publishable HTML. Full
   // publication validation is a separate step; no route here publishes content.
-  const allowed=['titulo','nome','resumo','texto','descricao','categoria','fonte','link','data','local','horario',
+  const allowed=['titulo','subtitulo','pesquisa','nome','resumo','texto','descricao','categoria','fonte','link','data','local','horario',
     'publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video','icone','classe'];
   const registro=Object.fromEntries(allowed.filter(key=>Object.hasOwn(value.registro,key)).map(key=>[key,value.registro[key]]));
   return {id:value.id,tipo:value.tipo,revisao:value.revisao,registro};

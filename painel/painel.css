@@ -51,3 +51,8 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 @media(max-width:1099px) { .painel-grade { grid-template-columns:minmax(0,1fr); }.painel-previa { position:static;max-height:none; }.painel-cartao { padding:24px; } }
 @media(max-width:520px) { .painel-topo { margin-bottom:22px; }.painel-topo img { width:130px; }.painel-topo a { font-size:.78rem; }.painel-apresentacao { align-items:flex-start; }.status-rascunho { font-size:.65rem;padding:5px 8px; }.painel-apresentacao>div>p:last-child { font-size:.85rem; }.painel-cartao { padding:18px;border-radius:12px; }.etapas-editor button { gap:5px;font-size:.72rem; }.etapas-editor button span { min-width:18px;height:18px; }.etapas-editor { margin-top:16px; }#lista-galeria { grid-template-columns:1fr; }.rodape-editor { align-items:stretch; }.rodape-editor>button,.navegacao-etapas { width:100%; }.navegacao-etapas button { flex:1; }#cancelar-edicao { margin-left:0; }.painel-aviso { font-size:.77rem; }.etiqueta-local { display:none; } }
 @media(prefers-reduced-motion:reduce) { * { transition:none!important;scroll-behavior:auto!important; } }
+.pesquisa-aluno{padding:1.2rem;border:1px solid #cbded1;border-radius:16px;background:#f4f9f5;margin:0 0 1.5rem}
+.parte-reportagem{padding:1rem 0;border-bottom:1px solid #d9e5dd}
+.parte-reportagem h4{margin:.25rem 0 .5rem}
+.parte-reportagem blockquote{margin:.7rem 0;padding:.7rem 1rem;border-left:3px solid #43805b;background:#fff;white-space:pre-wrap}
+#proposta-reportagem button{margin:.75rem .4rem .2rem 0}
