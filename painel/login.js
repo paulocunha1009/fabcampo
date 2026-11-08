@@ -32,7 +32,7 @@ const messages = {
 const access = createGoogleAccess({ endpoint: EDITORIAL_API, identityEndpoint:EDITORIAL_API.replace(/\/me$/,'/identidade'), onState(state) {
   status.dataset.googleSubject=state.status === 'pending' ? state.id:'';
   status.textContent = state.status === 'pending' ? `Conta Google confirmada: ${state.email}. O acesso de editor ainda precisa ser autorizado pelo responsável.` : state.status === 'authorized'
-    ? `Conta conferida: ${state.email}. Publicação ainda em preparação.` : messages[state.status];
+    ? `Conta conferida: ${state.email}. Confira a revisão salva antes de publicar.` : messages[state.status];
   signOut.hidden = !['authorized', 'checking','pending'].includes(state.status);
   // A response to an access check is not a persistent login session.
 } });
