@@ -807,3 +807,62 @@ privado salvo nessa etapa, nenhuma chamada Gemini feita.
 Evidências: tmp/validacao/pagina-completa-painel-celular.png e
 pagina-completa-com-capa.png. Próxima etapa: fluxo autenticado de publicação,
 atualização e retirada/reversão, com validação editorial e transação Git segura.
+
+## Publicação autorizada preparada, envio ainda desativado — 08/11/2026
+
+Implementado fluxo de preparação/confirmar/conferir para reportagens. Backend
+fe228ad543638abc5130bbc79e93594f635db49c, deployment
+HwGFWvR1ThatgWT5tNxDuSXSHrjN / fabcampo-1nwg72hsi-sidep-ce.vercel.app,
+/health JSON ok conferido antes de promover. Oficial /health 200; POST preparar
+sem login 401. CI main 42444135519 success. Frontend final master
+4a84109ffc32098fe34ab29a14e5ee167c786ffe, Pages 42444319852 success; index,
+publicacao.js e rascunhos.js publicados correspondem aos locais.
+
+Rotas protegidas: POST /api/editorial/publicacoes/preparar, POST .../confirmar,
+GET .../:id. Usa revisão confirmada no Redis, nunca conteúdo avulso enviado pelo
+cliente. Exige título/resumo/texto/local/fonte, categoria/modelo válidos, uma a dez
+fotos hash WebP, uma capa 1200x675, legendas/créditos/alt e vídeo/data válidos se
+informados. Foto é conferida por hash SHA256, dimensões e ausência de EXIF/XMP.
+Pesquisa original/arquivo são excluídos por lista permitida.
+
+Preparar faz somente leituras: revisão, master, site.json, busca.json, sitemap,
+manifesto opcional e fotos pinadas no commit da branch editorial-rascunhos.
+Confirmar fica fechado se EDITORIAL_PUBLISH_ENABLED não for exatamente true.
+Com liberação, gera blobs, árvore e commit com master como pai e atualiza referência
+sem force. Operação altera somente página gerenciada pelo UUID, fotos verificadas,
+notícias, busca, sitemap e manifesto público sem dados privados. Nunca mesclar
+main/master ou a branch de fotos inteira. Conflitos de revisão/master/fotos ou
+edições manuais da página são recusados. Reenvio com mesmo conteúdo/revisão é
+reutilizado sem nova transação. Página inclui canonical e Open Graph da capa.
+
+Envio Git não significa página ativa: conferência compara hash HTML no domínio e
+hash da notícia correta; só então retorna publicada. Atualizações fora de master
+ou demora do Pages permanecem aguardando. Retirada/reversão pela interface ainda
+não foi implementada; histórico Git e recuperação manual existentes continuam.
+Não afirmar transação real GitHub validada: até aqui só simulação, nenhuma matéria
+foi publicada nem qualquer mutação GitHub foi feita pelo novo serviço.
+
+Cliente guarda vínculo id/revisão/snapshot só depois da confirmação do salvamento
+ou abertura remota. Edição local invalida plano/checkbox. Preparação apresenta
+revisão, título, fotos e criar/atualizar. Envio exige conferência explícita e flag
+ativa retornada pelo servidor. Autenticação Google é checada em todas as rotas.
+Rascunhos importados usam a mesma instância versionada do módulo, evitando duplicar
+handlers. Mensagem de conta conferida passou a orientar a revisão salva.
+
+162 testes completos passaram, incluindo concorrência sem force, idempotência,
+exclusão de pesquisa, preservação de notícias/eventos/busca/sitemap manuais, flag
+fechada, rota sem login, plano invalidado por edição e início ESM isolado.
+UI oficial conferida: envio desabilitado e exigência de revisão salva. Não foi
+preparada publicação real de rascunho: os testes salvos não estão completos para
+publicação; não preencher créditos/local/fatos inventados para contornar validação.
+
+Vercel foi consultada: EDITORIAL_PUBLISH_ENABLED inexistente (No Results Found).
+Formulário concreto preparado em Production, Config, chave
+EDITORIAL_PUBLISH_ENABLED, valor true — NÃO SALVO. Antes de salvar/ativar, pedir
+confirmação em tempo de ação, pois amplia uso da credencial de upload de fotos para
+alterar conteúdo público do portal. Conta autorizada continua somente
+paulo.cunha1@prof.ce.gov.br. Nenhuma credencial nova ou permissão GitHub foi criada.
+A aprovação deve liberar a função, sem publicar automaticamente rascunhos de teste.
+Evidência: tmp/validacao/publicacao-liberacao-proposta.png.
+Referências técnicas GitHub: https://docs.github.com/en/rest/git/trees e
+https://docs.github.com/en/rest/git/commits?apiVersion=2022-11-28 .
