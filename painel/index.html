@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Prévia do painel editorial | Campo Digital</title>
   <link rel="stylesheet" href="../css/portal.css?v=20261105-3">
-  <link rel="stylesheet" href="painel.css">
+  <link rel="stylesheet" href="painel.css?v=20261108-1">
 </head>
 <body>
   <a class="link-pular" href="#conteudo">Pular para o conteúdo</a>
@@ -14,11 +14,12 @@
     <div class="painel-apresentacao"><div><p class="selo">Espaço da equipe</p><h1>Painel editorial</h1><p>Uma boa reportagem começa com um bom registro.</p></div><span class="status-rascunho">Modo rascunho</span></div>
     <div class="painel-aviso"><strong>Salve seu rascunho antes de sair.</strong> Use “Salvar no painel” e aguarde a confirmação da revisão. Fotos ainda não enviadas ficam somente nesta página. A publicação está em preparação.</div>
     <details class="acesso-equipe"><summary>Acesso da equipe e publicação</summary>
-    <div class="painel-acoes"><button type="button" id="preparar-login">Preparar entrada com Google</button><div id="botao-google"></div><button type="button" id="sair-painel" hidden>Limpar identificação</button><button type="button" disabled>Publicar no portal — em preparação</button></div>
+    <div class="painel-acoes"><button type="button" id="preparar-login">Preparar entrada com Google</button><div id="botao-google"></div><button type="button" id="sair-painel" hidden>Limpar identificação</button><button type="button" id="ir-publicacao">Preparar publicação no portal</button></div>
     <p id="estado-acesso" role="status" aria-live="polite">Entrada em validação. A prévia de rascunhos não exige login e não publica conteúdo.</p>
     </details>
     <details class="rascunhos-equipe"><summary>Rascunhos salvos no painel</summary><p class="ajuda">Entre com sua conta autorizada para buscar os rascunhos da equipe. Um salvamento só está confirmado quando aparecer o número da revisão.</p><button type="button" id="listar-rascunhos">Buscar rascunhos da equipe</button><label for="rascunho-remoto">Escolher rascunho salvo</label><select id="rascunho-remoto"><option value="">Busque os rascunhos para escolher</option></select><button type="button" id="abrir-rascunho-remoto" disabled>Abrir rascunho selecionado</button><p class="ajuda">Guarde a edição local antes de abrir outra. Os rascunhos já guardados nesta página permanecem na lista de registros.</p></details>
     <p id="estado-salvamento" role="status" aria-live="polite">Nenhum salvamento foi confirmado nesta página ainda.</p>
+    <details id="area-publicacao" class="rascunhos-equipe"><summary>Publicação da reportagem</summary><p>Primeiro salve a edição no painel e confira a página completa. Só a revisão salva será enviada. A página, as fotos e a lista de notícias serão atualizadas juntas.</p><button id="preparar-publicacao" type="button">Conferir revisão para publicar</button><p id="resumo-publicacao"></p><label class="confirmacao-editorial"><input id="revisao-publicacao" type="checkbox"> Conferi fatos, fontes, autorizações das imagens, legendas e a página completa desta revisão.</label><button id="confirmar-publicacao" type="button" disabled>Enviar reportagem para publicação</button><button id="consultar-publicacao" type="button">Conferir publicação no site</button><p id="estado-publicacao" role="status">A publicação está em implantação. Você pode preparar a conferência; o envio só será liberado após a ativação pelo responsável.</p><a id="link-publicacao" hidden target="_blank" rel="noopener noreferrer">Abrir reportagem publicada</a></details>
     <p id="estado-painel" role="status" aria-live="polite">Carregando conteúdo existente...</p>
     <div class="painel-acoes" role="group" aria-label="Tipo de conteúdo">
       <button type="button" data-tipo="noticias" aria-pressed="true">Reportagem</button>
@@ -134,6 +135,7 @@
   <script type="module" src="pesquisa-arquivo.js"></script>
   <script type="module" src="galeria.js"></script>
   <script type="module" src="etapas.js"></script>
-  <script type="module" src="rascunhos.js"></script>
+  <script type="module" src="rascunhos.js?v=20261108-1"></script>
+  <script type="module" src="publicacao.js?v=20261108-1"></script>
 </body>
 </html>

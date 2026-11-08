@@ -4,6 +4,12 @@ import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
+export function obterVinculoPublicacao(){
+  const current=obterRegistroAtual(),binding=bindings.get(key());
+  if(current.tipo!=='noticias')throw new Error('A publicação está disponível para reportagens.');
+  if(!binding?.revisao||binding.snapshot!==JSON.stringify(current))throw new Error('Salve esta edição no painel e aguarde a confirmação da revisão antes de preparar a publicação.');
+  return {id:binding.id,revisao:binding.revisao};
+}
 const key=()=>document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo+':'+$('registro-editorial').value;
 const status=text=>{$('estado-salvamento').textContent=text;};
 async function call(url,credential,body) {
@@ -33,7 +39,7 @@ $('salvar-no-painel').addEventListener('click',()=>{
     status('Salvando rascunho no painel...');
     const result=await call(endpoint,credential,{...draft,...binding});
     if(result.id!==binding.id || !Number.isInteger(result.revisao) || result.revisao!==binding.revisao+1 || result.status!=='rascunho')throw new Error('O servidor não confirmou a revisão esperada. Confira antes de tentar novamente.');
-    bindings.set(originalKey,{id:result.id,revisao:result.revisao});
+    bindings.set(originalKey,{id:result.id,revisao:result.revisao,snapshot:original});
     const mudou=originalKey!==key() || original!==JSON.stringify(obterRegistroAtual());
     status(`Rascunho salvo no painel — revisão ${result.revisao}.${mudou?' Há alterações locais posteriores que ainda precisam ser salvas.':' Nenhuma publicação foi feita.'}`);
   });
@@ -53,7 +59,7 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
   authorized(async credential=>{
     const draft=await call(endpoint+'/'+encodeURIComponent(id),credential);
     if(draft.id!==id || !Number.isInteger(draft.revisao) || draft.revisao<1)throw new Error('Rascunho recebido em formato inesperado.');
-    abrirRascunhoRemoto(draft);bindings.set(key(),{id:draft.id,revisao:draft.revisao});
+    abrirRascunhoRemoto(draft);bindings.set(key(),{id:draft.id,revisao:draft.revisao,snapshot:JSON.stringify(obterRegistroAtual())});
     status(`Rascunho aberto — revisão ${draft.revisao}. Os arquivos de foto ainda não enviados não podem ser recuperados do servidor.`);
   });
 });
