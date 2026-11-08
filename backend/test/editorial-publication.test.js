@@ -57,6 +57,8 @@ test('uma transação Git inclui fotos, página e listas, preserva conteúdo man
   for(const file of state.files.values())assert.ok(!file.toString().includes('PESQUISA_PRIVADA')&&!file.toString().includes('ARQUIVO_PRIVADO'));
   const writes=state.writes.length;assert.equal((await service.publish({...plan,confirmado:true})).reutilizada,true);assert.equal(state.writes.length,writes);
   assert.equal((await service.status(id)).status,'publicada');
+  const currentSite=state.files.get('data/site.json');const oldNews=JSON.parse(currentSite);oldNews.noticias[0].resumo='Resumo anterior';state.files.set('data/site.json',Buffer.from(JSON.stringify(oldNews)));
+  assert.equal((await service.status(id)).status,'aguardando');state.files.set('data/site.json',currentSite);
   state.files.set('pages/reportagem-'+id+'.html',Buffer.from('Outra versão'));assert.equal((await service.status(id)).status,'aguardando');
   await assert.rejects(()=>service.prepare({id,revisao:1}),error=>error.status===409);
 });

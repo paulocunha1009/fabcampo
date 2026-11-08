@@ -102,7 +102,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     const news={editorialId:plan.id,data:record.data,titulo:record.titulo,resumo:record.resumo,categoria:record.categoria,...categories[record.categoria],link:plan.path,fonte:record.fonte};
     const index=state.site.noticias.findIndex(item=>item.editorialId===plan.id);
     if(index<0)state.site.noticias.unshift(news);else state.site.noticias[index]=news;
-    const publication={id:plan.id,revisao:input.revisao,path:plan.path,hash:plan.hash,htmlHash,titulo:record.titulo};
+    const publication={id:plan.id,revisao:input.revisao,path:plan.path,hash:plan.hash,htmlHash,newsHash:digest(JSON.stringify(news)),titulo:record.titulo};
     state.manifest.publicacoes=state.manifest.publicacoes.filter(item=>item.id!==plan.id).concat(publication);
     const files=[[plan.path,html],['data/site.json',JSON.stringify(state.site,null,2)+'\n'],['data/editorial-publicacoes.json',JSON.stringify(state.manifest,null,2)+'\n']];
     for(const [path,content] of files){const blob=await github('/git/blobs','POST',{content,encoding:'utf-8'});entries.push({path,mode:'100644',type:'blob',sha:blob.sha});}
@@ -124,8 +124,9 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       if(!response.ok)return {status:'aguardando',id,link:path};
       const html=await response.text();if(html.length>256*1024||digest(html.replace(/\r\n/g,'\n'))!==item.htmlHash)return {status:'aguardando',id,link:path};
       const listing=await siteRequest('https://fabcampo.com.br/data/site.json?editorial='+item.hash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
-      const data=listing.ok?await listing.json():null;
-      const active=Array.isArray(data?.noticias)&&data.noticias.some(news=>news.editorialId===id&&news.link===path&&news.titulo===item.titulo);
+      const listingText=listing.ok?await listing.text():'';
+      const data=listingText.length<=1024*1024?JSON.parse(listingText):null;
+      const active=Array.isArray(data?.noticias)&&data.noticias.some(news=>news.editorialId===id&&news.link===path&&digest(JSON.stringify(news))===item.newsHash);
       return {status:active?'publicada':'aguardando',id,link:path};
     }catch{return {status:'aguardando',id,link:path};}
   }
