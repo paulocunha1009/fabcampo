@@ -1,8 +1,16 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
 import {renderEditorialPage} from '../lib/editorial-page.mjs';
 const photo=(index=0)=>({imagem:'img/editorial/'+'a'.repeat(63)+index+'.webp',capaImagem:'img/editorial/'+'b'.repeat(63)+index+'.webp',capa:index===0,legenda:'Legenda conferida',credito:'Crédito informado',textoAlternativo:'Descrição informada'});
 const record={titulo:'Título da reportagem',resumo:'Resumo',subtitulo:'Subtítulo',texto:'Abertura conferida.\n\n## Assunto documentado\nTexto da pesquisa.',fonte:'Equipe',categoria:'Educação',fotos:[photo(),photo(1)],cards:[{titulo:'Destaque',texto:'Trecho conferido.'}]};
+test('scripts do HTML gerado têm sintaxe válida, inclusive navegação dentro da prévia',()=>{
+  const html=renderEditorialPage(record);
+  for(const match of html.matchAll(/<script type="module">([\s\S]*?)<\/script>/g)){
+    const checked=spawnSync(process.execPath,['--input-type=module','--check'],{input:match[1],encoding:'utf8'});
+    assert.equal(checked.status,0,checked.stderr);
+  }
+});
 test('página reutiliza identidade, navegação, estrutura do artigo e rodapé',()=>{
   const html=renderEditorialPage(record);
   for(const expected of ['class="cabecalho"','class="rodape"','portal-responsivo.css','class="artigo-lead"','class="artigo-titulo-secao"','Nesta reportagem','noindex,nofollow','Fontes e créditos'])assert.ok(html.includes(expected),expected);
