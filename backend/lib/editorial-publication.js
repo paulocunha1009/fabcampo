@@ -48,11 +48,12 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(!configured)throw fail(503,'A publicação ainda não está configurada.');
     const ref=await github('/git/ref/heads/'+branch),head=ref.object?.sha;
     if(!/^[a-f0-9]{40}$/.test(head||''))throw fail(502,'Versão do repositório inválida.');
-    const siteFile=await content('data/site.json',head),manifestFile=await content('data/editorial-publicacoes.json',head,true);
-    let site,manifest;
-    try{site=JSON.parse(siteFile.bytes.toString('utf8'));manifest=manifestFile?JSON.parse(manifestFile.bytes.toString('utf8')):{version:1,publicacoes:[]};}catch{throw fail(502,'Não foi possível conferir as listas do portal.');}
-    if(!Array.isArray(site.noticias)||!Array.isArray(site.eventos)||manifest.version!==1||!Array.isArray(manifest.publicacoes))throw fail(502,'Formato das listas do portal inválido.');
-    return {head,site,manifest};
+    const siteFile=await content('data/site.json',head),manifestFile=await content('data/editorial-publicacoes.json',head,true),searchFile=await content('data/busca.json',head),mapFile=await content('sitemap.xml',head);
+    let site,manifest,search;
+    try{site=JSON.parse(siteFile.bytes.toString('utf8'));manifest=manifestFile?JSON.parse(manifestFile.bytes.toString('utf8')):{version:1,publicacoes:[]};search=JSON.parse(searchFile.bytes.toString('utf8'));}catch{throw fail(502,'Não foi possível conferir as listas do portal.');}
+    const sitemap=mapFile.bytes.toString('utf8');
+    if(!Array.isArray(site.noticias)||!Array.isArray(site.eventos)||manifest.version!==1||!Array.isArray(manifest.publicacoes)||search.version!==1||!Array.isArray(search.pages)||!sitemap.includes('</urlset>'))throw fail(502,'Formato das listas do portal inválido.');
+    return {head,site,manifest,search,sitemap};
   }
   async function draftArticle(input){
     if(!idPattern.test(input?.id||'')||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Escolha um rascunho salvo com revisão confirmada.');
@@ -104,7 +105,16 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(index<0)state.site.noticias.unshift(news);else state.site.noticias[index]=news;
     const publication={id:plan.id,revisao:input.revisao,path:plan.path,hash:plan.hash,htmlHash,newsHash:digest(JSON.stringify(news)),titulo:record.titulo};
     state.manifest.publicacoes=state.manifest.publicacoes.filter(item=>item.id!==plan.id).concat(publication);
-    const files=[[plan.path,html],['data/site.json',JSON.stringify(state.site,null,2)+'\n'],['data/editorial-publicacoes.json',JSON.stringify(state.manifest,null,2)+'\n']];
+    const chunks=[{section:'',text:record.resumo}];let section='';
+    for(let block of record.texto.split(/\n\s*\n/)){
+      const heading=/^##\s+([^\n]+)(?:\n|$)/.exec(block);if(heading){section=heading[1];block=block.slice(heading[0].length);}
+      let paragraph=block.trim();while(paragraph.length>1000){const space=paragraph.lastIndexOf(' ',1000),end=space>0?space:1000;chunks.push({section,text:paragraph.slice(0,end)});paragraph=paragraph.slice(end).trim();}if(paragraph)chunks.push({section,text:paragraph});
+    }
+    state.search.pages=state.search.pages.filter(page=>page.url!==plan.path).concat({title:record.titulo,url:plan.path,sha256:htmlHash,chunks});
+    const searchJSON=JSON.stringify(state.search)+'\n';if(Buffer.byteLength(searchJSON)>1024*1024)throw fail(400,'O índice de busca atingiu o limite. Procure a equipe antes de publicar.');
+    state.sitemap=state.sitemap.replace(/<url\b[^>]*>[\s\S]*?<\/url>/g,entry=>entry.includes('<loc>'+canonical+'</loc>')?'':entry);
+    state.sitemap=state.sitemap.replace('</urlset>','  <url><loc>'+canonical+'</loc><lastmod>'+new Date().toISOString().slice(0,10)+'</lastmod></url>\n</urlset>');
+    const files=[[plan.path,html],['data/site.json',JSON.stringify(state.site,null,2)+'\n'],['data/busca.json',searchJSON],['sitemap.xml',state.sitemap],['data/editorial-publicacoes.json',JSON.stringify(state.manifest,null,2)+'\n']];
     for(const [path,content] of files){const blob=await github('/git/blobs','POST',{content,encoding:'utf-8'});entries.push({path,mode:'100644',type:'blob',sha:blob.sha});}
     const parent=await github('/git/commits/'+state.head);
     const tree=await github('/git/trees','POST',{base_tree:parent.tree.sha,tree:entries});

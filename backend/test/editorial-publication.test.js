@@ -11,6 +11,8 @@ const article={titulo:'Matéria de teste',resumo:'Resumo de teste',texto:'Texto 
 function fixture({enabled=true}={}){
   const state={head:'1'.repeat(40),revision:1,writes:[],tree:null,blobs:new Map(),files:new Map([['data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Notícia manual',link:'pages/original.html'}],eventos:[{nome:'Evento manual'}],outro:'preservar'}))]]),race:false,tamper:false};
   let next=10;
+  state.files.set('data/busca.json',Buffer.from(JSON.stringify({version:1,pages:[{title:'Página manual',url:'pages/manual.html',chunks:[]}]})));
+  state.files.set('sitemap.xml',Buffer.from('<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://fabcampo.com.br/pages/manual.html</loc></url></urlset>'));
   const response=(data,status=200)=>({ok:status>=200&&status<300,status,json:async()=>data});
   const request=async(url,options)=>{
     const api=new URL(url),route=api.pathname.replace('/repos/paulocunha1009/fabcampo',''),method=options.method;
@@ -52,8 +54,9 @@ test('preparação é somente leitura e flag desligada impede toda escrita',asyn
 test('uma transação Git inclui fotos, página e listas, preserva conteúdo manual e permite repetição segura',async()=>{
   const {service,state}=fixture(),plan=await service.prepare({id,revisao:1});
   const result=await service.publish({...plan,confirmado:true});assert.equal(result.status,'enviada');
-  assert.deepEqual(state.tree.map(item=>item.path).sort(),[path,'pages/reportagem-'+id+'.html','data/site.json','data/editorial-publicacoes.json'].sort());
+  assert.deepEqual(state.tree.map(item=>item.path).sort(),[path,'pages/reportagem-'+id+'.html','data/site.json','data/busca.json','sitemap.xml','data/editorial-publicacoes.json'].sort());
   const site=JSON.parse(state.files.get('data/site.json'));assert.equal(site.noticias[1].titulo,'Notícia manual');assert.equal(site.eventos[0].nome,'Evento manual');assert.equal(site.outro,'preservar');
+  const search=JSON.parse(state.files.get('data/busca.json'));assert.equal(search.pages[0].title,'Página manual');assert.equal(search.pages[1].url,'pages/reportagem-'+id+'.html');assert.ok(state.files.get('sitemap.xml').toString().includes('pages/manual.html'));
   for(const file of state.files.values())assert.ok(!file.toString().includes('PESQUISA_PRIVADA')&&!file.toString().includes('ARQUIVO_PRIVADO'));
   const writes=state.writes.length;assert.equal((await service.publish({...plan,confirmado:true})).reutilizada,true);assert.equal(state.writes.length,writes);
   assert.equal((await service.status(id)).status,'publicada');
