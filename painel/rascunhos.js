@@ -5,7 +5,9 @@ const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
 export function obterVinculoPublicacao(){
-  const current=obterRegistroAtual(),binding=bindings.get(key());
+  const binding=bindings.get(key());
+  if(!binding?.revisao)throw new Error('Salve esta edição no painel e aguarde a confirmação da revisão antes de preparar a publicação.');
+  const current=obterRegistroAtual();
   if(current.tipo!=='noticias')throw new Error('A publicação está disponível para reportagens.');
   if(!binding?.revisao||binding.snapshot!==JSON.stringify(current))throw new Error('Salve esta edição no painel e aguarde a confirmação da revisão antes de preparar a publicação.');
   return {id:binding.id,revisao:binding.revisao};
