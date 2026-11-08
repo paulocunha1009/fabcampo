@@ -767,3 +767,43 @@ Evidências: tmp/validacao/proposta-arquivo-plano-aula.png e
 arquivo-pesquisa-salvo-recuperado.png. Importação/geração/persistência real concluídas.
 Limites de uso continuam 200 chamadas/dia compartilhadas e 15 globais/minuto;
 nenhuma mudança de cota foi feita. Não confundir chamadas com matérias aprovadas.
+
+## Prévia da página completa no padrão do portal — 07/11/2026
+
+Concluída a etapa da página completa para conferência, antes de habilitar publicação.
+Botão `Conferir página completa da reportagem` abre dialog com iframe sandbox
+sem allow-same-origin, conteúdo somente em memória e opções Computador/Celular.
+Não usa URL/query com dados privados, nem faz salvamento/publicação ao abrir.
+Fecha limpando srcdoc e devolvendo foco ao botão. Usa edição atual validada.
+
+Renderizador puro ESM em backend/lib/editorial-page.mjs, com dependência local
+editorial-chrome.mjs. Cabeçalho e rodapé derivados da reportagem Educação por
+tools/sync-editorial-chrome.mjs, com link de privacidade explícito. Não foi importado
+no servidor nem alterada a API; backend oficial continua c5d2bdf. A base do futuro
+publicador poderá usar esse mesmo renderizador, mas validação/publicação seguem
+pendentes. A página gerada é estática com título/subtítulo, capa e metadados
+informados, intertítulos, cards, galeria de até dez fotos incluindo a capa, vídeo
+YouTube carregado só por clique, fontes, navegação lateral e rodapé.
+
+Lista permitida explícita exclui pesquisa, pesquisaArquivo e credenciais. Texto
+escapado; URLs verificadas; data ausente não recebe data atual; preview usa branch
+editorial-rascunhos para hashes de fotos, versão pública usa domínio oficial.
+Nenhuma matéria pública criada. O iframe tem aviso privado/noindex e a URL do
+painel continua a mesma. Privacidade aqui é isolamento em memória, não publicação.
+
+A conferência encontrou CSS geral ocultando fotos de hero: correção específica
+com editorial-hero--foto. Links # de srcdoc agora são interceptados para rolar e
+focar o intertítulo sem navegar para o painel dentro do iframe. Recursos da prévia
+têm versão de cache para carregar correções. Menu móvel e alto contraste reutilizam
+os módulos do portal; não se carregam chat/analytics na prévia.
+
+Master final c446128, Pages 42429243831 success. Cinco arquivos publicados foram
+comparados aos locais, normalizando LF: todos correspondem. 153 testes completos
+passaram. Navegador: modal oficial em 1212 px sem overflow; modo Celular com área
+útil 375 px e scrollWidth 375; Menu abriu; link interno focou intertítulo e manteve
+URL about:srcdoc. Capa real do portal conferida no modelo local. Fixtures usam só
+textos/foto existentes de Educação, não relatos inventados. Nenhum novo rascunho
+privado salvo nessa etapa, nenhuma chamada Gemini feita.
+Evidências: tmp/validacao/pagina-completa-painel-celular.png e
+pagina-completa-com-capa.png. Próxima etapa: fluxo autenticado de publicação,
+atualização e retirada/reversão, com validação editorial e transação Git segura.
