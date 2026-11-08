@@ -3,6 +3,8 @@
 .editorial-hero h1{max-width:1050px;overflow-wrap:anywhere}
 .editorial-hero .hero__conteudo{position:relative;z-index:1}
 .editorial-hero .hero__imagem img{width:100%;height:100%;object-fit:cover}
+.hero.editorial-hero.editorial-hero--foto .hero__imagem img{display:block}
+.hero.editorial-hero.editorial-hero--foto::after,.hero.editorial-hero.editorial-hero--foto .hero__imagem::after{display:none}
 .editorial-aviso{padding:12px 5%;background:#fff4d8;border-bottom:1px solid #c59d50;color:#49350b;text-align:center}
 .editorial-legenda-capa{font-size:.85rem;color:var(--cor-texto-suave)}
 .editorial-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:36px 0}
