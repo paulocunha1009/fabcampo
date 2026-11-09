@@ -5,9 +5,10 @@ $('abrir-pagina-reportagem').addEventListener('click',()=>{
   try{
     const {tipo,registro}=obterRegistroAtual();
     if(tipo!=='noticias')throw new Error('A prévia da página completa está disponível para reportagens.');
-    $('pagina-reportagem-frame').srcdoc=renderEditorialPage(registro,{preview:true});
+    const html=renderEditorialPage(registro,{preview:true});
     $('pagina-reportagem-frame').style.width='100%';
     $('pagina-reportagem-dialog').showModal();
+    $('pagina-reportagem-frame').srcdoc=html;
     $('estado-pagina-reportagem').textContent='Prévia da edição atual. Nenhum salvamento ou publicação foi feito.';
   }catch(error){$('estado-pagina-reportagem').textContent=error.message||'Confira os campos da reportagem antes de abrir a página.';}
 });
