@@ -1,6 +1,17 @@
 {
   "noticias": [
     {
+      "editorialId": "8273baca-bf99-4537-8af1-6d69689e46f3",
+      "data": "2026-11-01",
+      "titulo": "Educação do Campo: escola, cultura e participação da comunidade",
+      "resumo": "A Educação do Campo valoriza a cultura, os saberes e o modo de vida das comunidades. Conheça os princípios apresentados no material de referência do portal.",
+      "categoria": "Educação",
+      "icone": "🎓",
+      "classe": "badge--educacao",
+      "link": "pages/reportagem-8273baca-bf99-4537-8af1-6d69689e46f3.html",
+      "fonte": "Estudantes do Curso Técnico em Informática"
+    },
+    {
       "data": "2026-05-20",
       "titulo": "Campo Digital valoriza memória, território e inovação",
       "resumo": "A plataforma reúne história, saberes do campo, reportagens e recursos digitais criados para fortalecer a comunidade escolar.",
