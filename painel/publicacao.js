@@ -1,6 +1,6 @@
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {obterVinculoPublicacao} from './rascunhos.js?v=20261108-2';
+import {obterVinculoPublicacao} from './rascunhos.js?v=20261110-2';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 let plan=null,busy=false,tracking=null;
 const info=text=>{$('estado-publicacao').textContent=text;};
@@ -38,9 +38,9 @@ $('confirmar-publicacao').addEventListener('click',()=>{
       info('Enviando página, fotos e notícia ao GitHub...');
       const result=await call('/confirmar',credential,{...binding,head:prepared.head,confirmacao:prepared.confirmacao,confirmado:true});
       if(result.status!=='enviada'||result.id!==binding.id)throw new Error('Envio não confirmado. Consulte o estado antes de tentar novamente.');
-      tracking=binding.id;$('consultar-publicacao').disabled=false;reset();
+      tracking=binding.id;$('consultar-publicacao').disabled=false;reset();document.dispatchEvent(new Event('editorial-publication-changed'));
       info('Revisão '+binding.revisao+' de “'+prepared.titulo+'” enviada ao GitHub. '+(!sameBinding(binding)?'Há edições locais posteriores que não foram enviadas. ':'')+'Aguarde a atualização do site e use “Conferir publicação no site”.');
-    }catch(error){tracking=binding.id;$('consultar-publicacao').disabled=false;reset();info(error.message+' Use a conferência do site antes de reenviar.');}
+    }catch(error){tracking=binding.id;$('consultar-publicacao').disabled=false;reset();document.dispatchEvent(new Event('editorial-publication-changed'));info(error.message+' Use a conferência do site antes de reenviar.');}
     finally{busy=false;}
   });
 });
@@ -79,7 +79,7 @@ $('confirmar-retirada').addEventListener('click',()=>{
     try{
       const result=await call('/retirar',credential,{...binding,head:prepared.head,confirmacao:prepared.confirmacao,confirmado:true});
       if(result.id!==binding.id||result.status!=='retirada-enviada')throw new Error('Retirada não confirmada.');
-      tracking=binding.id;reset();info('Retirada enviada ao GitHub. Aguarde e use “Conferir publicação no site”. O rascunho continua salvo.');
+      tracking=binding.id;reset();document.dispatchEvent(new Event('editorial-publication-changed'));info('Retirada enviada ao GitHub. Aguarde e use “Conferir publicação no site”. O rascunho continua salvo.');
     }catch(error){tracking=binding.id;reset();info(error.message+' Confira o site antes de tentar novamente.');}finally{busy=false;}
   });
 });
