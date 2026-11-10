@@ -866,3 +866,30 @@ A aprovação deve liberar a função, sem publicar automaticamente rascunhos de
 Evidência: tmp/validacao/publicacao-liberacao-proposta.png.
 Referências técnicas GitHub: https://docs.github.com/en/rest/git/trees e
 https://docs.github.com/en/rest/git/commits?apiVersion=2022-11-28 .
+
+## Publicação ativa e primeira matéria conferida — 10/11/2026
+
+A atualização abaixo substitui o estado de envio desativado descrito em 08/11.
+O professor autorizou explicitamente a ativação, o Redeploy e a promoção.
+EDITORIAL_PUBLISH_ENABLED=true foi salvo em Production. Deployment
+5So4tCAWcwcHVNTiPWu9bDcQva7d, fonte fe228ad, promovido ao domínio oficial.
+Saúde confirmada antes e depois; preparar sem autenticação continuou respondendo 401.
+
+A primeira matéria real foi publicada com autorização editorial explícita:
+Educação do Campo: escola, cultura e participação da comunidade, revisão 6.
+Página: pages/reportagem-8273baca-bf99-4537-8af1-6d69689e46f3.html.
+Foto creditada a Paulo H. Cordeiro — professor; local Lagoa do Mineiro e data
+01/11/2026 confirmados na autorização. A pesquisa original permanece privada.
+Commit público 2719b76fb3a63d97029272ea2b893e22cbf6227f; Pages 42914441269 success.
+O painel confirmou os hashes da página e da notícia; a página pública foi aberta.
+Isso valida uma transação real de criação pelo serviço. Atualização e retirada
+não foram exercitadas com essa matéria; retirada/reversão pela interface segue pendente.
+
+A prévia em branco foi corrigida ao abrir o dialog antes de atribuir srcdoc.
+Master 0599629; conferidos computador, reabertura e celular com largura útil 375px
+sem overflow. Revisão 6 foi recuperada do servidor e visualizada com a capa.
+Campos restaurados pelo navegador chegaram inconsistentes em uma sessão nova;
+a recuperação remota restaurou os valores corretos, sem salvar os campos incorretos.
+
+Mensagens iniciais do painel foram atualizadas para explicar salvar, revisar,
+enviar e conferir o site, removendo avisos antigos de implantação pendente.
