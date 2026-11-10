@@ -79,5 +79,43 @@ test('concorrência na atualização da referência não força nem altera a bra
 test('todas as rotas de publicação exigem conta autorizada',async()=>{
   let called=0;const app=express();app.use(createPublicationRouter({auth:{authenticate:async()=>{throw Object.assign(new Error(),{status:403});}},service:{prepare:async()=>called++,publish:async()=>called++,status:async()=>called++}}));
   const server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
-  try{for(const [method,path] of [['POST','preparar'],['POST','confirmar'],['GET',id]])assert.equal((await fetch(`http://127.0.0.1:${server.address().port}/api/editorial/publicacoes/${path}`,{method})).status,403);assert.equal(called,0);}finally{await new Promise(resolve=>server.close(resolve));}
+  try{for(const [method,path] of [['POST','preparar'],['POST','confirmar'],['POST','preparar-retirada'],['POST','retirar'],['GET',id]])assert.equal((await fetch(`http://127.0.0.1:${server.address().port}/api/editorial/publicacoes/${path}`,{method})).status,403);assert.equal(called,0);}finally{await new Promise(resolve=>server.close(resolve));}
+});
+
+test('retirada é reversível, preserva rascunho/fotos e remove apenas entradas próprias',async()=>{
+  const {service,state}=fixture();await service.publish({...await service.prepare({id,revisao:1}),confirmado:true});
+  const before=state.writes.length,plan=await service.prepareWithdrawal({id,revisao:1});assert.equal(state.writes.length,before);
+  assert.equal(plan.operacao,'retirar');
+  await service.withdraw({...plan,confirmado:true});
+  const html=state.files.get('pages/reportagem-'+id+'.html').toString();assert.match(html,/Reportagem indisponível/);assert.ok(!html.includes(article.texto));
+  const site=JSON.parse(state.files.get('data/site.json'));assert.equal(site.noticias.length,1);assert.equal(site.noticias[0].titulo,'Notícia manual');assert.equal(site.eventos[0].nome,'Evento manual');
+  assert.equal(JSON.parse(state.files.get('data/busca.json')).pages.length,1);assert.ok(!state.files.get('sitemap.xml').toString().includes('reportagem-'+id));
+  assert.ok(state.tree.every(item=>item.sha!==null&&!item.path.startsWith('img/')));
+  assert.equal((await service.status(id)).status,'retirada');
+  const writes=state.writes.length;assert.equal((await service.withdraw({...plan,confirmado:true})).reutilizada,true);assert.equal(state.writes.length,writes);
+  const republish=await service.prepare({id,revisao:1});assert.equal(republish.operacao,'republicar');await service.publish({...republish,confirmado:true});assert.equal((await service.status(id)).status,'publicada');
+});
+
+test('retirada recusa alterações de revisão, portal, página e confirmação sem avançar a branch',async()=>{
+  for(const change of ['revision','head','page','confirmation','race']){
+    const {service,state}=fixture();await service.publish({...await service.prepare({id,revisao:1}),confirmado:true});
+    const plan=await service.prepareWithdrawal({id,revisao:1}),before=state.head;
+    if(change==='revision')state.revision=2;if(change==='head')state.head='7'.repeat(40);
+    if(change==='page')state.files.set('pages/reportagem-'+id+'.html',Buffer.from('Edição manual'));
+    if(change==='race')state.race=true;
+    const writes=state.writes.length;
+    await assert.rejects(()=>service.withdraw({...plan,confirmado:change!=='confirmation'}),error=>[400,409].includes(error.status));
+    if(change!=='race')assert.equal(state.writes.length,writes);
+    assert.equal(state.head,change==='head'?'7'.repeat(40):before);
+  }
+  const {service,state}=fixture({enabled:false});await assert.rejects(()=>service.withdraw({id,revisao:1}),error=>error.status===503);assert.equal(state.writes.length,0);
+});
+
+test('conferência de retirada aguarda atualização das notícias, busca e sitemap',async()=>{
+  const {service,state}=fixture();await service.publish({...await service.prepare({id,revisao:1}),confirmado:true});
+  const old=new Map(state.files);await service.withdraw({...await service.prepareWithdrawal({id,revisao:1}),confirmado:true});
+  for(const name of ['data/site.json','data/busca.json','sitemap.xml']){
+    const current=state.files.get(name);state.files.set(name,old.get(name));assert.equal((await service.status(id)).status,'aguardando');state.files.set(name,current);
+  }
+  assert.equal((await service.status(id)).status,'retirada');
 });

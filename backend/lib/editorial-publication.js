@@ -85,7 +85,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     const existing=await content(path,state.head,true);
     if(existing&&(!old||old.path!==path))throw fail(409,'O endereço já existe fora das publicações gerenciadas. Procure a equipe.');
     if(existing&&old?.htmlHash!==digest(existing.bytes.toString('utf8').replace(/\r\n/g,'\n')))throw fail(409,'A página foi alterada fora do painel. Confira a alteração antes de atualizar.');
-    const plan={id:input.id,revisao:input.revisao,head:state.head,path,hash,fotos:record.fotos.length,titulo:record.titulo,operacao:old?'atualizar':'publicar',habilitada:enabled};
+    const plan={id:input.id,revisao:input.revisao,head:state.head,path,hash,fotos:record.fotos.length,titulo:record.titulo,operacao:old?.retirada?'republicar':old?'atualizar':'publicar',habilitada:enabled};
     plan.confirmacao=digest(JSON.stringify({id:plan.id,revisao:plan.revisao,head:plan.head,path,hash,entries}));
     return {plan,record,state,entries};
   }
@@ -94,7 +94,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(input?.confirmado!==true||!/^[a-f0-9]{64}$/.test(input.confirmacao||''))throw fail(400,'Prepare e confira a publicação antes de confirmar.');
     const {plan,record,state,entries}=await prepare(input);
     const previous=state.manifest.publicacoes.find(item=>item.id===input.id);
-    if(previous?.hash===plan.hash&&previous.revisao===input.revisao)return {status:'enviada',id:plan.id,link:plan.path,commit:state.head,reutilizada:true};
+    if(!previous?.retirada&&previous?.hash===plan.hash&&previous.revisao===input.revisao)return {status:'enviada',id:plan.id,link:plan.path,commit:state.head,reutilizada:true};
     if(input.head!==plan.head||input.confirmacao!==plan.confirmacao)throw fail(409,'O rascunho, as fotos ou o portal mudaram. Prepare a publicação novamente.');
     let html=renderEditorialPage(record,{preview:false});
     const cover=record.fotos.find(photo=>photo.capa),canonical='https://fabcampo.com.br/'+plan.path;
@@ -123,6 +123,40 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     await github('/git/refs/heads/'+branch,'PATCH',{sha:commit.sha,force:false});
     return {status:'enviada',id:plan.id,link:plan.path,commit:commit.sha};
   }
+  async function prepareWithdrawal(input){
+    if(!idPattern.test(input?.id||'')||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Abra um rascunho salvo antes de retirar a matéria.');
+    const draft=await drafts.get(input.id);
+    if(draft.tipo!=='noticias'||draft.revisao!==input.revisao)throw fail(409,'O rascunho mudou. Reabra a revisão salva.');
+    const state=await repositoryState(),item=state.manifest.publicacoes.find(item=>item.id===input.id),path='pages/reportagem-'+input.id+'.html';
+    if(!item)throw fail(404,'Nenhuma publicação gerenciada foi encontrada para este rascunho.');
+    if(item.path!==path||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
+    const existing=await content(path,state.head,true);
+    if(!existing||digest(existing.bytes.toString('utf8').replace(/\r\n/g,'\n'))!==item.htmlHash)throw fail(409,'A página foi alterada fora do painel. Procure a equipe antes de retirar.');
+    const plan={id:input.id,revisao:input.revisao,head:state.head,path,titulo:item.titulo,operacao:'retirar',habilitada:enabled,retirada:!!item.retirada};
+    plan.confirmacao=digest(JSON.stringify({operacao:'retirar',id:plan.id,revisao:plan.revisao,head:plan.head,item}));
+    return {plan,state,item};
+  }
+  async function withdraw(input){
+    if(!enabled)throw fail(503,'O envio de alterações públicas está desativado.');
+    if(input?.confirmado!==true||!/^[a-f0-9]{64}$/.test(input.confirmacao||''))throw fail(400,'Prepare e confirme a retirada antes de enviar.');
+    const {plan,state,item}=await prepareWithdrawal(input);
+    if(plan.retirada)return {status:'retirada-enviada',id:plan.id,reutilizada:true};
+    if(input.head!==plan.head||input.confirmacao!==plan.confirmacao)throw fail(409,'O portal ou o rascunho mudou. Confira a retirada novamente.');
+    // Aviso público reversível: não apaga o rascunho, fotos ou histórico Git.
+    const html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Reportagem indisponível | Campo Digital</title></head><body><main><h1>Reportagem indisponível</h1><p>Esta reportagem foi retirada do portal pela equipe responsável.</p><p><a href="https://fabcampo.com.br/">Voltar ao Campo Digital</a></p></main></body></html>';
+    const canonical='https://fabcampo.com.br/'+plan.path;
+    state.site.noticias=state.site.noticias.filter(news=>news.editorialId!==plan.id);
+    state.search.pages=state.search.pages.filter(page=>page.url!==plan.path);
+    state.sitemap=state.sitemap.replace(/<url\b[^>]*>[\s\S]*?<\/url>/g,entry=>entry.includes('<loc>'+canonical+'</loc>')?'':entry);
+    state.manifest.publicacoes=state.manifest.publicacoes.filter(entry=>entry.id!==plan.id).concat({...item,retirada:true,htmlHash:digest(html)});
+    const files=[[plan.path,html],['data/site.json',JSON.stringify(state.site,null,2)+'\n'],['data/busca.json',JSON.stringify(state.search)+'\n'],['sitemap.xml',state.sitemap],['data/editorial-publicacoes.json',JSON.stringify(state.manifest,null,2)+'\n']],entries=[];
+    for(const [path,content] of files){const blob=await github('/git/blobs','POST',{content,encoding:'utf-8'});entries.push({path,mode:'100644',type:'blob',sha:blob.sha});}
+    const parent=await github('/git/commits/'+state.head);
+    const tree=await github('/git/trees','POST',{base_tree:parent.tree.sha,tree:entries});
+    const commit=await github('/git/commits','POST',{message:'Retirar reportagem editorial '+plan.id,tree:tree.sha,parents:[state.head]});
+    await github('/git/refs/heads/'+branch,'PATCH',{sha:commit.sha,force:false});
+    return {status:'retirada-enviada',id:plan.id,commit:commit.sha};
+  }
   async function status(id){
     if(!idPattern.test(id||''))throw fail(400,'Identificação inválida.');
     const state=await repositoryState(),item=state.manifest.publicacoes.find(item=>item.id===id);
@@ -136,11 +170,19 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       const listing=await siteRequest('https://fabcampo.com.br/data/site.json?editorial='+item.hash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
       const listingText=listing.ok?await listing.text():'';
       const data=listingText.length<=1024*1024?JSON.parse(listingText):null;
+      if(item.retirada){
+        const searchResponse=await siteRequest('https://fabcampo.com.br/data/busca.json?editorial='+item.htmlHash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
+        const mapResponse=await siteRequest('https://fabcampo.com.br/sitemap.xml?editorial='+item.htmlHash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
+        const searchText=searchResponse.ok?await searchResponse.text():'',mapText=mapResponse.ok?await mapResponse.text():'';
+        const search=searchText.length<=1024*1024?JSON.parse(searchText):null;
+        const absent=Array.isArray(data?.noticias)&&!data.noticias.some(news=>news.editorialId===id||news.link===path)&&Array.isArray(search?.pages)&&!search.pages.some(page=>page.url===path)&&mapText.length<=1024*1024&&mapText.includes('</urlset>')&&!mapText.includes('<loc>https://fabcampo.com.br/'+path+'</loc>');
+        return {status:absent?'retirada':'aguardando',id};
+      }
       const active=Array.isArray(data?.noticias)&&data.noticias.some(news=>news.editorialId===id&&news.link===path&&digest(JSON.stringify(news))===item.newsHash);
       return {status:active?'publicada':'aguardando',id,link:path};
     }catch{return {status:'aguardando',id,link:path};}
   }
-  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status};
+  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw};
 }
 export function createPublicationRouter({auth,service=createPublicationService()}){
   const router=express.Router();
@@ -148,6 +190,8 @@ export function createPublicationRouter({auth,service=createPublicationService()
   const execute=action=>async(req,res)=>{try{res.json(await action(req));}catch(error){res.status([400,404,409,503].includes(error.status)?error.status:502).json({error:error.status?error.message:'Não foi possível confirmar a publicação. Confira o estado antes de tentar novamente.'});}};
   router.post('/api/editorial/publicacoes/preparar',express.json({limit:'4kb'}),execute(req=>service.prepare(req.body)));
   router.post('/api/editorial/publicacoes/confirmar',express.json({limit:'4kb'}),execute(req=>service.publish(req.body)));
+  router.post('/api/editorial/publicacoes/preparar-retirada',express.json({limit:'4kb'}),execute(req=>service.prepareWithdrawal(req.body)));
+  router.post('/api/editorial/publicacoes/retirar',express.json({limit:'4kb'}),execute(req=>service.withdraw(req.body)));
   router.get('/api/editorial/publicacoes/:id',execute(req=>service.status(req.params.id)));
   return router;
 }
