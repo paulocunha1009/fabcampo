@@ -915,3 +915,20 @@ Nenhuma retirada real executada: a primeira reportagem permanece publicada.
 Testes simulam retirada/republicação, preservação manual, autenticação, conflitos,
 flag desativada e implantação parcial. Conferência de operação real fica para uma
 retirada solicitada pelo professor, sem usar matéria pública como teste descartável.
+
+## Lista de matérias com estado confirmado — 10/11/2026
+
+Backend ba9a181 (AZHg9z3NZAJdoiT8NRemJZcn5KWx) promovido após saúde ok.
+Frontend master 19f107c; Pages 42922389032 success. 168 testes passaram.
+A consulta de publicação retorna revisão do manifesto. A lista compara com a
+revisão salva: Publicado ou Alterações pendentes; também mostra Rascunho,
+Retirado do ar, Atualização em andamento e Publicação não conferida em falhas.
+Link público só aparece para página verificada e caminho UUID exato.
+Consultas progressivas limitadas a três; sem IA, sem alterações de conteúdo.
+Lista limpa ao sair, salvar ou enviar publicação/retirada para evitar estado antigo.
+Módulo de rascunhos usa a mesma versão no HTML e na importação do publicador.
+
+Conferência real autenticada: Educação do Campo Publicado, revisão 6 no site e
+no painel, link correto; Plano AgroVida e Campo Digital mostraram Rascunho.
+Nenhum novo salvamento, geração, publicação ou retirada nessa conferência.
+Evidência: tmp/validacao/lista-materias-reais-conferida.png.
