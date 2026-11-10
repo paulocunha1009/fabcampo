@@ -893,3 +893,25 @@ a recuperação remota restaurou os valores corretos, sem salvar os campos incor
 
 Mensagens iniciais do painel foram atualizadas para explicar salvar, revisar,
 enviar e conferir o site, removendo avisos antigos de implantação pendente.
+
+## Retirada reversível pelo painel — 10/11/2026
+
+Backend cd4a176, deployment B6Ch7CGHjFQPzt71BuQYAfDYA2dv promovido ao domínio
+oficial após saúde conferida. Saúde oficial ok e POST retirar sem login 401.
+Frontend c46fe48 enviado a master. 166 testes passaram; verificador de links ok.
+
+Novas rotas autenticadas preparar-retirada/retirar. Conferência somente leitura
+vincula UUID, revisão salva, commit master e manifesto. Recusa página alterada
+manualmente, revisão divergente e avanço concorrente; commit sem force. Retirada
+substitui o HTML por aviso noindex sem o texto da matéria, remove apenas suas
+entradas das notícias, busca e sitemap, preserva rascunho, fotos e histórico Git.
+Não é apagamento de cópias externas, fotos ou histórico. Manifesto marca retirada;
+republicação passa por validação normal e não cai na reutilização da versão retirada.
+Conferência pública exige hash do aviso e ausência nas três listas.
+
+Interface exige preparação própria e checkbox de retirada, invalidados por edição,
+saída e troca de registro. Não reutiliza a confirmação editorial de publicação.
+Nenhuma retirada real executada: a primeira reportagem permanece publicada.
+Testes simulam retirada/republicação, preservação manual, autenticação, conflitos,
+flag desativada e implantação parcial. Conferência de operação real fica para uma
+retirada solicitada pelo professor, sem usar matéria pública como teste descartável.
