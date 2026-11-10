@@ -1,6 +1,6 @@
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
-import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js';
+import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261110-4';
 import {descreverPublicacao} from './lista-materias.mjs';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
@@ -93,6 +93,7 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
   authorized(async credential=>{
     const draft=await call(endpoint+'/'+encodeURIComponent(id),credential);
     if(draft.id!==id || !Number.isInteger(draft.revisao) || draft.revisao<1)throw new Error('Rascunho recebido em formato inesperado.');
+    if(draft.registro?.acervo){document.dispatchEvent(new CustomEvent('editorial-open-acervo',{detail:{path:draft.registro.acervo.path}}));status('Reportagem antiga selecionada. Continue no editor do acervo.');return;}
     abrirRascunhoRemoto(draft);bindings.set(key(),{id:draft.id,revisao:draft.revisao,snapshot:JSON.stringify(obterRegistroAtual())});
     status(`Rascunho aberto — revisão ${draft.revisao}. Os arquivos de foto ainda não enviados não podem ser recuperados do servidor.`);
   });

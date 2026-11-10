@@ -1,5 +1,6 @@
 import { validarFotos, validarVideo } from './midias-core.js';
 import { validarPesquisaArquivo } from './pesquisa-core.js';
+import {validarBlocos} from '../backend/lib/editorial-blocks.mjs';
 export const CATEGORIAS = {
   Portal:{ icone:'📌', classe:'badge--portal' },
   Tecnologia:{ icone:'🤖', classe:'badge--tech' },
@@ -71,7 +72,7 @@ export function validarRegistro(tipo, value){
   if(capa) { comum.imagem = capa.capaImagem || capa.imagem; comum.legenda = capa.legenda; comum.credito = capa.credito; comum.textoAlternativo = capa.textoAlternativo; }
   return { titulo, resumo, data:data(value.data, false), categoria:value.categoria,
     pesquisa:opcional('pesquisa',value.pesquisa,12000), pesquisaArquivo, subtitulo:opcional('subtitulo',value.subtitulo,240),
-    fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000), modelo, cards:validados, fotos, video };
+    fonte, link, ...CATEGORIAS[value.categoria], ...comum, texto:opcional('texto', value.texto, 12000), modelo, cards:validados, fotos, video,...validarBlocos(value) };
 }
 export function pendenciasPublicacao(tipo, value){
   const registro = validarRegistro(tipo, value);

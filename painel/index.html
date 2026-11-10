@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Prévia do painel editorial | Campo Digital</title>
   <link rel="stylesheet" href="../css/portal.css?v=20261105-3">
-  <link rel="stylesheet" href="painel.css?v=20261110-2">
+  <link rel="stylesheet" href="painel.css?v=20261110-3">
 </head>
 <body>
   <a class="link-pular" href="#conteudo">Pular para o conteúdo</a>
@@ -18,6 +18,7 @@
     <p id="estado-acesso" role="status" aria-live="polite">Entre com sua conta Google autorizada para salvar no painel e publicar. A prévia pode ser usada sem login e não publica conteúdo.</p>
     </details>
     <details class="rascunhos-equipe"><summary>Rascunhos salvos no painel</summary><p class="ajuda">Entre com sua conta autorizada para buscar os rascunhos da equipe. Um salvamento só está confirmado quando aparecer o número da revisão.</p><button type="button" id="listar-rascunhos">Buscar rascunhos da equipe</button><p class="ajuda">O estado é conferido ao buscar a lista. Após salvar ou publicar alterações, busque novamente. “Alterações pendentes” indica uma revisão salva diferente da publicada; a edição aberta nesta página ainda precisa ser salva.</p><ul id="lista-materias" aria-label="Matérias salvas e estado de publicação"></ul><label for="rascunho-remoto">Escolher rascunho salvo</label><select id="rascunho-remoto"><option value="">Busque os rascunhos para escolher</option></select><button type="button" id="abrir-rascunho-remoto" disabled>Abrir rascunho selecionado</button><p class="ajuda">Guarde a edição local antes de abrir outra. Os rascunhos já guardados nesta página permanecem na lista de registros.</p></details>
+    <details class="rascunhos-equipe"><summary>Reportagens antigas do portal</summary><p>Importe uma reportagem para editar seus textos sem trocar o endereço, as imagens ou o modelo da página. Importar e salvar não alteram o site.</p><button id="listar-acervo" type="button">Buscar reportagens antigas</button><ul id="catalogo-acervo"></ul><p id="estado-acervo" role="status"></p></details>
     <p id="estado-salvamento" role="status" aria-live="polite">Nenhum salvamento foi confirmado nesta página ainda.</p>
     <details id="area-publicacao" class="rascunhos-equipe"><summary>Publicação da reportagem</summary><p>Primeiro salve a edição no painel e confira a página completa. Só a revisão salva será enviada. A página, as fotos e a lista de notícias serão atualizadas juntas.</p><button id="preparar-publicacao" type="button">Conferir revisão para publicar</button><p id="resumo-publicacao"></p><label class="confirmacao-editorial"><input id="revisao-publicacao" type="checkbox"> Conferi fatos, fontes, autorizações das imagens, legendas e a página completa desta revisão.</label><button id="confirmar-publicacao" type="button" disabled>Enviar reportagem para publicação</button><button id="consultar-publicacao" type="button">Conferir publicação no site</button><p id="estado-publicacao" role="status">Salve e confira a página completa. Depois, use “Conferir revisão para publicar”, marque a revisão editorial e envie. Aguarde a confirmação em “Conferir publicação no site”.</p><a id="link-publicacao" hidden target="_blank" rel="noopener noreferrer">Abrir reportagem publicada</a><details><summary>Retirar reportagem do ar</summary><p>A retirada substitui a matéria por um aviso de indisponibilidade e remove sua entrada das notícias, da busca e do mapa do site. O rascunho, as fotos e o histórico são preservados. Para republicar, revise o rascunho e use o fluxo de publicação acima. Cópias já compartilhadas ou guardadas por terceiros podem continuar disponíveis.</p><button id="preparar-retirada" type="button">Conferir retirada</button><label class="confirmacao-editorial"><input id="revisao-retirada" type="checkbox"> Conferi o título e quero retirar esta reportagem do portal.</label><button id="confirmar-retirada" type="button" disabled>Retirar reportagem do ar</button></details></details>
     <p id="estado-painel" role="status" aria-live="polite">Carregando conteúdo existente...</p>
@@ -62,7 +63,8 @@
             <input id="cards" type="hidden" value="[]"><small id="erro-cards"></small>
             <div id="editar-cards"></div>
             </details>
-            <label for="categoria">Categoria</label><select id="categoria"><option>Portal</option><option>Tecnologia</option><option>Agroecologia</option><option>Educação</option><option>Cultura</option></select><small id="erro-categoria"></small>
+            <details class="arquivo-pesquisa"><summary>Blocos especiais — opcionais</summary><p>Use somente os blocos que ajudam a contar esta história. A reportagem pode ser publicada sem citação, tabela ou cards. Os campos básicos e a capa continuam necessários.</p><label for="citacao">Citação ou fala registrada — opcional</label><textarea id="citacao" maxlength="2000" rows="3"></textarea><span id="erro-citacao" class="erro-campo"></span><label for="citacaoFonte">Quem falou e fonte da citação</label><input id="citacaoFonte" maxlength="400"><span id="erro-citacaoFonte" class="erro-campo"></span><p class="ajuda">Transcreva uma fala real e identifique sua fonte. Não crie depoimentos.</p><label for="dadosTitulo">Título da tabela — opcional</label><input id="dadosTitulo" maxlength="160"><span id="erro-dadosTitulo" class="erro-campo"></span><label for="dadosTexto">Dados da pesquisa — opcionais</label><textarea id="dadosTexto" maxlength="6000" rows="5" placeholder="Indicador | Informação"></textarea><span id="erro-dadosTexto" class="erro-campo"></span><p class="ajuda">Uma linha por dado, separando indicador e informação com |. Até 20 linhas. Informe no texto da matéria a fonte e a data dos dados.</p></details>
+          <label for="categoria">Categoria</label><select id="categoria"><option>Portal</option><option>Tecnologia</option><option>Agroecologia</option><option>Educação</option><option>Cultura</option></select><small id="erro-categoria"></small>
             <label for="fonte">Fonte ou autoria</label><input id="fonte" maxlength="160"><small id="erro-fonte"></small>
             <label for="link">Link de referência <span class="opcional">opcional</span></label><input id="link" inputmode="url" maxlength="2000" placeholder="Endereço da fonte ou de uma página do portal"><small id="erro-link"></small>
           </div>
@@ -80,7 +82,7 @@
           <label for="data">Data</label><input id="data" type="date" aria-describedby="ajuda-data"><small id="erro-data"></small>
           <p id="ajuda-data">Deixe em branco o que ainda não foi confirmado. Evento só pode seguir para publicação com data e horário confirmados.</p>
           </section>
-          <section data-etapa="midias" hidden aria-labelledby="titulo-midias"><h3 id="titulo-midias" tabindex="-1">Dê imagem à história</h3><p class="ajuda">Adicione as fotos, escolha a capa e organize a sequência.</p>
+          <section data-etapa="midias" hidden aria-labelledby="titulo-midias"><h3 id="titulo-midias" tabindex="-1">Dê imagem à história</h3><p class="ajuda">Uma foto de capa é obrigatória. As demais fotos (até 10 no total) e o vídeo são opcionais.</p><p class="ajuda">Adicione as fotos, escolha a capa e organize a sequência.</p>
           <section id="midias-reportagem">
             <h3>Fotos da reportagem</h3><p>De 1 a 10 fotos, incluindo uma capa. As fotos internas preservam seu formato. Foto, legenda, crédito e descrição acessível precisam ser conferidos antes da revisão.</p>
             <div class="seletor-fotos"><label for="arquivos-galeria">Adicionar fotos à reportagem</label><p>JPEG, PNG ou WebP · até 12 MB por foto · máximo de 10 fotos</p><input id="arquivos-galeria" type="file" multiple accept="image/jpeg,image/png,image/webp"></div>
@@ -126,8 +128,10 @@
     </div>
   </main>
   <dialog id="pagina-reportagem-dialog" aria-labelledby="titulo-pagina-reportagem"><div class="barra-pagina-reportagem"><h2 id="titulo-pagina-reportagem">Página da reportagem — prévia</h2><div><button id="pagina-desktop" type="button">Computador</button><button id="pagina-celular" type="button">Celular</button><button id="fechar-pagina-reportagem" type="button">Fechar prévia</button></div></div><iframe id="pagina-reportagem-frame" title="Prévia completa da reportagem" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe></dialog>
-  <script type="module" src="painel.js"></script>
-  <script type="module" src="previa-reportagem.js?v=20261109-1"></script>
+  <dialog id="editor-acervo" aria-labelledby="titulo-editor-acervo"><div class="barra-pagina-reportagem"><h2 id="titulo-editor-acervo">Editar reportagem existente</h2><button id="fechar-acervo" type="button">Fechar editor</button></div><div class="acervo-conteudo"><p>Edite os trechos abaixo. Tabelas, imagens, links e estrutura visual são preservados. A página original só muda após salvar, conferir e confirmar a atualização.</p><p id="resumo-acervo"></p><div id="campos-acervo"></div><button id="salvar-acervo" type="button">Salvar edição no painel</button><button id="previa-acervo" type="button">Conferir página editada</button><button id="preparar-acervo" type="button">Preparar atualização da página original</button><label class="confirmacao-editorial"><input id="confirmacao-acervo" type="checkbox"> Conferi os textos, as fontes e a página editada e autorizo atualizar a reportagem original.</label><button id="publicar-acervo" type="button" disabled>Atualizar reportagem no portal</button><p id="estado-editor-acervo" role="status"></p><iframe id="previa-acervo-frame" title="Prévia da reportagem antiga editada" sandbox referrerpolicy="no-referrer" hidden></iframe></div></dialog>
+  <script type="module" src="acervo.js?v=20261110-2"></script>
+  <script type="module" src="painel.js?v=20261110-4"></script>
+  <script type="module" src="previa-reportagem.js?v=20261110-4"></script>
   <script type="module" src="login.js"></script>
   <script type="module" src="imagem.js"></script>
   <script type="module" src="cards.js"></script>
@@ -135,7 +139,7 @@
   <script type="module" src="pesquisa-arquivo.js"></script>
   <script type="module" src="galeria.js"></script>
   <script type="module" src="etapas.js"></script>
-  <script type="module" src="rascunhos.js?v=20261110-2"></script>
-  <script type="module" src="publicacao.js?v=20261110-2"></script>
+  <script type="module" src="rascunhos.js?v=20261110-3"></script>
+  <script type="module" src="publicacao.js?v=20261110-3"></script>
 </body>
 </html>

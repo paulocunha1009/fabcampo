@@ -1,6 +1,6 @@
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {obterVinculoPublicacao} from './rascunhos.js?v=20261110-2';
+import {obterVinculoPublicacao} from './rascunhos.js?v=20261110-3';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 let plan=null,busy=false,tracking=null;
 const info=text=>{$('estado-publicacao').textContent=text;};

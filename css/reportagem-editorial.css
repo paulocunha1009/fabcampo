@@ -19,3 +19,4 @@
 .editorial-lateral h2{font-size:1.1rem;margin-bottom:16px}.editorial-lateral ul{padding-left:20px}.editorial-lateral li{margin:12px 0}
 .artigo-corpo,.editorial-lateral{overflow-wrap:anywhere}
 @media(max-width:900px){.artigo-layout{grid-template-columns:1fr;gap:24px}.editorial-cards{grid-template-columns:1fr}.editorial-hero{min-height:320px}.artigo-layout{padding-block:28px}.editorial-creditos{padding:20px 0}}
+.editorial-citacao{border-left:4px solid #28703e;background:#f0f6ed;margin:30px 0;padding:20px}.editorial-citacao blockquote{margin:0;font-size:1.2rem;line-height:1.7}.editorial-citacao figcaption{margin-top:12px;color:#456347}.editorial-tabela{margin:32px 0}.editorial-tabela-rolagem{overflow-x:auto}.editorial-tabela table{width:100%;border-collapse:collapse}.editorial-tabela th,.editorial-tabela td{padding:12px;border:1px solid #cedbca;text-align:left;overflow-wrap:anywhere}.editorial-tabela th{background:#e9f1e5}
