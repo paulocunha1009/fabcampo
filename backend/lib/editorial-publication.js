@@ -165,8 +165,8 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(item.path!==path||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
     try{
       const response=await siteRequest('https://fabcampo.com.br/'+path+'?editorial='+item.hash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
-      if(!response.ok)return {status:'aguardando',id,link:path};
-      const html=await response.text();if(html.length>256*1024||digest(html.replace(/\r\n/g,'\n'))!==item.htmlHash)return {status:'aguardando',id,link:path};
+      if(!response.ok)return {status:'aguardando',id,link:path,revisao:item.revisao};
+      const html=await response.text();if(html.length>256*1024||digest(html.replace(/\r\n/g,'\n'))!==item.htmlHash)return {status:'aguardando',id,link:path,revisao:item.revisao};
       const listing=await siteRequest('https://fabcampo.com.br/data/site.json?editorial='+item.hash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
       const listingText=listing.ok?await listing.text():'';
       const data=listingText.length<=1024*1024?JSON.parse(listingText):null;
@@ -176,11 +176,11 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
         const searchText=searchResponse.ok?await searchResponse.text():'',mapText=mapResponse.ok?await mapResponse.text():'';
         const search=searchText.length<=1024*1024?JSON.parse(searchText):null;
         const absent=Array.isArray(data?.noticias)&&!data.noticias.some(news=>news.editorialId===id||news.link===path)&&Array.isArray(search?.pages)&&!search.pages.some(page=>page.url===path)&&mapText.length<=1024*1024&&mapText.includes('</urlset>')&&!mapText.includes('<loc>https://fabcampo.com.br/'+path+'</loc>');
-        return {status:absent?'retirada':'aguardando',id};
+        return {status:absent?'retirada':'aguardando',id,revisao:item.revisao};
       }
       const active=Array.isArray(data?.noticias)&&data.noticias.some(news=>news.editorialId===id&&news.link===path&&digest(JSON.stringify(news))===item.newsHash);
-      return {status:active?'publicada':'aguardando',id,link:path};
-    }catch{return {status:'aguardando',id,link:path};}
+      return {status:active?'publicada':'aguardando',id,link:path,revisao:item.revisao};
+    }catch{return {status:'aguardando',id,link:path,revisao:item.revisao};}
   }
   return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw};
 }

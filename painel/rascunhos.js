@@ -1,9 +1,36 @@
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js';
+import {descreverPublicacao} from './lista-materias.mjs';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
+let listVersion=0;
+function clearList(){listVersion++;$('lista-materias').replaceChildren();$('rascunho-remoto').replaceChildren(new Option('Busque os rascunhos para escolher',''));$('abrir-rascunho-remoto').disabled=true;}
+document.addEventListener('editorial-access-cleared',clearList);
+document.addEventListener('editorial-publication-changed',clearList);
+async function renderList(drafts,credential){
+  const version=++listVersion,container=$('lista-materias');container.replaceChildren();
+  const queue=[];
+  for(const draft of drafts){
+    const row=document.createElement('li'),title=document.createElement('strong'),state=document.createElement('p'),detail=document.createElement('p'),actions=document.createElement('div'),open=document.createElement('button');
+    title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Abrir rascunho';
+    open.addEventListener('click',()=>{if(version!==listVersion)return;$('rascunho-remoto').value=draft.id;$('abrir-rascunho-remoto').disabled=false;$('abrir-rascunho-remoto').click();});
+    actions.append(open);row.append(title,state,detail,actions);container.append(row);
+    if(draft.tipo!=='noticias')continue;
+    queue.push(async()=>{
+      try{
+        const result=await call(EDITORIAL_API.replace(/\/me$/,'/publicacoes/')+encodeURIComponent(draft.id),credential);
+        if(version!==listVersion)return;const description=descreverPublicacao(draft,result);
+        state.textContent=description.rotulo;detail.textContent=description.detalhe;
+        if(description.link){const link=document.createElement('a');link.href=description.link;link.textContent='Abrir no portal';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
+      }catch{if(version===listVersion){state.textContent='Publicação não conferida';detail.textContent='Não foi possível confirmar o estado. Busque a lista novamente.';}}
+    });
+  }
+  // Consultas progressivas e limitadas: não dispara uma requisição por matéria de uma vez.
+  async function worker(){while(queue.length&&version===listVersion)await queue.shift()();}
+  await Promise.all(Array.from({length:Math.min(3,queue.length)},worker));
+}
 export function obterVinculoPublicacao(){
   const binding=bindings.get(key());
   if(!binding?.revisao)throw new Error('Salve esta edição no painel e aguarde a confirmação da revisão antes de preparar a publicação.');
@@ -42,17 +69,22 @@ $('salvar-no-painel').addEventListener('click',()=>{
     const result=await call(endpoint,credential,{...draft,...binding});
     if(result.id!==binding.id || !Number.isInteger(result.revisao) || result.revisao!==binding.revisao+1 || result.status!=='rascunho')throw new Error('O servidor não confirmou a revisão esperada. Confira antes de tentar novamente.');
     bindings.set(originalKey,{id:result.id,revisao:result.revisao,snapshot:original});
+    clearList();
     const mudou=originalKey!==key() || original!==JSON.stringify(obterRegistroAtual());
     status(`Rascunho salvo no painel — revisão ${result.revisao}.${mudou?' Há alterações locais posteriores que ainda precisam ser salvas.':' Nenhuma publicação foi feita.'}`);
   });
 });
 $('listar-rascunhos').addEventListener('click',()=>authorized(async credential=>{
+  const version=listVersion;
   const result=await call(endpoint,credential);
+  if(version!==listVersion)return;
   if(!Array.isArray(result.rascunhos))throw new Error('A lista de rascunhos não foi confirmada.');
   const select=$('rascunho-remoto');select.replaceChildren(new Option('Escolha um rascunho',''));
-  for(const draft of result.rascunhos){if(typeof draft.id==='string' && /^[a-f0-9-]{36}$/.test(draft.id) && typeof draft.titulo==='string')select.append(new Option(`${draft.titulo} — revisão ${draft.revisao}`,draft.id));}
+  const drafts=result.rascunhos.filter(draft=>typeof draft.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(draft.id)&&typeof draft.titulo==='string'&&Number.isInteger(draft.revisao)&&draft.revisao>0&&['noticias','eventos'].includes(draft.tipo));
+  for(const draft of drafts)select.append(new Option(`${draft.titulo} — revisão ${draft.revisao}`,draft.id));
   $('abrir-rascunho-remoto').disabled=true;
   status(result.rascunhos.length?'Rascunhos encontrados. Escolha qual deseja abrir.':'Nenhum rascunho salvo no painel ainda.');
+  void renderList(drafts,credential).catch(()=>{if(version===listVersion)status('Busque a lista novamente para conferir o estado.');});
 }));
 $('rascunho-remoto').addEventListener('change',()=>{$('abrir-rascunho-remoto').disabled=!$('rascunho-remoto').value;});
 $('abrir-rascunho-remoto').addEventListener('click',()=>{
