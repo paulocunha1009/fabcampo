@@ -2,6 +2,7 @@ import express from 'express';
 import { Redis } from '@upstash/redis';
 import { randomUUID } from 'node:crypto';
 import {validarPesquisaArquivo} from './editorial-research-file.js';
+import {validarAcervo} from './editorial-acervo.js';
 
 const fail = (status, message) => Object.assign(new Error(message), {status});
 const validId = id => typeof id === 'string' && /^[a-f0-9-]{36}$/.test(id);
@@ -26,9 +27,10 @@ export function validateDraftInput(value) {
   // Drafts are private editorial data, not approved/publishable HTML. Full
   // publication validation is a separate step; no route here publishes content.
   const allowed=['titulo','subtitulo','pesquisa','pesquisaArquivo','nome','resumo','texto','descricao','categoria','fonte','link','data','local','horario',
-    'publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video','icone','classe'];
+    'publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video','icone','classe','acervo','citacao','citacaoFonte','dadosTitulo','dadosTexto'];
   const registro=Object.fromEntries(allowed.filter(key=>Object.hasOwn(value.registro,key)).map(key=>[key,value.registro[key]]));
   if(registro.pesquisaArquivo){try{registro.pesquisaArquivo=validarPesquisaArquivo(registro.pesquisaArquivo);}catch{throw fail(400,'Confira o arquivo de pesquisa e seus limites.');}}
+  if(registro.acervo)registro.acervo=validarAcervo(registro.acervo);
   return {id:value.id,tipo:value.tipo,revisao:value.revisao,registro};
 }
 
@@ -49,7 +51,7 @@ if old then
   if old.historico then for i=1,math.min(4,#old.historico) do table.insert(next.historico,old.historico[i]) end end
 end
 redis.call('HSET',KEYS[1],ARGV[1],cjson.encode(next))
-redis.call('HSET',KEYS[2],ARGV[1],cjson.encode({id=next.id,tipo=next.tipo,revisao=next.revisao,titulo=ARGV[4],atualizadoEm=next.atualizadoEm}))
+redis.call('HSET',KEYS[2],ARGV[1],cjson.encode({id=next.id,tipo=next.tipo,revisao=next.revisao,titulo=ARGV[4],atualizadoEm=next.atualizadoEm,origem=ARGV[5]}))
 return next.revisao`;
 
 export function createDraftStore({redis=environmentRedis(),clock=Date.now}={}) {
@@ -69,7 +71,7 @@ export function createDraftStore({redis=environmentRedis(),clock=Date.now}={}) {
     requireStore();const value=validateDraftInput(input);const id=value.id || randomUUID();
     const document={id,tipo:value.tipo,revisao:value.revisao,registro:value.registro,atualizadoEm:new Date(clock()).toISOString(),status:'rascunho'};
     const title=value.registro[value.tipo === 'noticias' ? 'titulo':'nome'].trim();
-    const revision=Number(await redis.eval(SAVE_DRAFT_SCRIPT,keys,[id,value.revisao,JSON.stringify(document),title]));
+    const revision=Number(await redis.eval(SAVE_DRAFT_SCRIPT,keys,[id,value.revisao,JSON.stringify(document),title,value.registro.acervo?.path||'']));
     if(revision===-1)throw fail(409,'Existe uma versão mais recente. Seu texto foi preservado: baixe-o antes de abrir a versão do painel.');
     if(revision===-2)throw fail(409,'O painel atingiu o limite de 50 rascunhos. Baixe o arquivo e procure a equipe responsável.');
     if(!Number.isInteger(revision) || revision!==value.revisao+1)throw fail(502,'O armazenamento não confirmou o salvamento.');

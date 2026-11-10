@@ -3,6 +3,8 @@ import {createHash} from 'node:crypto';
 import sharp from 'sharp';
 import {createDraftStore} from './editorial-drafts.js';
 import {renderEditorialPage} from './editorial-page.mjs';
+import {acervoCatalogo,acervoPath,validarAcervo,analisarAcervo,aplicarAcervo,tituloAcervo} from './editorial-acervo.js';
+import {validarBlocos} from './editorial-blocks.mjs';
 
 const repo='paulocunha1009/fabcampo',branch='master';
 const fail=(status,message)=>Object.assign(new Error(message),{status});
@@ -24,6 +26,7 @@ export function validatePublicArticle(value){
   });
   if(!Array.isArray(value.cards||[])||(value.cards||[]).length>3)throw fail(400,'Use até três cards.');
   record.cards=(value.cards||[]).map(card=>({titulo:text(card?.titulo,90),texto:text(card?.texto,500)}));
+  Object.assign(record,validarBlocos(value));
   // O renderizador valida data, vídeo e endereço de referência sem aceitar HTML.
   try{renderEditorialPage(record,{preview:false});}catch{throw fail(400,'Confira a data, o vídeo e o endereço da fonte.');}
   return record;
@@ -60,7 +63,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     const draft=await drafts.get(input.id);
     if(draft.revisao!==input.revisao)throw fail(409,'Existe uma revisão mais recente. Reabra o rascunho antes de publicar.');
     if(draft.tipo!=='noticias')throw fail(400,'Esta etapa publica somente reportagens.');
-    return validatePublicArticle(draft.registro);
+    return draft.registro.acervo?{titulo:draft.registro.titulo,acervo:validarAcervo(draft.registro.acervo)}:validatePublicArticle(draft.registro);
   }
   async function images(record){
     const usages=new Map();for(const photo of record.fotos){usages.set(photo.imagem,usages.get(photo.imagem)||'galeria');if(photo.capa)usages.set(photo.capaImagem,'capa');}
@@ -77,15 +80,45 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     }
     return entries;
   }
+  const acervoId=path=>{const value=digest('acervo:'+path).slice(0,32);return [value.slice(0,8),value.slice(8,12),value.slice(12,16),value.slice(16,20),value.slice(20)].join('-');};
+  async function openArchive(input){
+    const entry=acervoCatalogo.find(item=>item.path===input?.path);if(!entry)throw fail(400,'Escolha uma reportagem do acervo.');
+    const id=acervoId(entry.path);let draft;
+    try{draft=await drafts.get(id);}catch(error){if(error.status!==404)throw error;}
+    if(!draft){
+      const state=await repositoryState(),file=await content(entry.path,state.head),original=file.bytes.toString('utf8');
+      analisarAcervo(original);
+      draft=await drafts.save({id,revisao:0,tipo:'noticias',registro:{titulo:entry.titulo,acervo:{path:entry.path,original,baseHash:digest(original),edicoes:[]}}});
+    }
+    if(draft.registro?.acervo?.path!==entry.path)throw fail(409,'O rascunho do acervo precisa ser conferido pela equipe.');
+    return {draft,campos:aplicarAcervo(draft.registro.acervo).campos};
+  }
+  async function saveArchive(input){
+    if(!acervoPath(input?.path)||input.id!==acervoId(input.path)||!Number.isInteger(input.revisao))throw fail(400,'Registro de acervo inválido.');
+    const draft=await drafts.get(input.id);
+    if(draft.revisao!==input.revisao||draft.registro?.acervo?.path!==input.path)throw fail(409,'Existe uma revisão mais recente. Reabra a matéria antes de editar.');
+    const acervo=validarAcervo({...draft.registro.acervo,edicoes:input.edicoes}),titulo=tituloAcervo(aplicarAcervo(acervo).html);
+    return drafts.save({id:input.id,revisao:input.revisao,tipo:'noticias',registro:{titulo,acervo}});
+  }
+  async function previewArchive(input){
+    if(!acervoPath(input?.path)||input.id!==acervoId(input.path))throw fail(400,'Registro de acervo inválido.');
+    const draft=await drafts.get(input.id);
+    if(draft.revisao!==input.revisao||draft.registro?.acervo?.path!==input.path)throw fail(409,'A revisão mudou. Reabra a matéria.');
+    return {html:aplicarAcervo({...draft.registro.acervo,edicoes:input.edicoes}).html};
+  }
   async function prepare(input){
-    const record=await draftArticle(input),state=await repositoryState(),entries=await images(record);
-    const path='pages/reportagem-'+input.id+'.html',hash=digest(JSON.stringify(record));
+    const record=await draftArticle(input),state=await repositoryState(),entries=record.acervo?[]:await images(record);
+    const path=record.acervo?.path||'pages/reportagem-'+input.id+'.html',hash=digest(JSON.stringify(record));
+    if(record.acervo&&input.id!==acervoId(path))throw fail(400,'Importe esta reportagem pelo acervo para preservar seu vínculo.');
     const old=state.manifest.publicacoes.find(item=>item.id===input.id);
     // Nunca sobrescrever páginas manuais ou arquivos que não pertencem ao manifesto.
     const existing=await content(path,state.head,true);
-    if(existing&&(!old||old.path!==path))throw fail(409,'O endereço já existe fora das publicações gerenciadas. Procure a equipe.');
-    if(existing&&old?.htmlHash!==digest(existing.bytes.toString('utf8').replace(/\r\n/g,'\n')))throw fail(409,'A página foi alterada fora do painel. Confira a alteração antes de atualizar.');
-    const plan={id:input.id,revisao:input.revisao,head:state.head,path,hash,fotos:record.fotos.length,titulo:record.titulo,operacao:old?.retirada?'republicar':old?'atualizar':'publicar',habilitada:enabled};
+    const imported=record.acervo&&existing&&digest(existing.bytes.toString('utf8'))===record.acervo.baseHash;
+    if(record.acervo&&(!existing||(!imported&&old?.baseHash!==record.acervo.baseHash)))throw fail(409,'A página original mudou. Procure a equipe antes de publicar a edição.');
+    if(existing&&(!old||old.path!==path)&&!imported)throw fail(409,'O endereço já existe fora das publicações gerenciadas. Procure a equipe.');
+    if(existing&&old&&old.htmlHash!==digest(existing.bytes.toString('utf8').replace(/\r\n/g,'\n')))throw fail(409,'A página foi alterada fora do painel. Confira a alteração antes de atualizar.');
+    if(record.acervo)aplicarAcervo(record.acervo);
+    const plan={id:input.id,revisao:input.revisao,head:state.head,path,hash,fotos:record.fotos?.length||0,titulo:record.titulo,operacao:old?.retirada?'republicar':old||record.acervo?'atualizar':'publicar',habilitada:enabled};
     plan.confirmacao=digest(JSON.stringify({id:plan.id,revisao:plan.revisao,head:plan.head,path,hash,entries}));
     return {plan,record,state,entries};
   }
@@ -96,17 +129,18 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     const previous=state.manifest.publicacoes.find(item=>item.id===input.id);
     if(!previous?.retirada&&previous?.hash===plan.hash&&previous.revisao===input.revisao)return {status:'enviada',id:plan.id,link:plan.path,commit:state.head,reutilizada:true};
     if(input.head!==plan.head||input.confirmacao!==plan.confirmacao)throw fail(409,'O rascunho, as fotos ou o portal mudaram. Prepare a publicação novamente.');
-    let html=renderEditorialPage(record,{preview:false});
-    const cover=record.fotos.find(photo=>photo.capa),canonical='https://fabcampo.com.br/'+plan.path;
-    html=html.replace('</head>','<meta name="editorial-publication" content="'+plan.hash+'"><link rel="canonical" href="'+canonical+'"><meta property="og:type" content="article"><meta property="og:site_name" content="Campo Digital"><meta property="og:title" content="'+escapeHTML(record.titulo)+'"><meta property="og:description" content="'+escapeHTML(record.resumo)+'"><meta property="og:url" content="'+canonical+'"><meta property="og:image" content="https://fabcampo.com.br/'+cover.capaImagem+'"></head>');
+    let html=record.acervo?aplicarAcervo(record.acervo).html:renderEditorialPage(record,{preview:false});
+    const cover=record.fotos?.find(photo=>photo.capa),canonical='https://fabcampo.com.br/'+plan.path;
+    if(!record.acervo)html=html.replace('</head>','<meta name="editorial-publication" content="'+plan.hash+'"><link rel="canonical" href="'+canonical+'"><meta property="og:type" content="article"><meta property="og:site_name" content="Campo Digital"><meta property="og:title" content="'+escapeHTML(record.titulo)+'"><meta property="og:description" content="'+escapeHTML(record.resumo)+'"><meta property="og:url" content="'+canonical+'"><meta property="og:image" content="https://fabcampo.com.br/'+cover.capaImagem+'"></head>');
     const htmlHash=digest(html.replace(/\r\n/g,'\n'));
-    const news={editorialId:plan.id,data:record.data,titulo:record.titulo,resumo:record.resumo,categoria:record.categoria,...categories[record.categoria],link:plan.path,fonte:record.fonte};
-    const index=state.site.noticias.findIndex(item=>item.editorialId===plan.id);
+    const priorNews=record.acervo?state.site.noticias.find(item=>item.link===plan.path):null;
+    const news=record.acervo?{...priorNews,editorialId:plan.id,link:plan.path,titulo:record.titulo,resumo:priorNews?.resumo||record.titulo,categoria:priorNews?.categoria||'Educação'}:{editorialId:plan.id,data:record.data,titulo:record.titulo,resumo:record.resumo,categoria:record.categoria,...categories[record.categoria],link:plan.path,fonte:record.fonte};
+    const index=state.site.noticias.findIndex(item=>item.editorialId===plan.id||(record.acervo&&item.link===plan.path));
     if(index<0)state.site.noticias.unshift(news);else state.site.noticias[index]=news;
-    const publication={id:plan.id,revisao:input.revisao,path:plan.path,hash:plan.hash,htmlHash,newsHash:digest(JSON.stringify(news)),titulo:record.titulo};
+    const publication={id:plan.id,revisao:input.revisao,path:plan.path,hash:plan.hash,htmlHash,newsHash:digest(JSON.stringify(news)),titulo:record.titulo,...(record.acervo?{baseHash:record.acervo.baseHash}:{})};
     state.manifest.publicacoes=state.manifest.publicacoes.filter(item=>item.id!==plan.id).concat(publication);
-    const chunks=[{section:'',text:record.resumo}];let section='';
-    for(let block of record.texto.split(/\n\s*\n/)){
+    const chunks=[{section:'',text:news.resumo}];let section='';
+    for(let block of (record.acervo?aplicarAcervo(record.acervo).campos.map(field=>field.texto).join('\n\n'):record.texto).split(/\n\s*\n/)){
       const heading=/^##\s+([^\n]+)(?:\n|$)/.exec(block);if(heading){section=heading[1];block=block.slice(heading[0].length);}
       let paragraph=block.trim();while(paragraph.length>1000){const space=paragraph.lastIndexOf(' ',1000),end=space>0?space:1000;chunks.push({section,text:paragraph.slice(0,end)});paragraph=paragraph.slice(end).trim();}if(paragraph)chunks.push({section,text:paragraph});
     }
@@ -127,9 +161,9 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(!idPattern.test(input?.id||'')||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Abra um rascunho salvo antes de retirar a matéria.');
     const draft=await drafts.get(input.id);
     if(draft.tipo!=='noticias'||draft.revisao!==input.revisao)throw fail(409,'O rascunho mudou. Reabra a revisão salva.');
-    const state=await repositoryState(),item=state.manifest.publicacoes.find(item=>item.id===input.id),path='pages/reportagem-'+input.id+'.html';
+    const state=await repositoryState(),item=state.manifest.publicacoes.find(item=>item.id===input.id),path=item?.path;
     if(!item)throw fail(404,'Nenhuma publicação gerenciada foi encontrada para este rascunho.');
-    if(item.path!==path||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
+    if((path!=='pages/reportagem-'+input.id+'.html'&&!acervoPath(path))||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
     const existing=await content(path,state.head,true);
     if(!existing||digest(existing.bytes.toString('utf8').replace(/\r\n/g,'\n'))!==item.htmlHash)throw fail(409,'A página foi alterada fora do painel. Procure a equipe antes de retirar.');
     const plan={id:input.id,revisao:input.revisao,head:state.head,path,titulo:item.titulo,operacao:'retirar',habilitada:enabled,retirada:!!item.retirada};
@@ -160,9 +194,17 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
   async function status(id){
     if(!idPattern.test(id||''))throw fail(400,'Identificação inválida.');
     const state=await repositoryState(),item=state.manifest.publicacoes.find(item=>item.id===id);
-    if(!item)return {status:'nao-enviada',id};
-    const path='pages/reportagem-'+id+'.html';
-    if(item.path!==path||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
+    if(!item){
+      const original=acervoCatalogo.find(entry=>acervoId(entry.path)===id);
+      if(!original)return {status:'nao-enviada',id};
+      try{
+        const file=await content(original.path,state.head),response=await siteRequest('https://fabcampo.com.br/'+original.path+'?editorial='+state.head,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
+        if(response.ok&&digest((await response.text()).replace(/\r\n/g,'\n'))===digest(file.bytes.toString('utf8').replace(/\r\n/g,'\n')))return {status:'existente',id,link:original.path};
+      }catch{}
+      return {status:'aguardando',id,revisao:1};
+    }
+    const path=item.path;
+    if((path!=='pages/reportagem-'+id+'.html'&&!acervoPath(path))||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
     try{
       const response=await siteRequest('https://fabcampo.com.br/'+path+'?editorial='+item.hash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)});
       if(!response.ok)return {status:'aguardando',id,link:path,revisao:item.revisao};
@@ -182,7 +224,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       return {status:active?'publicada':'aguardando',id,link:path,revisao:item.revisao};
     }catch{return {status:'aguardando',id,link:path,revisao:item.revisao};}
   }
-  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw};
+  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw,openArchive,saveArchive,previewArchive};
 }
 export function createPublicationRouter({auth,service=createPublicationService()}){
   const router=express.Router();
@@ -192,6 +234,10 @@ export function createPublicationRouter({auth,service=createPublicationService()
   router.post('/api/editorial/publicacoes/confirmar',express.json({limit:'4kb'}),execute(req=>service.publish(req.body)));
   router.post('/api/editorial/publicacoes/preparar-retirada',express.json({limit:'4kb'}),execute(req=>service.prepareWithdrawal(req.body)));
   router.post('/api/editorial/publicacoes/retirar',express.json({limit:'4kb'}),execute(req=>service.withdraw(req.body)));
+  router.get('/api/editorial/publicacoes/acervo/catalogo',execute(()=>acervoCatalogo));
+  router.post('/api/editorial/publicacoes/acervo/abrir',express.json({limit:'4kb'}),execute(req=>service.openArchive(req.body)));
+  router.post('/api/editorial/publicacoes/acervo/salvar',express.json({limit:'256kb'}),execute(req=>service.saveArchive(req.body)));
+  router.post('/api/editorial/publicacoes/acervo/previa',express.json({limit:'256kb'}),execute(req=>service.previewArchive(req.body)));
   router.get('/api/editorial/publicacoes/:id',execute(req=>service.status(req.params.id)));
   return router;
 }

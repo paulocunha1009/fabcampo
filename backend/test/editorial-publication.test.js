@@ -8,7 +8,7 @@ const id='12345678-1234-4234-8234-123456789abc';
 const bytes=await sharp({create:{width:1200,height:675,channels:3,background:'#285e3e'}}).webp().toBuffer();
 const hash=createHash('sha256').update(bytes).digest('hex'),path='img/editorial/'+hash+'.webp';
 const article={titulo:'Matéria de teste',resumo:'Resumo de teste',texto:'Texto de teste conferido.',local:'Local de teste',fonte:'Equipe de teste',categoria:'Educação',fotos:[{id:'foto-1',imagem:path,capaImagem:path,capa:true,legenda:'Legenda de teste',credito:'Crédito de teste',textoAlternativo:'Descrição de teste'}],pesquisa:'PESQUISA_PRIVADA',pesquisaArquivo:{texto:'ARQUIVO_PRIVADO'}};
-function fixture({enabled=true}={}){
+function fixture({enabled=true,record=article}={}){
   const state={head:'1'.repeat(40),revision:1,writes:[],tree:null,blobs:new Map(),files:new Map([['data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Notícia manual',link:'pages/original.html'}],eventos:[{nome:'Evento manual'}],outro:'preservar'}))]]),race:false,tamper:false};
   let next=10;
   state.files.set('data/busca.json',Buffer.from(JSON.stringify({version:1,pages:[{title:'Página manual',url:'pages/manual.html',chunks:[]}]})));
@@ -38,7 +38,7 @@ function fixture({enabled=true}={}){
     }
     throw new Error('Chamada inesperada: '+method+' '+route);
   };
-  const service=createPublicationService({token:'test-only',staging:'editorial-rascunhos',enabled,request,drafts:{get:async()=>({tipo:'noticias',revisao:state.revision,registro:article})},siteRequest:async url=>{
+  const service=createPublicationService({token:'test-only',staging:'editorial-rascunhos',enabled,request,drafts:{get:async()=>({tipo:'noticias',revisao:state.revision,registro:record})},siteRequest:async url=>{
     const file=state.files.get(new URL(url).pathname.slice(1));return {ok:!!file,text:async()=>file.toString(),json:async()=>JSON.parse(file.toString())};
   }});
   return {service,state};
@@ -79,7 +79,7 @@ test('concorrência na atualização da referência não força nem altera a bra
 test('todas as rotas de publicação exigem conta autorizada',async()=>{
   let called=0;const app=express();app.use(createPublicationRouter({auth:{authenticate:async()=>{throw Object.assign(new Error(),{status:403});}},service:{prepare:async()=>called++,publish:async()=>called++,status:async()=>called++}}));
   const server=await new Promise(resolve=>{const s=app.listen(0,'127.0.0.1',()=>resolve(s));});
-  try{for(const [method,path] of [['POST','preparar'],['POST','confirmar'],['POST','preparar-retirada'],['POST','retirar'],['GET',id]])assert.equal((await fetch(`http://127.0.0.1:${server.address().port}/api/editorial/publicacoes/${path}`,{method})).status,403);assert.equal(called,0);}finally{await new Promise(resolve=>server.close(resolve));}
+  try{for(const [method,path] of [['POST','preparar'],['POST','confirmar'],['POST','preparar-retirada'],['POST','retirar'],['GET','acervo/catalogo'],['POST','acervo/abrir'],['POST','acervo/salvar'],['POST','acervo/previa'],['GET',id]])assert.equal((await fetch(`http://127.0.0.1:${server.address().port}/api/editorial/publicacoes/${path}`,{method})).status,403);assert.equal(called,0);}finally{await new Promise(resolve=>server.close(resolve));}
 });
 
 test('retirada é reversível, preserva rascunho/fotos e remove apenas entradas próprias',async()=>{
@@ -118,4 +118,17 @@ test('conferência de retirada aguarda atualização das notícias, busca e site
     const current=state.files.get(name);state.files.set(name,old.get(name));assert.equal((await service.status(id)).status,'aguardando');state.files.set(name,current);
   }
   assert.equal((await service.status(id)).status,'retirada');
+});
+
+test('edição do acervo preserva página original e endereço, sem copiar imagens ou duplicar notícia',async()=>{
+ const source='<html><head><title>Original</title></head><body><header>Menu fixo</header><main><article><h1>Título original</h1><p>Texto original com <strong>ênfase</strong>.</p><table><tr><td>Dado</td></tr></table><img src="../img/foto.jpg"></article></main><footer>Rodapé fixo</footer></body></html>';
+ const legacyPath='pages/reportagem-educacao.html',baseHash=createHash('sha256').update(source).digest('hex');
+ const raw=createHash('sha256').update('acervo:'+legacyPath).digest('hex').slice(0,32),legacyId=[raw.slice(0,8),raw.slice(8,12),raw.slice(12,16),raw.slice(16,20),raw.slice(20)].join('-');
+ const record={titulo:'Título original',acervo:{path:legacyPath,original:source,baseHash,edicoes:[{indice:1,texto:'Texto revisado com'}]}};
+ const {service,state}=fixture({record});state.files.set(legacyPath,Buffer.from(source));
+ state.files.set('data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Chamada antiga',resumo:'Resumo existente',link:legacyPath},{titulo:'Outra',link:'pages/outra.html'}],eventos:[]})));
+ const plan=await service.prepare({id:legacyId,revisao:1});assert.equal(plan.path,legacyPath);assert.equal(plan.operacao,'atualizar');assert.equal(state.writes.length,0);
+ await service.publish({...plan,confirmado:true});const html=state.files.get(legacyPath).toString();assert.match(html,/Texto revisado com <strong>ênfase/);assert.match(html,/<table>/);assert.match(html,/Rodapé fixo/);assert.match(html,/Menu fixo/);assert.ok(state.tree.every(item=>!item.path.startsWith('img/')));
+ const news=JSON.parse(state.files.get('data/site.json')).noticias;assert.equal(news.length,2);assert.equal(news[0].link,legacyPath);assert.equal(news[0].resumo,'Resumo existente');assert.equal((await service.status(legacyId)).status,'publicada');
+ state.files.set(legacyPath,Buffer.from(html+'<p>Edição externa</p>'));await assert.rejects(()=>service.prepare({id:legacyId,revisao:1}),error=>error.status===409);
 });

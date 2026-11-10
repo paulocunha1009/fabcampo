@@ -1,7 +1,7 @@
-import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js';
+import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js?v=20261110-4';
 import { videoEmbed, imagemPrevia } from './midias-core.js';
 const $ = id => document.getElementById(id);
-const campos = ['titulo','subtitulo','pesquisa','pesquisaArquivo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video'];
+const campos = ['titulo','subtitulo','pesquisa','pesquisaArquivo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video','citacao','citacaoFonte','dadosTitulo','dadosTexto'];
 const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade', fotos:'1 a 10 fotos enviadas, com uma capa, legendas, créditos e descrições acessíveis' };
 let tipo = 'noticias';
 let conteudo = { noticias:[], eventos:[] };
