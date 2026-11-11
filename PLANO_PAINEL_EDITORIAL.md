@@ -999,3 +999,24 @@ Também conferida largura útil de celular sem overflow. Checagem de sintaxe e l
 passou. Testes anteriores do backend (173) não repetidos: backend não foi alterado.
 Nenhuma matéria ou rascunho real foi modificado nesta revisão de interface.
 Evidência: tmp/validacao/editor-visual-paragrafo-selecionado.png.
+
+## Usabilidade dos cards no acervo — 10/11/2026
+
+Professor esclareceu que a dificuldade era nos cards das reportagens antigas.
+Editor visual passa a reconhecer o contêiner do card e agrupar seus campos no
+mesmo painel: título, texto, símbolo ou número/indicador, conforme a estrutura
+existente. Clique em qualquer parte do card seleciona o bloco inteiro. Seletor
+Ir para um card e desfazer por card até a revisão salva. Mantém índices dos nós
+textuais originais e atualizações com textContent; não altera o contrato do backend.
+
+Reconhecidos os modelos reais de pilares, místicas, dados da escola, indicadores,
+cultivos, personagens, soluções e orientações. Campos de um card não ficam mais
+como diversos controles clicáveis independentes no quadro. Mensagens do quadro
+continuam verificadas por source, nonce e identificação válida do card.
+
+Root cd818ae, master 115ad4b. Conferência local com os mesmos fixtures públicos:
+seleção por card e por nome, título/texto/símbolo juntos no card Calendário agrícola,
+atualização instantânea e desfazer; indicadores de Clima com número/texto; IA com
+cards de porcentagens e de orientações. Nenhuma edição real salva ou publicada.
+Sintaxe e links passaram; backend inalterado. Evidência:
+tmp/validacao/editor-card-completo.png. Publicação da interface acompanhada no Pages.
