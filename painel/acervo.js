@@ -1,6 +1,6 @@
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {montarPreviaVisual} from './acervo-visual.js?v=20261110-5';
+import {montarPreviaVisual} from './acervo-visual.js?v=20261110-6';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 const paths=['pages/reportagem-educacao.html','pages/reportagem-clima.html','pages/materia_ia_educacao_v2.html'];
 let draft=null,fields=[],dirty=false,busy=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false;
