@@ -5,17 +5,23 @@ import {EDITORIAL_API} from './auth-config.js';
 import {montarPreviaVisual,obterCardsVisuais,tituloVisualAcervo} from './acervo-visual.js?v=20261111-5';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 const paths=['pages/reportagem-educacao.html','pages/reportagem-clima.html','pages/materia_ia_educacao_v2.html'];
-let draft=null,fields=[],dirty=false,busy=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';
+let draft=null,fields=[],dirty=false,busy=false,writing=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';
 const message=text=>{$('estado-editor-acervo').textContent=text;};
 function resetPlan(){plan=null;$('confirmacao-acervo').checked=false;$('publicar-acervo').disabled=true;}
 async function call(path,credential,body){
   const response=await fetch(endpoint+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+credential,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(120000)});
   const result=await response.json();if(!response.ok)throw new Error(result.error||'A operação não foi confirmada.');return result;
 }
-function authorized(action){
-  if(busy)return;const version=epoch;
-  requestAuthorizedAction(async credential=>{if(busy||version!==epoch)return;busy=true;try{await action(credential,version);}catch(error){if(version===epoch)message(error.message);}finally{busy=false;}});
+function refreshButtons(){
+  for(const id of ['salvar-acervo','preparar-acervo','confirmacao-acervo'])$(id).disabled=busy;
+  $('fechar-acervo').disabled=writing;$('editor-acervo').setAttribute('aria-busy',String(busy));
+  $('publicar-acervo').disabled=busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked;
 }
+function authorized(action,{text='',write=false}={}){
+  if(busy)return;const version=epoch;
+  requestAuthorizedAction(async credential=>{if(busy||version!==epoch)return;busy=true;writing=write;refreshButtons();if(text)message(text);try{await action(credential,version);}catch(error){if(version===epoch)message(error.message);}finally{busy=false;writing=false;refreshButtons();}});
+}
+
 const edits=()=>fields.map(field=>({indice:field.indice,texto:field.texto}));
 function options(){return validarOpcoesAcervo({resumo:$('chamada-resumo-acervo').value,capa:obterCapaAcervo()});}
 function hasChanges(){try{return fields.some((field,index)=>field.texto!==savedFields[index])||JSON.stringify(options())!==savedOptions;}catch{return true;}}
@@ -82,27 +88,28 @@ $('listar-acervo').addEventListener('click',()=>authorized(async(credential,vers
   $('estado-acervo').textContent='Acervo encontrado. A importação preserva a página inteira e cria um rascunho privado.';
 }));
 document.addEventListener('editorial-open-acervo',event=>open(event.detail?.path));
-$('fechar-acervo').addEventListener('click',()=>$('editor-acervo').close());
+$('fechar-acervo').addEventListener('click',()=>{if(!writing)$('editor-acervo').close();});
+$('editor-acervo').addEventListener('cancel',event=>{if(writing)event.preventDefault();});
 $('salvar-acervo').addEventListener('click',()=>{
   if(!draft)return;let opcoes;try{opcoes=options();}catch(error){message(error.message);return;}const input={id:draft.id,revisao:draft.revisao,path:draft.registro.acervo.path,edicoes:edits(),...opcoes},snapshot=JSON.stringify(edits()),optionSnapshot=JSON.stringify(opcoes);
   authorized(async(credential,version)=>{
     const result=await call('/acervo/salvar',credential,input);if(version!==epoch)return;
     if(result.id!==draft.id||result.revisao!==input.revisao+1)throw new Error('Revisão salva não confirmada.');
     draft=result;savedFields=input.edicoes.map(edit=>edit.texto);savedOptions=optionSnapshot;dirty=hasChanges();resetPlan();updateSummary();document.dispatchEvent(new Event('editorial-publication-changed'));message('Rascunho salvo — revisão '+draft.revisao+'. '+(dirty?'Há alterações posteriores ainda não salvas.':'Nenhuma alteração foi publicada.'));
-  });
+  },{text:'Salvando a revisão no painel. Aguarde a confirmação; o conteúdo aberto foi preservado.',write:true});
 });
 $('previa-acervo').addEventListener('click',()=>{hiddenMarks=!hiddenMarks;send({tipo:'acervo-marcas',ocultar:hiddenMarks});$('previa-acervo').textContent=hiddenMarks?'Mostrar marcações de edição':'Visualizar sem marcações';});
 $('preparar-acervo').addEventListener('click',()=>{
   if(!draft||dirty){message('Salve os textos, o resumo e a capa antes de preparar a atualização.');return;}
-  resetPlan();authorized(async(credential,version)=>{const result=await call('/preparar',credential,{id:draft.id,revisao:draft.revisao});if(version!==epoch||dirty)return;if(result.id!==draft.id||result.path!==draft.registro.acervo.path)throw new Error('Página de destino não confirmada.');plan=result;message('Atualização conferida para '+result.path+'. Revise a prévia e marque a confirmação para enviar.');});
+  resetPlan();authorized(async(credential,version)=>{const result=await call('/preparar',credential,{id:draft.id,revisao:draft.revisao});if(version!==epoch||dirty)return;if(result.id!==draft.id||result.path!==draft.registro.acervo.path)throw new Error('Página de destino não confirmada.');plan=result;message('Atualização conferida para '+result.path+'. Revise a prévia e marque a confirmação para enviar.');},{text:'Conferindo a revisão salva e a página de destino…'});
 });
-$('confirmacao-acervo').addEventListener('change',()=>{$('publicar-acervo').disabled=busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked;});
+$('confirmacao-acervo').addEventListener('change',refreshButtons);
 $('publicar-acervo').addEventListener('click',()=>{
   if(busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked)return;const prepared=plan;
   authorized(async(credential,version)=>{
     if(plan!==prepared||dirty)return;$('publicar-acervo').disabled=true;
     const result=await call('/confirmar',credential,{id:prepared.id,revisao:prepared.revisao,head:prepared.head,confirmacao:prepared.confirmacao,confirmado:true});if(version!==epoch)return;
     resetPlan();document.dispatchEvent(new Event('editorial-publication-changed'));message(result.status==='enviada'?'Atualização enviada. Aguarde o portal atualizar e busque a lista de matérias para conferir o estado.':'Envio não confirmado. Confira a lista antes de tentar novamente.');
-  });
+  },{text:'Enviando a revisão para publicação. Aguarde a confirmação; não feche esta página.',write:true});
 });
 document.addEventListener('editorial-access-cleared',()=>{epoch++;draft=null;fields=[];dirty=false;resetPlan();$('editor-acervo').close();$('texto-selecionado-acervo').value='';$('campos-acervo').hidden=true;$('catalogo-acervo').replaceChildren();$('previa-acervo-frame').srcdoc='';});
