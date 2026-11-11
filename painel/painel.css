@@ -77,3 +77,5 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .estado-edicao{padding:12px 16px;border:1px solid #c9d5c5;border-left:5px solid #667862;border-radius:8px;background:#f4f7f2;overflow-wrap:anywhere}.estado-edicao[data-estado="pendente"]{border-color:#b18526;background:#fff8e5;color:#664a10}.estado-edicao[data-estado="salvo"]{border-color:#3d7850;background:#edf8ef;color:#245333}
 
 .acervo-chamada{padding:16px;border:1px solid #ccd9c9;border-radius:10px;margin:12px 0}.acervo-chamada summary{font-weight:700;cursor:pointer}.acervo-chamada input:not([type="range"]),.acervo-chamada textarea{width:100%;box-sizing:border-box}.acervo-chamada label{display:block;margin-top:12px}.chamada-acervo-previa{margin:16px 0;padding:16px;background:#f2f7ef;border-radius:8px;overflow-wrap:anywhere}
+
+.alteracoes-acervo-lista{list-style:none;padding:0}.alteracoes-acervo-lista li{padding:12px;border:1px solid #ccd9c9;border-radius:8px;margin:10px 0;background:#f7faf5}.alteracoes-acervo-lista p{font-size:.9rem;margin:.5rem 0;overflow-wrap:anywhere}
