@@ -1062,3 +1062,9 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Contagem considera apenas o grupo escolhido; mensagens distintas para lista vazia e busca sem resultados. Troca para lixeira limpa o filtro de publicação e o desativa nesse grupo.
 - Seis testes direcionados passaram. Conferência visual com API simulada exclusivamente local: busca vazia, limpeza e troca de Publicadas para Lixeira exibindo Restaurar. Nenhum rascunho real alterado.
 - Servidor de prévia restrito a 127.0.0.1; tentativa em todas as interfaces rejeitada pela revisão automática e substituída por loopback.
+
+
+### 11/11/2026 — estado de salvamento da edição
+- Aviso junto ao formulário distingue edição nova, alterações pendentes e revisão confirmada. Compara conteúdo validado com snapshot confirmado pelo servidor; não guarda credenciais nem altera rascunhos automaticamente.
+- Atualização da prévia não confirma salvamento remoto. Carregamento de rascunho e retorno do salvamento atualizam o indicador. Edições posteriores à requisição continuam pendentes.
+- Dois testes do indicador passaram, incluindo fluxo de salvamento/edição/prévia/novo salvamento com API simulada. Quatro testes existentes de publicação passaram. Nenhum conteúdo real alterado.

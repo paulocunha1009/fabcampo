@@ -1,3 +1,4 @@
+import {descreverEstadoEdicao} from './estado-edicao.mjs';
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261110-4';
@@ -55,6 +56,17 @@ export function obterVinculoPublicacao(){
 }
 const key=()=>document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo+':'+$('registro-editorial').value;
 const status=text=>{$('estado-salvamento').textContent=text;};
+function atualizarEstadoEdicao(){
+  let snapshot=null;try{snapshot=JSON.stringify(obterRegistroAtual());}catch{}
+  const descricao=descreverEstadoEdicao(bindings.get(key()),snapshot);
+  $('estado-edicao-atual').textContent=descricao.texto;$('estado-edicao-atual').dataset.estado=descricao.estado;
+}
+$('editorial-form').addEventListener('input',atualizarEstadoEdicao);
+$('editorial-form').addEventListener('change',atualizarEstadoEdicao);
+$('editorial-form').addEventListener('submit',()=>queueMicrotask(atualizarEstadoEdicao));
+document.addEventListener('editorial-record-loaded',()=>queueMicrotask(atualizarEstadoEdicao));
+atualizarEstadoEdicao();
+
 async function call(url,credential,body) {
   const response=await fetch(url,{method:body?'POST':'GET',headers:{Authorization:`Bearer ${credential}`,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(15000)});
   if(!response.ok){const error=await response.json().catch(()=>({}));throw new Error(typeof error.error==='string'?error.error:'O servidor não confirmou a operação. O texto local foi preservado.');}
@@ -83,7 +95,7 @@ $('salvar-no-painel').addEventListener('click',()=>{
     const result=await call(endpoint,credential,{...draft,...binding});
     if(result.id!==binding.id || !Number.isInteger(result.revisao) || result.revisao!==binding.revisao+1 || result.status!=='rascunho')throw new Error('O servidor não confirmou a revisão esperada. Confira antes de tentar novamente.');
     bindings.set(originalKey,{id:result.id,revisao:result.revisao,snapshot:original});
-    clearList();
+    clearList();atualizarEstadoEdicao();
     const mudou=originalKey!==key() || original!==JSON.stringify(obterRegistroAtual());
     status(`Rascunho salvo no painel — revisão ${result.revisao}.${mudou?' Há alterações locais posteriores que ainda precisam ser salvas.':' Nenhuma publicação foi feita.'}`);
   });
@@ -110,6 +122,7 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
     if(draft.id!==id || !Number.isInteger(draft.revisao) || draft.revisao<1)throw new Error('Rascunho recebido em formato inesperado.');
     if(draft.registro?.acervo){document.dispatchEvent(new CustomEvent('editorial-open-acervo',{detail:{path:draft.registro.acervo.path}}));status('Reportagem antiga selecionada. Continue no editor do acervo.');return;}
     abrirRascunhoRemoto(draft);bindings.set(key(),{id:draft.id,revisao:draft.revisao,snapshot:JSON.stringify(obterRegistroAtual())});
+    atualizarEstadoEdicao();
     status(`Rascunho aberto — revisão ${draft.revisao}. Os arquivos de foto ainda não enviados não podem ser recuperados do servidor.`);
   });
 });
