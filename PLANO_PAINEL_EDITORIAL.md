@@ -1070,3 +1070,9 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Dois testes do indicador passaram, incluindo fluxo de salvamento/edição/prévia/novo salvamento com API simulada. Quatro testes existentes de publicação passaram. Nenhum conteúdo real alterado.
 
 - Conferência publicada detectou cache de lista-materias.mjs sem a nova exportação. Corrigidas URLs versionadas dos módulos e mantida uma única instância de rascunhos.js entre a página e publicacao.js. Reexecutados quatro testes de estado/filtros, todos passaram.
+
+
+### 11/11/2026 — pendências com atalhos na revisão
+- Etapa Revisão mostra campos básicos ausentes, capa e primeira falha de validação; usa validação existente para complementar pendências. Não substitui revisão editorial nem validação final do servidor.
+- Botões levam à etapa/campo correto e abrem seções opcionais quando há erro nelas. Extras permanecem opcionais.
+- Dois testes direcionados passaram: básicos/capa/opcionais e formatos/eventos. Conferência local de interface confirmou navegação para Fotos e foco em Local, sem preencher ou salvar conteúdo real.

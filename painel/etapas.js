@@ -1,3 +1,4 @@
+import {listarPendenciasRevisao} from './revisao-core.mjs?v=20261111-4';
 const $ = id => document.getElementById(id);
 const steps = ['conteudo','midias','revisao'];
 let current = 0;
@@ -7,6 +8,12 @@ function summary() {
   let photos = []; try { photos = JSON.parse($('fotos').value || '[]'); } catch {}
   $('revisao-fotos').textContent = news ? (photos.length ? `${photos.length} de 10 fotos · ${photos.some(photo=>photo.capa) ? 'capa escolhida':'escolha uma capa'}`:'Nenhuma foto adicionada') : ($('imagem').value ? 'Imagem registrada':'Sem imagem');
   $('revisao-video').textContent = news && $('video').value.trim() ? 'Link adicionado · conferir na prévia':'Sem vídeo';
+  const valores=Object.fromEntries(Array.from(document.querySelectorAll('#editorial-form input[id],#editorial-form textarea[id],#editorial-form select[id]')).map(el=>[el.id,el.value]));
+  for(const campo of ['fotos','cards','pesquisaArquivo']){try{valores[campo]=JSON.parse(valores[campo]|| (campo==='pesquisaArquivo'?'null':'[]'));}catch{valores[campo]='formato inválido';}}
+  const faltantes=listarPendenciasRevisao(news?'noticias':'eventos',valores),lista=$('revisao-pendencias');lista.replaceChildren();
+  $('revisao-orientacao').textContent=faltantes.length?`${faltantes.length} ${faltantes.length===1?'item':'itens'} para completar ou conferir. Clique em um item para abrir o campo.`:'Nenhuma pendência automática encontrada. Confira fatos, fontes, autorizações e a página completa; esta conferência não autoriza a publicação.';
+  for(const item of faltantes){const li=document.createElement('li'),botao=document.createElement('button');botao.type='button';botao.className='botao-secundario';botao.textContent=item.rotulo+(item.detalhe?' — '+item.detalhe:'');botao.addEventListener('click',()=>{const id={fotos:'arquivos-galeria',cards:'sugerir-cards',pesquisaArquivo:'texto-arquivo-pesquisa'}[item.campo]||item.campo;const target=$(id);if(!target)return;const section=target.closest('[data-etapa]');if(section)show(section.dataset.etapa,false);let details=target.closest('details');while(details){details.open=true;details=details.parentElement.closest('details');}if(target.hidden||target.closest('[hidden]')){$('arquivo-pesquisa').focus();}else target.focus();});li.append(botao);lista.append(li);}
+
 }
 function show(step, focus = true) {
   current = steps.indexOf(step);
@@ -39,4 +46,5 @@ document.addEventListener('editorial-record-loaded',()=>{
   show('conteudo',false);
 });
 $('editorial-form').addEventListener('input',summary);
+$('editorial-form').addEventListener('change',summary);
 show('conteudo',false);
