@@ -1,9 +1,11 @@
+import {obterCapaAcervo,definirCapaAcervo} from './acervo-capa.js?v=20261111-5';
+import {validarOpcoesAcervo} from '../backend/lib/editorial-acervo-opcoes.mjs?v=20261111-5';
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {montarPreviaVisual,obterCardsVisuais} from './acervo-visual.js?v=20261110-7';
+import {montarPreviaVisual,obterCardsVisuais,tituloVisualAcervo} from './acervo-visual.js?v=20261111-5';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 const paths=['pages/reportagem-educacao.html','pages/reportagem-clima.html','pages/materia_ia_educacao_v2.html'];
-let draft=null,fields=[],dirty=false,busy=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;
+let draft=null,fields=[],dirty=false,busy=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';
 const message=text=>{$('estado-editor-acervo').textContent=text;};
 function resetPlan(){plan=null;$('confirmacao-acervo').checked=false;$('publicar-acervo').disabled=true;}
 async function call(path,credential,body){
@@ -15,6 +17,15 @@ function authorized(action){
   requestAuthorizedAction(async credential=>{if(busy||version!==epoch)return;busy=true;try{await action(credential,version);}catch(error){if(version===epoch)message(error.message);}finally{busy=false;}});
 }
 const edits=()=>fields.map(field=>({indice:field.indice,texto:field.texto}));
+function options(){return validarOpcoesAcervo({resumo:$('chamada-resumo-acervo').value,capa:obterCapaAcervo()});}
+function hasChanges(){try{return fields.some((field,index)=>field.texto!==savedFields[index])||JSON.stringify(options())!==savedOptions;}catch{return true;}}
+function updateCall(){if(!draft)return;$('chamada-titulo-acervo').textContent=tituloVisualAcervo(draft.registro.acervo.original,fields)||draft.registro.titulo;$('chamada-previa-resumo-acervo').textContent=$('chamada-resumo-acervo').value;try{const capa=obterCapaAcervo();$('chamada-previa-imagem-acervo').hidden=!capa;if(capa){$('chamada-previa-imagem-acervo').src='https://fabcampo.com.br/'+capa.imagem;$('chamada-previa-imagem-acervo').alt=capa.textoAlternativo;}}catch{}}
+function refreshVisual(){nonce=crypto.randomUUID();$('previa-acervo-frame').srcdoc=montarPreviaVisual(draft.registro.acervo.original,fields,nonce,options());updateCall();}
+function optionsChanged(){if(!draft)return;dirty=true;resetPlan();updateCall();message('Chamada ou capa alterada. Confira a prévia e salve o rascunho.');}
+$('chamada-resumo-acervo').addEventListener('input',optionsChanged);
+document.addEventListener('editorial-acervo-capa',optionsChanged);
+$('conferir-chamada-acervo').addEventListener('click',()=>{if(!draft)return;try{refreshVisual();message('Prévia atualizada com os textos, o resumo e a capa desta edição. Salve antes de publicar.');}catch(error){message(error.message);}});
+
 const typeLabels={h1:'Título principal',h2:'Título da seção',h3:'Subtítulo da seção',h4:'Título do bloco',h5:'Título do bloco',h6:'Título do bloco',p:'Parágrafo',strong:'Texto em destaque',b:'Texto em destaque',em:'Texto em ênfase',li:'Item de lista',td:'Informação da tabela',th:'Título da coluna',figcaption:'Legenda da imagem',a:'Texto do link'};
 function send(data){$('previa-acervo-frame').contentWindow?.postMessage({...data,nonce},'*');}
 function selectField(index){
@@ -24,7 +35,7 @@ function selectField(index){
   $('acervo-contexto').textContent=field.grupo;$('acervo-tipo').textContent=typeLabels[field.tipo]||'Texto selecionado';$('texto-selecionado-acervo').value=field.texto;
 }
 function changed(index,text){
-  fields[index].texto=text;dirty=true;resetPlan();send({tipo:'acervo-atualizar',indice:index,texto:text});message('Alterações ainda não salvas. Use “Salvar rascunho” para guardar.');
+  fields[index].texto=text;dirty=true;resetPlan();updateCall();send({tipo:'acervo-atualizar',indice:index,texto:text});message('Alterações ainda não salvas. Use “Salvar rascunho” para guardar.');
 }
 function selectCard(id){
   if(!Number.isInteger(id)||!cards[id])return;const card=cards[id];selected=null;selectedCard=id;
@@ -37,23 +48,23 @@ function selectCard(id){
 }
 $('card-acervo').addEventListener('change',()=>{const value=$('card-acervo').value;if(value==='')return;const id=Number(value);selectCard(id);send({tipo:'acervo-focar',indice:cards[id].campos[0].indice});});
 $('restaurar-card-acervo').addEventListener('click',()=>{
-  if(selectedCard===null)return;for(const part of cards[selectedCard].campos){fields[part.indice].texto=savedFields[part.indice];send({tipo:'acervo-atualizar',indice:part.indice,texto:savedFields[part.indice]});}selectCard(selectedCard);dirty=fields.some((field,index)=>field.texto!==savedFields[index]);resetPlan();message(dirty?'Card restaurado. Há outras alterações não salvas.':'Card restaurado à revisão salva.');
+  if(selectedCard===null)return;for(const part of cards[selectedCard].campos){fields[part.indice].texto=savedFields[part.indice];send({tipo:'acervo-atualizar',indice:part.indice,texto:savedFields[part.indice]});}selectCard(selectedCard);dirty=hasChanges();resetPlan();updateCall();message(dirty?'Card restaurado. Há outras alterações não salvas.':'Card restaurado à revisão salva.');
 });
-function updateSummary(){if(draft)$('resumo-acervo').textContent=draft.registro.titulo+' · Rascunho salvo: revisão '+draft.revisao;}
+function updateSummary(){if(draft){$('resumo-acervo').textContent=draft.registro.titulo+' · Rascunho salvo: revisão '+draft.revisao;updateCall();}}
 function render(){
   updateSummary();selected=null;selectedCard=null;cards=obterCardsVisuais(draft.registro.acervo.original,fields);$('acervo-card-editor').hidden=true;const cardSelect=$('card-acervo');cardSelect.replaceChildren(new Option('Escolha um card',''));for(const card of cards)cardSelect.append(new Option((card.id+1)+'. '+card.titulo,String(card.id)));cardSelect.disabled=!cards.length;nonce=crypto.randomUUID();savedFields=fields.map(field=>field.texto);hiddenMarks=false;
   $('previa-acervo').textContent='Visualizar sem marcações';$('campos-acervo').hidden=true;$('acervo-vazio').hidden=false;
   const select=$('secao-acervo');select.replaceChildren(new Option('Escolha uma seção',''));const seen=new Set();
   for(const field of fields)if(!seen.has(field.grupo)){seen.add(field.grupo);select.append(new Option(field.grupo,String(field.indice)));}
-  $('previa-acervo-frame').srcdoc=montarPreviaVisual(draft.registro.acervo.original,fields,nonce);
+  $('previa-acervo-frame').srcdoc=montarPreviaVisual(draft.registro.acervo.original,fields,nonce,{capa:draft.registro.acervo.capa});updateCall();
 }
 window.addEventListener('message',event=>{if(event.source!==$('previa-acervo-frame').contentWindow||event.data?.nonce!==nonce)return;if(event.data?.tipo==='acervo-selecao')selectField(event.data.indice);if(event.data?.tipo==='acervo-card')selectCard(event.data.cardId);});
 $('secao-acervo').addEventListener('change',()=>{if(!$('secao-acervo').value)return;const index=Number($('secao-acervo').value);selectField(index);send({tipo:'acervo-focar',indice:index});});
 $('texto-selecionado-acervo').addEventListener('input',()=>{
-  if(selected===null)return;fields[selected].texto=$('texto-selecionado-acervo').value;dirty=true;resetPlan();send({tipo:'acervo-atualizar',indice:selected,texto:fields[selected].texto});message('Alterações ainda não salvas. Use “Salvar rascunho” para guardar.');
+  if(selected===null)return;fields[selected].texto=$('texto-selecionado-acervo').value;dirty=true;resetPlan();updateCall();send({tipo:'acervo-atualizar',indice:selected,texto:fields[selected].texto});message('Alterações ainda não salvas. Use “Salvar rascunho” para guardar.');
 });
 $('restaurar-trecho-acervo').addEventListener('click',()=>{
-  if(selected===null)return;fields[selected].texto=savedFields[selected];$('texto-selecionado-acervo').value=fields[selected].texto;send({tipo:'acervo-atualizar',indice:selected,texto:fields[selected].texto});dirty=fields.some((field,index)=>field.texto!==savedFields[index]);resetPlan();message(dirty?'Há outras alterações não salvas.':'O texto voltou à revisão salva.');
+  if(selected===null)return;fields[selected].texto=savedFields[selected];$('texto-selecionado-acervo').value=fields[selected].texto;send({tipo:'acervo-atualizar',indice:selected,texto:fields[selected].texto});dirty=hasChanges();resetPlan();updateCall();message(dirty?'Há outras alterações não salvas.':'O texto voltou à revisão salva.');
 });
 function open(path){
   if(!paths.includes(path))return;
@@ -61,7 +72,7 @@ function open(path){
   authorized(async(credential,version)=>{
     const result=await call('/acervo/abrir',credential,{path});if(version!==epoch)return;
     draft=result.draft;fields=result.campos;if(!draft?.registro?.acervo||!Array.isArray(fields))throw new Error('A importação não foi confirmada.');
-    resetPlan();dirty=false;if(!$('editor-acervo').open)$('editor-acervo').showModal();render();message('Rascunho salvo. Clique em um texto da reportagem para começar.');
+    $('chamada-resumo-acervo').value=result.resumo||'';definirCapaAcervo(draft.registro.acervo.capa,draft.id);savedOptions=JSON.stringify(options());resetPlan();dirty=false;if(!$('editor-acervo').open)$('editor-acervo').showModal();render();message('Rascunho salvo. Clique em um texto da reportagem para começar.');
   });
 }
 $('listar-acervo').addEventListener('click',()=>authorized(async(credential,version)=>{
@@ -73,16 +84,16 @@ $('listar-acervo').addEventListener('click',()=>authorized(async(credential,vers
 document.addEventListener('editorial-open-acervo',event=>open(event.detail?.path));
 $('fechar-acervo').addEventListener('click',()=>$('editor-acervo').close());
 $('salvar-acervo').addEventListener('click',()=>{
-  if(!draft)return;const input={id:draft.id,revisao:draft.revisao,path:draft.registro.acervo.path,edicoes:edits()},snapshot=JSON.stringify(edits());
+  if(!draft)return;let opcoes;try{opcoes=options();}catch(error){message(error.message);return;}const input={id:draft.id,revisao:draft.revisao,path:draft.registro.acervo.path,edicoes:edits(),...opcoes},snapshot=JSON.stringify(edits()),optionSnapshot=JSON.stringify(opcoes);
   authorized(async(credential,version)=>{
     const result=await call('/acervo/salvar',credential,input);if(version!==epoch)return;
     if(result.id!==draft.id||result.revisao!==input.revisao+1)throw new Error('Revisão salva não confirmada.');
-    draft=result;savedFields=input.edicoes.map(edit=>edit.texto);dirty=snapshot!==JSON.stringify(edits());resetPlan();updateSummary();document.dispatchEvent(new Event('editorial-publication-changed'));message('Rascunho salvo — revisão '+draft.revisao+'. '+(dirty?'Há alterações posteriores ainda não salvas.':'Nenhuma alteração foi publicada.'));
+    draft=result;savedFields=input.edicoes.map(edit=>edit.texto);savedOptions=optionSnapshot;dirty=hasChanges();resetPlan();updateSummary();document.dispatchEvent(new Event('editorial-publication-changed'));message('Rascunho salvo — revisão '+draft.revisao+'. '+(dirty?'Há alterações posteriores ainda não salvas.':'Nenhuma alteração foi publicada.'));
   });
 });
 $('previa-acervo').addEventListener('click',()=>{hiddenMarks=!hiddenMarks;send({tipo:'acervo-marcas',ocultar:hiddenMarks});$('previa-acervo').textContent=hiddenMarks?'Mostrar marcações de edição':'Visualizar sem marcações';});
 $('preparar-acervo').addEventListener('click',()=>{
-  if(!draft||dirty){message('Salve os textos antes de preparar a atualização.');return;}
+  if(!draft||dirty){message('Salve os textos, o resumo e a capa antes de preparar a atualização.');return;}
   resetPlan();authorized(async(credential,version)=>{const result=await call('/preparar',credential,{id:draft.id,revisao:draft.revisao});if(version!==epoch||dirty)return;if(result.id!==draft.id||result.path!==draft.registro.acervo.path)throw new Error('Página de destino não confirmada.');plan=result;message('Atualização conferida para '+result.path+'. Revise a prévia e marque a confirmação para enviar.');});
 });
 $('confirmacao-acervo').addEventListener('change',()=>{$('publicar-acervo').disabled=busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked;});
