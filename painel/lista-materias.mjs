@@ -16,3 +16,12 @@ export function correspondeFiltroMateria(item,{busca='',grupo='ativas',estado='t
   const normalizar=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
   return (grupo==='lixeira'?item.lixeira:!item.lixeira)&&normalizar(item.titulo).includes(normalizar(busca).trim())&&(estado==='todos'||item.estado===estado);
 }
+
+export function resumirFiltroMaterias(items,filtros={}){
+  const grupo=filtros.grupo||'ativas';
+  const total=items.filter(item=>grupo==='lixeira'?item.lixeira:!item.lixeira).length;
+  const encontrados=items.filter(item=>correspondeFiltroMateria(item,filtros)).length;
+  if(!total)return {encontrados,total,texto:grupo==='lixeira'?'A lixeira está vazia.':'Nenhuma matéria ou rascunho nesta lista.'};
+  if(!encontrados)return {encontrados,total,texto:'Nenhum título corresponde aos filtros. Use “Limpar filtros” para ver todos os registros desta lista.'};
+  return {encontrados,total,texto:`${encontrados} de ${total} ${total===1?'registro':'registros'} ${grupo==='lixeira'?'na lixeira':'na lista de matérias'}.`};
+}
