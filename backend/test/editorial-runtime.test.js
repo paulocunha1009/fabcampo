@@ -11,7 +11,7 @@ test('módulos de pesquisa iniciam com somente os arquivos da raiz do backend',a
   try{
     await mkdir(join(directory,'lib'));
     await writeFile(join(directory,'package.json'),'{"type":"module"}');
-    for(const name of ['editorial-report.js','editorial-drafts.js','editorial-research-file.js','editorial-publication.js','editorial-page.mjs','editorial-chrome.mjs','editorial-acervo.js','editorial-blocks.mjs'])
+    for(const name of ['editorial-report.js','editorial-drafts.js','editorial-research-file.js','editorial-publication.js','editorial-page.mjs','editorial-chrome.mjs','editorial-acervo.js','editorial-acervo-opcoes.mjs','editorial-blocks.mjs'])
       await copyFile(new URL('../lib/'+name,import.meta.url),join(directory,'lib',name));
     const report=await import(pathToFileURL(join(directory,'lib','editorial-report.js')).href);
     const drafts=await import(pathToFileURL(join(directory,'lib','editorial-drafts.js')).href);

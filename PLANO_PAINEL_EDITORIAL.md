@@ -1084,3 +1084,12 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Todos os 186 testes passaram com acesso a loopback para testes de rotas. Nenhuma alteração de título de matéria real executada.
 
 - Backend 68f40f5 promovido na Vercel: 9euvEC4qFc6BYweFbAhpGX4LCp2p, build fabcampo-esudg6blt-sidep-ce.vercel.app. Saúde true antes/depois; domínio oficial atribuído confirmado; prévia de acervo sem autenticação retorna 401. Evidência tmp/validacao/acervo-titulos-backend-20261111.png.
+
+
+### 11/11/2026 — resumo e capa do acervo
+- Opções privadas no acervo: resumo até 1.200 caracteres e troca opcional da capa. Imagem canônica WebP e legenda/crédito/descrição obrigatórios para a nova foto. Campos antigos preservados quando ausentes na requisição.
+- Publicação atualiza resumo da chamada/busca e metadados existentes, substitui somente a imagem do hero, inclui crédito visível e atualiza og:image/twitter:image existentes. Copia a capa na mesma transação Git após verificar bytes/hash/dimensões, sem alterar fotos internas.
+- Interface permite arquivo JPEG/PNG/WebP até 12 MB, 40 MP, mínimo 1200×675, recorte local WebP 1200×675 até 1 MB, envio ao fluxo atual, prévia e Manter capa original. Foto preparada/pendente impede salvar; nova foto limpa créditos anteriores para conferência explícita. Nenhum texto ou crédito é inventado.
+- 189 testes completos passaram. QA local com originais públicos e API simulada: seletor/recorte, bloqueio antes do envio, envio simulado, crédito, prévia e salvar/reabrir recuperando opções. Nenhum upload externo ou rascunho real alterado no teste.
+
+- Teste adicional confirmou salvar/recuperar no serviço de acervo e compatibilidade com cliente anterior que não envia resumo/capa; total final de 190 testes passou.

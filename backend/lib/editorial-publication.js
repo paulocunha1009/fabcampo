@@ -3,7 +3,7 @@ import {createHash} from 'node:crypto';
 import sharp from 'sharp';
 import {createDraftStore} from './editorial-drafts.js';
 import {renderEditorialPage} from './editorial-page.mjs';
-import {acervoCatalogo,acervoPath,validarAcervo,analisarAcervo,aplicarAcervo,tituloAcervo} from './editorial-acervo.js';
+import {acervoCatalogo,acervoPath,validarAcervo,analisarAcervo,aplicarAcervo,tituloAcervo,resumoOriginalAcervo} from './editorial-acervo.js';
 import {validarBlocos} from './editorial-blocks.mjs';
 
 const repo='paulocunha1009/fabcampo',branch='master';
@@ -93,23 +93,24 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     }
     if(draft.registro?.acervo?.path!==entry.path)throw fail(409,'O rascunho do acervo precisa ser conferido pela equipe.');
     if(draft.lixeira)throw fail(409,'Esta reportagem está na lixeira. Restaure pela lista de matérias.');
-    return {draft,campos:aplicarAcervo(draft.registro.acervo).campos};
+    const state=await repositoryState(),resumo=draft.registro.acervo.resumo??state.site.noticias.find(item=>item.link===entry.path)?.resumo??resumoOriginalAcervo(draft.registro.acervo.original);
+    return {draft,resumo,campos:aplicarAcervo(draft.registro.acervo).campos};
   }
   async function saveArchive(input){
     if(!acervoPath(input?.path)||input.id!==acervoId(input.path)||!Number.isInteger(input.revisao))throw fail(400,'Registro de acervo inválido.');
     const draft=await drafts.get(input.id);
     if(draft.revisao!==input.revisao||draft.registro?.acervo?.path!==input.path)throw fail(409,'Existe uma revisão mais recente. Reabra a matéria antes de editar.');
-    const acervo=validarAcervo({...draft.registro.acervo,edicoes:input.edicoes}),titulo=tituloAcervo(aplicarAcervo(acervo).html);
+    const acervo=validarAcervo({...draft.registro.acervo,...(Object.hasOwn(input,'resumo')?{resumo:input.resumo}:{}),...(Object.hasOwn(input,'capa')?{capa:input.capa}:{}),edicoes:input.edicoes}),titulo=tituloAcervo(aplicarAcervo(acervo).html);
     return drafts.save({id:input.id,revisao:input.revisao,tipo:'noticias',registro:{titulo,acervo}});
   }
   async function previewArchive(input){
     if(!acervoPath(input?.path)||input.id!==acervoId(input.path))throw fail(400,'Registro de acervo inválido.');
     const draft=await drafts.get(input.id);
     if(draft.revisao!==input.revisao||draft.registro?.acervo?.path!==input.path)throw fail(409,'A revisão mudou. Reabra a matéria.');
-    return {html:aplicarAcervo({...draft.registro.acervo,edicoes:input.edicoes}).html};
+    return {html:aplicarAcervo({...draft.registro.acervo,...(Object.hasOwn(input,'resumo')?{resumo:input.resumo}:{}),...(Object.hasOwn(input,'capa')?{capa:input.capa}:{}),edicoes:input.edicoes}).html};
   }
   async function prepare(input){
-    const record=await draftArticle(input),state=await repositoryState(),entries=record.acervo?[]:await images(record);
+    const record=await draftArticle(input),state=await repositoryState(),entries=record.acervo?(record.acervo.capa?await images({fotos:[{...record.acervo.capa,capa:true,capaImagem:record.acervo.capa.imagem}]}):[]):await images(record);
     const path=record.acervo?.path||'pages/reportagem-'+input.id+'.html',hash=digest(JSON.stringify(record));
     if(record.acervo&&input.id!==acervoId(path))throw fail(400,'Importe esta reportagem pelo acervo para preservar seu vínculo.');
     const old=state.manifest.publicacoes.find(item=>item.id===input.id);
@@ -120,7 +121,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(existing&&(!old||old.path!==path)&&!imported)throw fail(409,'O endereço já existe fora das publicações gerenciadas. Procure a equipe.');
     if(existing&&old&&old.htmlHash!==digest(existing.bytes.toString('utf8').replace(/\r\n/g,'\n')))throw fail(409,'A página foi alterada fora do painel. Confira a alteração antes de atualizar.');
     if(record.acervo)aplicarAcervo(record.acervo);
-    const plan={id:input.id,revisao:input.revisao,head:state.head,path,hash,fotos:record.fotos?.length||0,titulo:record.titulo,operacao:old?.retirada?'republicar':old||record.acervo?'atualizar':'publicar',habilitada:enabled};
+    const plan={id:input.id,revisao:input.revisao,head:state.head,path,hash,fotos:record.acervo?.capa?1:record.fotos?.length||0,titulo:record.titulo,operacao:old?.retirada?'republicar':old||record.acervo?'atualizar':'publicar',habilitada:enabled};
     plan.confirmacao=digest(JSON.stringify({id:plan.id,revisao:plan.revisao,head:plan.head,path,hash,entries}));
     return {plan,record,state,entries};
   }
@@ -136,7 +137,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(!record.acervo)html=html.replace('</head>','<meta name="editorial-publication" content="'+plan.hash+'"><link rel="canonical" href="'+canonical+'"><meta property="og:type" content="article"><meta property="og:site_name" content="Campo Digital"><meta property="og:title" content="'+escapeHTML(record.titulo)+'"><meta property="og:description" content="'+escapeHTML(record.resumo)+'"><meta property="og:url" content="'+canonical+'"><meta property="og:image" content="https://fabcampo.com.br/'+cover.capaImagem+'"></head>');
     const htmlHash=digest(html.replace(/\r\n/g,'\n'));
     const priorNews=record.acervo?state.site.noticias.find(item=>item.link===plan.path):null;
-    const news=record.acervo?{...priorNews,editorialId:plan.id,link:plan.path,titulo:record.titulo,resumo:priorNews?.resumo||record.titulo,categoria:priorNews?.categoria||'Educação'}:{editorialId:plan.id,data:record.data,titulo:record.titulo,resumo:record.resumo,categoria:record.categoria,...categories[record.categoria],link:plan.path,fonte:record.fonte};
+    const news=record.acervo?{...priorNews,editorialId:plan.id,link:plan.path,titulo:record.titulo,resumo:record.acervo.resumo??priorNews?.resumo??record.titulo,categoria:priorNews?.categoria||'Educação'}:{editorialId:plan.id,data:record.data,titulo:record.titulo,resumo:record.resumo,categoria:record.categoria,...categories[record.categoria],link:plan.path,fonte:record.fonte};
     const index=state.site.noticias.findIndex(item=>item.editorialId===plan.id||(record.acervo&&item.link===plan.path));
     if(index<0)state.site.noticias.unshift(news);else state.site.noticias[index]=news;
     const publication={id:plan.id,revisao:input.revisao,path:plan.path,hash:plan.hash,htmlHash,newsHash:digest(JSON.stringify(news)),titulo:record.titulo,...(record.acervo?{baseHash:record.acervo.baseHash}:{})};

@@ -1,3 +1,4 @@
+import {validarOpcoesAcervo} from './editorial-acervo-opcoes.mjs';
 import {parse} from 'parse5';
 import {createHash} from 'node:crypto';
 export const acervoCatalogo=[{path:'pages/reportagem-educacao.html',titulo:'A Escola que Nasce da Terra'},{path:'pages/reportagem-clima.html',titulo:'Mudanças Climáticas Ameaçam o Futuro do Campo'},{path:'pages/materia_ia_educacao_v2.html',titulo:'IA na Educação'}];
@@ -13,7 +14,7 @@ export function tituloAcervo(html){
 export function validarAcervo(value){
   if(!value||!acervoPath(value.path)||typeof value.original!=='string'||Buffer.byteLength(value.original)>180000||hash(value.original)!==value.baseHash||!Array.isArray(value.edicoes)||value.edicoes.length>1500)throw fail('Registro do acervo inválido. Importe novamente pelo painel.');
   const seen=new Set();for(const edit of value.edicoes){if(!Number.isInteger(edit.indice)||edit.indice<0||seen.has(edit.indice)||typeof edit.texto!=='string'||edit.texto.length>12000||!edit.texto.trim())throw fail('Confira os trechos editados.');seen.add(edit.indice);}
-  return {path:value.path,original:value.original,baseHash:value.baseHash,edicoes:value.edicoes.map(edit=>({indice:edit.indice,texto:edit.texto}))};
+  return {...validarOpcoesAcervo(value),path:value.path,original:value.original,baseHash:value.baseHash,edicoes:value.edicoes.map(edit=>({indice:edit.indice,texto:edit.texto}))};
 }
 export function analisarAcervo(html){
   const document=parse(html,{sourceCodeLocationInfo:true}),fields=[];let group='Apresentação';
@@ -50,10 +51,43 @@ function sincronizarTitulo(html,titulo){
   visit(document);for(const patch of patches.sort((a,b)=>b.start-a.start))html=html.slice(0,patch.start)+patch.texto+html.slice(patch.end);
   return html;
 }
+function aplicarChamada(html,record){
+  if(record.resumo===undefined&&!record.capa)return html;
+  const doc=parse(html,{sourceCodeLocationInfo:true}),patches=[];let capaImg=null,heroConteudo=null;
+  const attr=(node,name)=>(node.attrs||[]).find(item=>item.name===name)?.value||'';
+  function patchAttr(node,name,value){const loc=node.sourceCodeLocation?.attrs?.[name];if(loc)patches.push({start:loc.startOffset,end:loc.endOffset,texto:name+'="'+escape(value)+'"'});}
+  function visit(node,inImage=false){
+    const classes=attr(node,'class').split(/\s+/);inImage=inImage||classes.includes('hero__imagem');
+    if(inImage&&node.tagName==='img'&&!capaImg)capaImg=node;
+    if(classes.includes('hero__conteudo'))heroConteudo=node;
+    if(node.tagName==='meta'){
+      const key=(attr(node,'property')||attr(node,'name')).toLowerCase();
+      if(record.resumo!==undefined&&['description','og:description','twitter:description'].includes(key))patchAttr(node,'content',record.resumo);
+      if(record.capa&&['og:image','twitter:image'].includes(key))patchAttr(node,'content','https://fabcampo.com.br/'+record.capa.imagem);
+    }
+    for(const child of node.childNodes||[])visit(child,inImage);
+  }
+  visit(doc);
+  if(record.capa){
+    if(!capaImg?.sourceCodeLocation||!heroConteudo?.sourceCodeLocation?.endTag)throw fail('Não foi possível identificar a capa deste modelo. Procure a equipe.');
+    const attrs=new Map((capaImg.attrs||[]).map(item=>[item.name,item.value]));
+    for(const name of ['srcset','sizes','data-fallback-hidden','hidden'])attrs.delete(name);
+    attrs.set('src','../'+record.capa.imagem);attrs.set('alt',record.capa.textoAlternativo);attrs.set('loading','eager');attrs.set('style',(attrs.get('style')||'')+';display:block!important;width:100%;height:100%;object-fit:cover;object-position:center');
+    patches.push({start:capaImg.sourceCodeLocation.startOffset,end:capaImg.sourceCodeLocation.endOffset,texto:'<img '+[...attrs].map(([name,value])=>name+'="'+escape(value)+'"').join(' ')+'>'});
+    const at=heroConteudo.sourceCodeLocation.endTag.startOffset;
+    patches.push({start:at,end:at,texto:'<p class="editorial-capa-credito" style="font-size:.85rem;margin-top:1rem">'+escape(record.capa.legenda)+' · Crédito: '+escape(record.capa.credito)+'</p>'});
+  }
+  for(const patch of patches.sort((a,b)=>b.start-a.start))html=html.slice(0,patch.start)+patch.texto+html.slice(patch.end);
+  return html;
+}
+export function resumoOriginalAcervo(html){
+ let resumo='';function visit(node){const attrs=Object.fromEntries((node.attrs||[]).map(item=>[item.name,item.value]));if(node.tagName==='meta'&&attrs.name==='description')resumo=attrs.content||'';for(const child of node.childNodes||[])visit(child);}visit(parse(html));return resumo.slice(0,1200);
+}
 export function aplicarAcervo(value){
   const record=validarAcervo(value),fields=analisarAcervo(record.original),changes=new Map(record.edicoes.map(edit=>[edit.indice,edit.texto]));
   if([...changes.keys()].some(index=>index>=fields.length))throw fail('Um trecho não pertence à página importada.');
   let html=record.original;for(const field of [...fields].reverse()){const changed=changes.get(field.indice);if(changed!==undefined&&changed!==field.texto)html=html.slice(0,field.start)+field.prefix+escape(changed)+field.suffix+html.slice(field.end);}
   if(/<h1(?:\s|>)/i.test(record.original)){const anterior=tituloAcervo(record.original),atual=tituloAcervo(html);if(anterior!==atual)html=sincronizarTitulo(html,atual);}
+  html=aplicarChamada(html,record);
   return {html,campos:fields.map(({start,end,prefix,suffix,...field})=>({...field,texto:changes.get(field.indice)??field.texto}))};
 }

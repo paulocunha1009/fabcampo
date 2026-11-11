@@ -9,7 +9,7 @@ const bytes=await sharp({create:{width:1200,height:675,channels:3,background:'#2
 const hash=createHash('sha256').update(bytes).digest('hex'),path='img/editorial/'+hash+'.webp';
 const article={titulo:'Matéria de teste',resumo:'Resumo de teste',texto:'Texto de teste conferido.',local:'Local de teste',fonte:'Equipe de teste',categoria:'Educação',fotos:[{id:'foto-1',imagem:path,capaImagem:path,capa:true,legenda:'Legenda de teste',credito:'Crédito de teste',textoAlternativo:'Descrição de teste'}],pesquisa:'PESQUISA_PRIVADA',pesquisaArquivo:{texto:'ARQUIVO_PRIVADO'}};
 function fixture({enabled=true,record=article}={}){
-  const state={head:'1'.repeat(40),revision:1,writes:[],tree:null,blobs:new Map(),files:new Map([['data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Notícia manual',link:'pages/original.html'}],eventos:[{nome:'Evento manual'}],outro:'preservar'}))]]),race:false,tamper:false,trash:false};
+  const state={record,head:'1'.repeat(40),revision:1,writes:[],tree:null,blobs:new Map(),files:new Map([['data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Notícia manual',link:'pages/original.html'}],eventos:[{nome:'Evento manual'}],outro:'preservar'}))]]),race:false,tamper:false,trash:false};
   let next=10;
   state.files.set('data/busca.json',Buffer.from(JSON.stringify({version:1,pages:[{title:'Página manual',url:'pages/manual.html',chunks:[]}]})));
   state.files.set('sitemap.xml',Buffer.from('<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://fabcampo.com.br/pages/manual.html</loc></url></urlset>'));
@@ -38,7 +38,7 @@ function fixture({enabled=true,record=article}={}){
     }
     throw new Error('Chamada inesperada: '+method+' '+route);
   };
-  const service=createPublicationService({token:'test-only',staging:'editorial-rascunhos',enabled,request,drafts:{get:async()=>({tipo:'noticias',revisao:state.revision,registro:record,lixeira:state.trash}),setTrash:async(input,value)=>{state.trash=value;return {id:input.id,revisao:input.revisao,lixeira:value};}},siteRequest:async url=>{
+  const service=createPublicationService({token:'test-only',staging:'editorial-rascunhos',enabled,request,drafts:{get:async()=>({tipo:'noticias',revisao:state.revision,registro:state.record,lixeira:state.trash}),save:async input=>{assert.equal(input.revisao,state.revision);state.record=input.registro;state.revision++;return {id:input.id,tipo:input.tipo,revisao:state.revision,registro:state.record};},setTrash:async(input,value)=>{state.trash=value;return {id:input.id,revisao:input.revisao,lixeira:value};}},siteRequest:async url=>{
     const file=state.files.get(new URL(url).pathname.slice(1));return {ok:!!file,text:async()=>file.toString(),json:async()=>JSON.parse(file.toString())};
   }});
   return {service,state};
@@ -166,4 +166,24 @@ test('publicação de novo título no acervo mantém chamada, busca e metadados 
  assert.equal(JSON.parse(state.files.get('data/site.json')).noticias[0].titulo,'Título revisado');
  assert.ok(state.files.get('data/busca.json').toString().includes('Título revisado'));
  assert.equal((await service.status(legacyId)).status,'publicada');
+});
+
+test('nova capa do acervo copia WebP verificado e novo resumo atualiza notícias e busca na mesma transação',async()=>{
+ const legacyPath='pages/reportagem-educacao.html',original='<html><head><title>Título</title><meta name="description" content="Antigo"><meta property="og:image" content="original.jpg"></head><body><section class="hero"><div class="hero__imagem"><img src="original.jpg"></div><div class="hero__conteudo"><h1>Título</h1></div></section><main><p>Texto preservado.</p></main></body></html>';
+ const raw=createHash('sha256').update('acervo:'+legacyPath).digest('hex').slice(0,32),legacyId=[raw.slice(0,8),raw.slice(8,12),raw.slice(12,16),raw.slice(16,20),raw.slice(20)].join('-');
+ const record={titulo:'Título',acervo:{path:legacyPath,original,baseHash:createHash('sha256').update(original).digest('hex'),edicoes:[],resumo:'Resumo novo conferido',capa:{imagem:path,legenda:'Legenda conferida',credito:'Equipe',textoAlternativo:'Descrição conferida'}}};
+ const {service,state}=fixture({record});state.files.set(legacyPath,Buffer.from(original));state.files.set('data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Título',resumo:'Resumo antigo',link:legacyPath}],eventos:[]})));
+ const plan=await service.prepare({id:legacyId,revisao:1});assert.equal(plan.fotos,1);assert.equal(state.writes.length,0);await service.publish({...plan,confirmado:true});
+ assert.ok(state.tree.some(item=>item.path===path));assert.equal(JSON.parse(state.files.get('data/site.json')).noticias[0].resumo,'Resumo novo conferido');assert.ok(state.files.get('data/busca.json').toString().includes('Resumo novo conferido'));assert.ok(state.files.get(legacyPath).toString().includes('Crédito: Equipe'));
+ const other=fixture({record});other.state.files.set(legacyPath,Buffer.from(original));other.state.tamper=true;await assert.rejects(()=>other.service.prepare({id:legacyId,revisao:1}));assert.equal(other.state.writes.length,0);
+});
+
+test('salvar e recuperar acervo preserva resumo e capa mesmo em salvamento posterior de cliente antigo',async()=>{
+ const legacyPath='pages/reportagem-educacao.html',original='<html><head><meta name="description" content="Resumo original"></head><body><section class="hero"><div class="hero__imagem"><img src="original.jpg"></div><div class="hero__conteudo"><h1>Título</h1></div></section><main><p>Texto</p></main></body></html>';
+ const raw=createHash('sha256').update('acervo:'+legacyPath).digest('hex').slice(0,32),legacyId=[raw.slice(0,8),raw.slice(8,12),raw.slice(12,16),raw.slice(16,20),raw.slice(20)].join('-');
+ const record={titulo:'Título',acervo:{path:legacyPath,original,baseHash:createHash('sha256').update(original).digest('hex'),edicoes:[]}},capa={imagem:path,legenda:'Legenda',credito:'Equipe',textoAlternativo:'Descrição'};
+ const {service,state}=fixture({record});state.files.set(legacyPath,Buffer.from(original));
+ await service.saveArchive({id:legacyId,path:legacyPath,revisao:1,edicoes:[],resumo:'Resumo conferido',capa});
+ let aberto=await service.openArchive({path:legacyPath});assert.equal(aberto.resumo,'Resumo conferido');assert.deepEqual(aberto.draft.registro.acervo.capa,capa);
+ await service.saveArchive({id:legacyId,path:legacyPath,revisao:2,edicoes:[]});aberto=await service.openArchive({path:legacyPath});assert.equal(aberto.resumo,'Resumo conferido');assert.deepEqual(aberto.draft.registro.acervo.capa,capa);assert.equal(state.writes.length,0);
 });
