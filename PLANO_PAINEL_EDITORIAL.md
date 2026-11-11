@@ -932,3 +932,42 @@ Conferência real autenticada: Educação do Campo Publicado, revisão 6 no site
 no painel, link correto; Plano AgroVida e Campo Digital mostraram Rascunho.
 Nenhum novo salvamento, geração, publicação ou retirada nessa conferência.
 Evidência: tmp/validacao/lista-materias-reais-conferida.png.
+
+## Acervo antigo e blocos opcionais — 10/11/2026
+
+Backend 0f6d450, deployment BjhZjHxS9R5fmLBEXHNsbvSndjLU promovido após saúde
+conferida. API oficial ok e catálogo sem login 401. Frontend master b652570,
+Pages 42927832391 success. 173 testes passaram. A revisão automática interrompeu
+uma tentativa por limite de uso antes do clique; retomada posterior autorizada
+concluiu a promoção pelo mesmo fluxo da Vercel, sem contornar a revisão.
+
+Acervo permitido: reportagem-educacao.html, reportagem-clima.html e
+materia_ia_educacao_v2.html. Importação privada com UUID estável por caminho,
+HTML original completo, hash e edições por índice de nó textual. parse5 8.0.0
+com sourceCodeLocationInfo; aplica somente texto escapado em posições existentes,
+preservando byte a byte todo o restante do HTML. Sem mudança, resultado idêntico.
+Não transforma tabelas, imagens ou estrutura em texto simples. Campos agrupados
+pelos títulos; cabeçalho, rodapé, scripts e controles não são campos editáveis.
+Prévia sandbox sem scripts; base de URLs adicionada somente na prévia.
+
+Salvar edição não publica. Publicação exige revisão salva e confirmação; usa
+mesmo endereço antigo, preserva fotos existentes e não duplica a notícia por link.
+Recusa mudança externa no HTML e vínculos de origem forjados. Atualizações públicas
+reais destas páginas ainda não foram exercitadas; simulação em teste preservou
+layout, tabela, imagens e notícia manual. Lixeira/exclusão definitiva segue pendente.
+
+Conferência real autenticada concluiu as três importações, todas revisão 1:
+Educação 329 trechos, Clima 217, IA na Educação 38. Prévia de Educação carregou.
+Nenhum trecho foi editado nem qualquer página antiga republicada. Lista mostra
+as três como Publicado · edição importada, com seus links originais; a matéria
+nova continua publicada na revisão 6 e os dois rascunhos anteriores permanecem.
+Evidências tmp/validacao/acervo-educacao-importado.png e
+acervo-tres-reportagens-importadas.png.
+
+Professor confirmou manter campos básicos atuais: somente fotos adicionais e
+blocos especiais opcionais. Capa continua necessária entre imagens. Formulário
+novo inclui citação + fonte (par obrigatório se usado) e tabela opcional de até
+20 linhas Indicador | Informação, sem conteúdo inventado. Validação, rascunho,
+prévia completa e publicador preservam esses campos. Renderização escapa texto.
+Sem blocos preenchidos, não insere citação/tabela vazia. Cards e vídeo continuam
+opcionais. Fonte: documentação oficial parse5 de localizações de nós.
