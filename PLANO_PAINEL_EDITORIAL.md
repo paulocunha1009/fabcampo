@@ -1068,3 +1068,5 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Aviso junto ao formulário distingue edição nova, alterações pendentes e revisão confirmada. Compara conteúdo validado com snapshot confirmado pelo servidor; não guarda credenciais nem altera rascunhos automaticamente.
 - Atualização da prévia não confirma salvamento remoto. Carregamento de rascunho e retorno do salvamento atualizam o indicador. Edições posteriores à requisição continuam pendentes.
 - Dois testes do indicador passaram, incluindo fluxo de salvamento/edição/prévia/novo salvamento com API simulada. Quatro testes existentes de publicação passaram. Nenhum conteúdo real alterado.
+
+- Conferência publicada detectou cache de lista-materias.mjs sem a nova exportação. Corrigidas URLs versionadas dos módulos e mantida uma única instância de rascunhos.js entre a página e publicacao.js. Reexecutados quatro testes de estado/filtros, todos passaram.
