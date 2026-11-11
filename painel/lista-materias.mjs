@@ -11,3 +11,8 @@ export function descreverPublicacao(draft,result){
   if(result.status!=='publicada'||result.link!==path)throw new Error('Endereço não conferido.');
   return {rotulo:draft.revisao===result.revisao?'Publicado':'Alterações pendentes',detalhe:'No site: revisão '+result.revisao+'. No painel: revisão '+draft.revisao+'.',link:'https://fabcampo.com.br/'+path};
 }
+
+export function correspondeFiltroMateria(item,{busca='',grupo='ativas',estado='todos'}={}){
+  const normalizar=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
+  return (grupo==='lixeira'?item.lixeira:!item.lixeira)&&normalizar(item.titulo).includes(normalizar(busca).trim())&&(estado==='todos'||item.estado===estado);
+}

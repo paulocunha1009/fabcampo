@@ -1,12 +1,13 @@
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261110-4';
-import {descreverPublicacao} from './lista-materias.mjs';
+import {descreverPublicacao,correspondeFiltroMateria} from './lista-materias.mjs';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
 let listVersion=0;
-function clearList(){listVersion++;$('lista-materias').replaceChildren();$('rascunho-remoto').replaceChildren(new Option('Busque os rascunhos para escolher',''));$('abrir-rascunho-remoto').disabled=true;}
+function filtrarLista(){let count=0;const rows=$('lista-materias').children;for(const row of rows){row.hidden=!correspondeFiltroMateria({titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado},{busca:$('busca-materias').value,grupo:$('filtro-materias').value,estado:$('estado-materias').value});if(!row.hidden)count++;}$('resultado-materias').textContent=rows.length?`${count} de ${rows.length} registros nesta lista.`:'Busque os rascunhos da equipe para carregar a lista.';}
+function clearList(){listVersion++;$('lista-materias').replaceChildren();filtrarLista();$('rascunho-remoto').replaceChildren(new Option('Busque os rascunhos para escolher',''));$('abrir-rascunho-remoto').disabled=true;}
 document.addEventListener('editorial-access-cleared',clearList);
 document.addEventListener('editorial-publication-changed',clearList);
 async function renderList(drafts,credential){
@@ -14,7 +15,7 @@ async function renderList(drafts,credential){
   const queue=[];
   for(const draft of drafts){
     const row=document.createElement('li'),title=document.createElement('strong'),state=document.createElement('p'),detail=document.createElement('p'),actions=document.createElement('div'),open=document.createElement('button');
-    title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
+    row.dataset.titulo=draft.titulo;row.dataset.lixeira=String(Boolean(draft.lixeira));row.dataset.estado=draft.tipo==='noticias'?'desconhecida':'rascunho';title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
     open.addEventListener('click',()=>{if(version!==listVersion)return;$('rascunho-remoto').value=draft.id;$('abrir-rascunho-remoto').disabled=false;$('abrir-rascunho-remoto').click();});
     const actionButton=(label,acao)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.className='botao-secundario';button.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-acao-materia',{detail:{draft,acao}}));});actions.append(button);return button;};
     row.append(title,state,detail,actions);container.append(row);
@@ -26,11 +27,12 @@ async function renderList(drafts,credential){
       try{
         const result=await call(EDITORIAL_API.replace(/\/me$/,'/publicacoes/')+encodeURIComponent(draft.id),credential);
         if(version!==listVersion)return;const description=descreverPublicacao(draft,result);
-        state.textContent=description.rotulo;detail.textContent=description.detalhe;trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
+        row.dataset.estado=result.status==='publicada'?(draft.revisao===result.revisao?'publicada':'pendente'):({existente:'publicada','nao-enviada':'rascunho',retirada:'retirada',aguardando:'aguardando'}[result.status]||'desconhecida');filtrarLista();state.textContent=description.rotulo;detail.textContent=description.detalhe;trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
         if(description.link){const link=document.createElement('a');link.href=description.link;link.textContent='Abrir no portal';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
       }catch{if(version===listVersion){state.textContent='Publicação não conferida';detail.textContent='Não foi possível confirmar o estado. Busque a lista novamente.';}}
     });
   }
+  filtrarLista();
   // Consultas progressivas e limitadas: não dispara uma requisição por matéria de uma vez.
   async function worker(){while(queue.length&&version===listVersion)await queue.shift()();}
   await Promise.all(Array.from({length:Math.min(3,queue.length)},worker));
@@ -89,7 +91,7 @@ $('listar-rascunhos').addEventListener('click',()=>authorized(async credential=>
   for(const draft of active)select.append(new Option(`${draft.titulo} — revisão ${draft.revisao}`,draft.id));
   $('abrir-rascunho-remoto').disabled=true;
   status(result.rascunhos.length?'Rascunhos encontrados. Escolha qual deseja abrir.':'Nenhum rascunho salvo no painel ainda.');
-  void renderList(drafts.filter(draft=>$('filtro-materias').value==='lixeira'?draft.lixeira:!draft.lixeira),credential).catch(()=>{if(version===listVersion)status('Busque a lista novamente para conferir o estado.');});
+  void renderList(drafts,credential).catch(()=>{if(version===listVersion)status('Busque a lista novamente para conferir o estado.');});
 }));
 $('rascunho-remoto').addEventListener('change',()=>{$('abrir-rascunho-remoto').disabled=!$('rascunho-remoto').value;});
 $('abrir-rascunho-remoto').addEventListener('click',()=>{
@@ -104,4 +106,6 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
   });
 });
 
-$('filtro-materias').addEventListener('change',()=>{$('listar-rascunhos').click();});
+$('filtro-materias').addEventListener('change',filtrarLista);
+$('estado-materias').addEventListener('change',filtrarLista);
+$('busca-materias').addEventListener('input',filtrarLista);
