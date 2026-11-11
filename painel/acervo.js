@@ -1,3 +1,4 @@
+import {acompanharPublicacao} from './publicacao-acompanhamento.mjs?v=20261111-10';
 import {listarAlteracoesAcervo,trechoAlteracao} from './acervo-alteracoes.mjs?v=20261111-9';
 import {montarCopiaAcervo,lerCopiaAcervo,LIMITE_COPIA_ACERVO} from './acervo-copia.mjs?v=20261111-7';
 import {obterCapaAcervo,definirCapaAcervo,exportarCapaAcervo} from './acervo-capa.js?v=20261111-7';
@@ -7,16 +8,16 @@ import {EDITORIAL_API} from './auth-config.js';
 import {montarPreviaVisual,obterCardsVisuais,tituloVisualAcervo} from './acervo-visual.js?v=20261111-9';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 const paths=['pages/reportagem-educacao.html','pages/reportagem-clima.html','pages/materia_ia_educacao_v2.html'];
-let draft=null,fields=[],dirty=false,busy=false,writing=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';let backupPending=null,backupRead=0;
+let draft=null,fields=[],dirty=false,busy=false,writing=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';let backupPending=null,backupRead=0,followController=null,publicationTarget=null;
 const message=text=>{$('estado-editor-acervo').textContent=text;};
 function resetPlan(){if(backupPending){$('confirmar-copia-acervo').checked=false;$('aplicar-copia-acervo').disabled=true;}plan=null;$('confirmacao-acervo').checked=false;$('confirmar-descartar-acervo').checked=false;$('publicar-acervo').disabled=true;refreshButtons();}
-async function call(path,credential,body){
-  const response=await fetch(endpoint+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+credential,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(120000)});
+async function call(path,credential,body,signal){
+  const response=await fetch(endpoint+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+credential,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),credentials:'omit',cache:'no-store',redirect:'error',signal:signal?AbortSignal.any([signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(120000)});
   const result=await response.json();if(!response.ok)throw new Error(result.error||'A operação não foi confirmada.');return result;
 }
 function refreshButtons(){
   for(const id of ['salvar-acervo','preparar-acervo','confirmacao-acervo'])$(id).disabled=busy;
-  $('aplicar-copia-acervo').disabled=busy||!backupPending||!$('confirmar-copia-acervo').checked;$('arquivo-copia-acervo').disabled=busy;$('confirmar-descartar-acervo').disabled=busy||!dirty;$('descartar-alteracoes-acervo').disabled=busy||!dirty||!$('confirmar-descartar-acervo').checked;$('fechar-acervo').disabled=writing;$('editor-acervo').setAttribute('aria-busy',String(busy));
+  $('aplicar-copia-acervo').disabled=busy||!backupPending||!$('confirmar-copia-acervo').checked;$('arquivo-copia-acervo').disabled=busy;$('confirmar-descartar-acervo').disabled=busy||!dirty;$('descartar-alteracoes-acervo').disabled=busy||!dirty||!$('confirmar-descartar-acervo').checked;$('consultar-atualizacao-acervo').disabled=busy||Boolean(followController);$('fechar-acervo').disabled=writing;$('editor-acervo').setAttribute('aria-busy',String(busy));
   $('publicar-acervo').disabled=busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked;updateChanges();
 }
 function authorized(action,{text='',write=false}={}){
@@ -24,6 +25,25 @@ function authorized(action,{text='',write=false}={}){
   requestAuthorizedAction(async credential=>{if(busy||version!==epoch)return;busy=true;writing=write;refreshButtons();if(text)message(text);try{await action(credential,version);}catch(error){if(version===epoch)message(error.message);}finally{busy=false;writing=false;refreshButtons();}});
 }
 
+function stopFollow(clear=false){followController?.abort();followController=null;if(clear){publicationTarget=null;$('estado-atualizacao-acervo').textContent='';$('link-atualizacao-acervo').hidden=true;}}
+async function followPublication(expected,credential,manual=false){
+  if(!draft||draft.id!==expected.id)return;stopFollow();publicationTarget=expected;const controller=new AbortController(),version=epoch;followController=controller;$('link-atualizacao-acervo').hidden=true;refreshButtons();
+  const active=()=>epoch===version&&draft?.id===expected.id&&followController===controller;
+  $('estado-atualizacao-acervo').textContent='Conferindo a revisão '+expected.revisao+' no portal…';
+  try{
+    const result=await acompanharPublicacao({expected,signal:controller.signal,ativo:active,consultar:()=>call('/'+encodeURIComponent(expected.id),credential,undefined,controller.signal),...(manual?{intervalos:[0]}:{}),onUpdate:update=>{
+      if(update.status==='confirmada'){$('estado-atualizacao-acervo').textContent='Revisão '+expected.revisao+' confirmada no portal: página e chamada atualizadas.'+(dirty||draft.revisao!==expected.revisao?' A edição aberta tem alterações posteriores que não foram publicadas.':'');const link=$('link-atualizacao-acervo');link.href='https://fabcampo.com.br/'+expected.path;link.hidden=false;}
+      else if(update.status==='outra-revisao')$('estado-atualizacao-acervo').textContent='O portal está na revisão '+update.publicacao.revisao+'. A revisão '+expected.revisao+' acompanhada não é a atual. Busque a lista para conferir.';
+      else if(update.status==='retirada')$('estado-atualizacao-acervo').textContent='Esta reportagem está retirada do ar. O rascunho permanece salvo.';
+      else $('estado-atualizacao-acervo').textContent='Revisão '+expected.revisao+' ainda não confirmada no site. Conferência '+update.tentativa+' de '+update.total+'.';
+    }});
+    if(!active()||result.status==='cancelada')return;
+    if(result.status==='confirmada')document.dispatchEvent(new Event('editorial-publication-changed'));
+    if(result.status==='aguardando')$('estado-atualizacao-acervo').textContent=result.publicacao?.status==='nao-enviada'?'A conferência ainda não localizou o envio deste rascunho. Consulte mais tarde antes de reenviar.':result.publicacao?.status==='existente'?'A página original está disponível, mas a revisão editada ainda não foi confirmada no portal.':'A revisão '+expected.revisao+' ainda não foi confirmada no portal. Use “Conferir atualização no site” depois; não é necessário publicar novamente.';
+  }catch(error){if(active())$('estado-atualizacao-acervo').textContent=error.message+' A conferência automática parou. Use “Conferir atualização no site” para tentar novamente.';}
+  finally{if(followController===controller){followController=null;refreshButtons();}}
+}
+$('consultar-atualizacao-acervo').addEventListener('click',()=>{if(busy||followController||!draft)return;const expected=publicationTarget||{id:draft.id,revisao:draft.revisao,path:draft.registro.acervo.path};requestAuthorizedAction(credential=>{void followPublication(expected,credential,true);});});
 const edits=()=>fields.map(field=>({indice:field.indice,texto:field.texto}));
 function clearBackup(){backupRead++;backupPending=null;$('confirmar-copia-acervo').checked=false;$('aplicar-copia-acervo').disabled=true;$('conferencia-copia-acervo').hidden=true;$('arquivo-copia-acervo').value='';$('estado-copia-acervo').textContent='';$('detalhes-copia-acervo').textContent='';}
 $('baixar-copia-acervo').addEventListener('click',()=>{
@@ -115,7 +135,7 @@ function open(path){
   if(dirty){if(!$('editor-acervo').open)$('editor-acervo').showModal();message('Há uma edição em andamento. Salve os textos antes de abrir outra matéria.');return;}
   authorized(async(credential,version)=>{
     const result=await call('/acervo/abrir',credential,{path});if(version!==epoch)return;
-    draft=result.draft;fields=result.campos;clearBackup();if(!draft?.registro?.acervo||!Array.isArray(fields))throw new Error('A importação não foi confirmada.');
+    stopFollow(true);draft=result.draft;fields=result.campos;clearBackup();if(!draft?.registro?.acervo||!Array.isArray(fields))throw new Error('A importação não foi confirmada.');
     $('chamada-resumo-acervo').value=result.resumo||'';definirCapaAcervo(draft.registro.acervo.capa,draft.id);savedOptions=JSON.stringify(options());resetPlan();dirty=false;if(!$('editor-acervo').open)$('editor-acervo').showModal();render();message('Rascunho salvo. Clique em um texto da reportagem para começar.');
   });
 }
@@ -154,9 +174,9 @@ $('confirmacao-acervo').addEventListener('change',refreshButtons);
 $('publicar-acervo').addEventListener('click',()=>{
   if(busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked)return;const prepared=plan;
   authorized(async(credential,version)=>{
-    if(plan!==prepared||dirty)return;$('publicar-acervo').disabled=true;
+    if(plan!==prepared||dirty)return;stopFollow();publicationTarget={id:prepared.id,revisao:prepared.revisao,path:prepared.path};$('publicar-acervo').disabled=true;
     const result=await call('/confirmar',credential,{id:prepared.id,revisao:prepared.revisao,head:prepared.head,confirmacao:prepared.confirmacao,confirmado:true});if(version!==epoch)return;
-    resetPlan();document.dispatchEvent(new Event('editorial-publication-changed'));message(result.status==='enviada'?'Atualização enviada. Aguarde o portal atualizar e busque a lista de matérias para conferir o estado.':'Envio não confirmado. Confira a lista antes de tentar novamente.');
+    if(result.status!=='enviada'||result.id!==prepared.id||result.link!==prepared.path)throw new Error('Envio não confirmado. Use a conferência do site antes de reenviar.');resetPlan();document.dispatchEvent(new Event('editorial-publication-changed'));message('Atualização enviada. A revisão '+prepared.revisao+' será conferida automaticamente no portal.');void followPublication(publicationTarget,credential);
   },{text:'Enviando a revisão para publicação. Aguarde a confirmação; não feche esta página.',write:true});
 });
-document.addEventListener('editorial-access-cleared',()=>{epoch++;draft=null;fields=[];dirty=false;clearBackup();resetPlan();$('editor-acervo').close();$('texto-selecionado-acervo').value='';$('campos-acervo').hidden=true;$('catalogo-acervo').replaceChildren();$('previa-acervo-frame').srcdoc='';});
+document.addEventListener('editorial-access-cleared',()=>{stopFollow(true);epoch++;draft=null;fields=[];dirty=false;clearBackup();resetPlan();$('editor-acervo').close();$('texto-selecionado-acervo').value='';$('campos-acervo').hidden=true;$('catalogo-acervo').replaceChildren();$('previa-acervo-frame').srcdoc='';});
