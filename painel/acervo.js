@@ -1,9 +1,9 @@
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {montarPreviaVisual} from './acervo-visual.js?v=20261110-6';
+import {montarPreviaVisual,obterCardsVisuais} from './acervo-visual.js?v=20261110-7';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 const paths=['pages/reportagem-educacao.html','pages/reportagem-clima.html','pages/materia_ia_educacao_v2.html'];
-let draft=null,fields=[],dirty=false,busy=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false;
+let draft=null,fields=[],dirty=false,busy=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;
 const message=text=>{$('estado-editor-acervo').textContent=text;};
 function resetPlan(){plan=null;$('confirmacao-acervo').checked=false;$('publicar-acervo').disabled=true;}
 async function call(path,credential,body){
@@ -19,18 +19,35 @@ const typeLabels={h1:'Título principal',h2:'Título da seção',h3:'Subtítulo 
 function send(data){$('previa-acervo-frame').contentWindow?.postMessage({...data,nonce},'*');}
 function selectField(index){
   if(!draft||!Number.isInteger(index)||!fields[index])return;
-  selected=index;const field=fields[index];$('acervo-vazio').hidden=true;$('campos-acervo').hidden=false;
+  const card=cards.find(card=>card.campos.some(field=>field.indice===index));if(card){selectCard(card.id);return;}
+  selectedCard=null;$('acervo-card-editor').hidden=true;selected=index;const field=fields[index];$('acervo-vazio').hidden=true;$('campos-acervo').hidden=false;
   $('acervo-contexto').textContent=field.grupo;$('acervo-tipo').textContent=typeLabels[field.tipo]||'Texto selecionado';$('texto-selecionado-acervo').value=field.texto;
 }
+function changed(index,text){
+  fields[index].texto=text;dirty=true;resetPlan();send({tipo:'acervo-atualizar',indice:index,texto:text});message('Alterações ainda não salvas. Use “Salvar rascunho” para guardar.');
+}
+function selectCard(id){
+  if(!Number.isInteger(id)||!cards[id])return;const card=cards[id];selected=null;selectedCard=id;
+  $('acervo-vazio').hidden=true;$('campos-acervo').hidden=true;$('acervo-card-editor').hidden=false;$('acervo-card-nome').textContent=card.titulo;$('card-acervo').value=String(id);
+  const holder=$('acervo-card-campos');holder.replaceChildren();const totals={};for(const field of card.campos)totals[field.label]=(totals[field.label]||0)+1;const seen={};
+  for(const part of card.campos){
+    const field=fields[part.indice],label=document.createElement('label'),input=document.createElement(part.label==='Texto'?'textarea':'input');input.id='acervo-card-campo-'+part.indice;label.htmlFor=input.id;seen[part.label]=(seen[part.label]||0)+1;label.textContent=part.label+(totals[part.label]>1?' — parte '+seen[part.label]:'');input.value=field.texto;input.maxLength=12000;if(input.tagName==='TEXTAREA')input.rows=4;
+    input.addEventListener('input',()=>changed(part.indice,input.value));holder.append(label,input);
+  }
+}
+$('card-acervo').addEventListener('change',()=>{const value=$('card-acervo').value;if(value==='')return;const id=Number(value);selectCard(id);send({tipo:'acervo-focar',indice:cards[id].campos[0].indice});});
+$('restaurar-card-acervo').addEventListener('click',()=>{
+  if(selectedCard===null)return;for(const part of cards[selectedCard].campos){fields[part.indice].texto=savedFields[part.indice];send({tipo:'acervo-atualizar',indice:part.indice,texto:savedFields[part.indice]});}selectCard(selectedCard);dirty=fields.some((field,index)=>field.texto!==savedFields[index]);resetPlan();message(dirty?'Card restaurado. Há outras alterações não salvas.':'Card restaurado à revisão salva.');
+});
 function updateSummary(){if(draft)$('resumo-acervo').textContent=draft.registro.titulo+' · Rascunho salvo: revisão '+draft.revisao;}
 function render(){
-  updateSummary();selected=null;nonce=crypto.randomUUID();savedFields=fields.map(field=>field.texto);hiddenMarks=false;
+  updateSummary();selected=null;selectedCard=null;cards=obterCardsVisuais(draft.registro.acervo.original,fields);$('acervo-card-editor').hidden=true;const cardSelect=$('card-acervo');cardSelect.replaceChildren(new Option('Escolha um card',''));for(const card of cards)cardSelect.append(new Option((card.id+1)+'. '+card.titulo,String(card.id)));cardSelect.disabled=!cards.length;nonce=crypto.randomUUID();savedFields=fields.map(field=>field.texto);hiddenMarks=false;
   $('previa-acervo').textContent='Visualizar sem marcações';$('campos-acervo').hidden=true;$('acervo-vazio').hidden=false;
   const select=$('secao-acervo');select.replaceChildren(new Option('Escolha uma seção',''));const seen=new Set();
   for(const field of fields)if(!seen.has(field.grupo)){seen.add(field.grupo);select.append(new Option(field.grupo,String(field.indice)));}
   $('previa-acervo-frame').srcdoc=montarPreviaVisual(draft.registro.acervo.original,fields,nonce);
 }
-window.addEventListener('message',event=>{if(event.source!==$('previa-acervo-frame').contentWindow||event.data?.nonce!==nonce||event.data?.tipo!=='acervo-selecao')return;selectField(event.data.indice);});
+window.addEventListener('message',event=>{if(event.source!==$('previa-acervo-frame').contentWindow||event.data?.nonce!==nonce)return;if(event.data?.tipo==='acervo-selecao')selectField(event.data.indice);if(event.data?.tipo==='acervo-card')selectCard(event.data.cardId);});
 $('secao-acervo').addEventListener('change',()=>{if(!$('secao-acervo').value)return;const index=Number($('secao-acervo').value);selectField(index);send({tipo:'acervo-focar',indice:index});});
 $('texto-selecionado-acervo').addEventListener('input',()=>{
   if(selected===null)return;fields[selected].texto=$('texto-selecionado-acervo').value;dirty=true;resetPlan();send({tipo:'acervo-atualizar',indice:selected,texto:fields[selected].texto});message('Alterações ainda não salvas. Use “Salvar rascunho” para guardar.');
