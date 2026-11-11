@@ -1055,3 +1055,10 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Busca por título sem acentos e filtros locais por estado confirmado e lixeira, sem novas consultas ao digitar.
 - Pesquisa com IA recolhida como caminho opcional; campos básicos diretamente acessíveis; subtítulo identificado como opcional. Regras de publicação preservadas.
 - Oito testes de sessão, filtros e fluxo de publicação passaram. Conferência visual local realizada. Verificador de links aponta dois diretórios PDF.js sem index.html, anteriores à mudança.
+
+
+### 11/11/2026 — orientação dos filtros e lixeira
+- Botão Limpar filtros preserva o grupo atual e devolve foco à busca.
+- Contagem considera apenas o grupo escolhido; mensagens distintas para lista vazia e busca sem resultados. Troca para lixeira limpa o filtro de publicação e o desativa nesse grupo.
+- Seis testes direcionados passaram. Conferência visual com API simulada exclusivamente local: busca vazia, limpeza e troca de Publicadas para Lixeira exibindo Restaurar. Nenhum rascunho real alterado.
+- Servidor de prévia restrito a 127.0.0.1; tentativa em todas as interfaces rejeitada pela revisão automática e substituída por loopback.
