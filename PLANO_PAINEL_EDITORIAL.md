@@ -1020,3 +1020,31 @@ atualização instantânea e desfazer; indicadores de Clima com número/texto; I
 cards de porcentagens e de orientações. Nenhuma edição real salva ou publicada.
 Sintaxe e links passaram; backend inalterado. Evidência:
 tmp/validacao/editor-card-completo.png. Publicação da interface acompanhada no Pages.
+
+## Inativar por matéria e lixeira reversível — 10/11/2026
+
+Backend 1291998, deployment CF4zoR23fpT5cwN5niLBvVifmK33 promovido ao domínio
+oficial. Saúde conferida antes/depois e nova rota de lixeira sem login 401.
+Frontend master c22a4d9. Lista inclui Editar, Inativar, Mover para a lixeira e
+filtro Lixeira com Restaurar. Botão de lixeira só liberado após confirmação de
+inatividade no site ou para rascunho nunca publicado. Janela exige título/revisão
+conferidos e checkbox; inativação tem preparação com head/fingerprint do Git.
+Nenhuma inativação, movimentação para lixeira ou restauração real executada.
+
+Redis usa Lua atômico para marcar/remover lixeira, com comparação de revisão,
+sem HDEL, sem TTL, preservando conteúdo/histórico. Edição e publicação recusam
+rascunho na lixeira. Restaurar não republica. Lixeira conta no limite de 50 itens;
+exclusão definitiva não implementada. Serviço verifica ausência de publicação
+ativa antes de marcar lixeira. Há confirmação separada da inativação no site.
+
+Também suporta a primeira inativação de uma reportagem antiga importada ainda
+sem manifesto: confere vínculo estável, hash do HTML original e caminho permitido.
+Remove chamadas pelo link original, sem deixar notícia antiga apontando para o
+aviso. Base original preservada no rascunho permite republicação pelo editor.
+
+176 testes completos passaram; depois foi acrescentado e executado teste do
+ciclo original importado -> inativo -> lixeira -> restaurado -> republicado, junto
+aos 20 testes direcionados de publicação/rascunhos, todos passaram. Conferência
+local de interface com API simulada: inativar disponível para publicada, lixeira
+bloqueada para ativa e liberada para rascunho, confirmação desmarcada impede envio.
+Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
