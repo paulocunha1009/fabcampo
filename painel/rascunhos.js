@@ -14,15 +14,19 @@ async function renderList(drafts,credential){
   const queue=[];
   for(const draft of drafts){
     const row=document.createElement('li'),title=document.createElement('strong'),state=document.createElement('p'),detail=document.createElement('p'),actions=document.createElement('div'),open=document.createElement('button');
-    title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Abrir rascunho';
+    title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
     open.addEventListener('click',()=>{if(version!==listVersion)return;$('rascunho-remoto').value=draft.id;$('abrir-rascunho-remoto').disabled=false;$('abrir-rascunho-remoto').click();});
-    actions.append(open);row.append(title,state,detail,actions);container.append(row);
+    const actionButton=(label,acao)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.className='botao-secundario';button.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-acao-materia',{detail:{draft,acao}}));});actions.append(button);return button;};
+    row.append(title,state,detail,actions);container.append(row);
+    if(draft.lixeira){state.textContent='Lixeira';detail.textContent='Rascunho preservado. Restaurar não publica a matéria.';actionButton('Restaurar','restaurar');continue;}
+    actions.append(open);const trash=actionButton('Mover para a lixeira','lixeira');trash.disabled=draft.tipo==='noticias';
+
     if(draft.tipo!=='noticias')continue;
     queue.push(async()=>{
       try{
         const result=await call(EDITORIAL_API.replace(/\/me$/,'/publicacoes/')+encodeURIComponent(draft.id),credential);
         if(version!==listVersion)return;const description=descreverPublicacao(draft,result);
-        state.textContent=description.rotulo;detail.textContent=description.detalhe;
+        state.textContent=description.rotulo;detail.textContent=description.detalhe;trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
         if(description.link){const link=document.createElement('a');link.href=description.link;link.textContent='Abrir no portal';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
       }catch{if(version===listVersion){state.textContent='Publicação não conferida';detail.textContent='Não foi possível confirmar o estado. Busque a lista novamente.';}}
     });
@@ -81,10 +85,11 @@ $('listar-rascunhos').addEventListener('click',()=>authorized(async credential=>
   if(!Array.isArray(result.rascunhos))throw new Error('A lista de rascunhos não foi confirmada.');
   const select=$('rascunho-remoto');select.replaceChildren(new Option('Escolha um rascunho',''));
   const drafts=result.rascunhos.filter(draft=>typeof draft.id==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(draft.id)&&typeof draft.titulo==='string'&&Number.isInteger(draft.revisao)&&draft.revisao>0&&['noticias','eventos'].includes(draft.tipo));
-  for(const draft of drafts)select.append(new Option(`${draft.titulo} — revisão ${draft.revisao}`,draft.id));
+  const active=drafts.filter(draft=>!draft.lixeira);
+  for(const draft of active)select.append(new Option(`${draft.titulo} — revisão ${draft.revisao}`,draft.id));
   $('abrir-rascunho-remoto').disabled=true;
   status(result.rascunhos.length?'Rascunhos encontrados. Escolha qual deseja abrir.':'Nenhum rascunho salvo no painel ainda.');
-  void renderList(drafts,credential).catch(()=>{if(version===listVersion)status('Busque a lista novamente para conferir o estado.');});
+  void renderList(drafts.filter(draft=>$('filtro-materias').value==='lixeira'?draft.lixeira:!draft.lixeira),credential).catch(()=>{if(version===listVersion)status('Busque a lista novamente para conferir o estado.');});
 }));
 $('rascunho-remoto').addEventListener('change',()=>{$('abrir-rascunho-remoto').disabled=!$('rascunho-remoto').value;});
 $('abrir-rascunho-remoto').addEventListener('click',()=>{
@@ -98,3 +103,5 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
     status(`Rascunho aberto — revisão ${draft.revisao}. Os arquivos de foto ainda não enviados não podem ser recuperados do servidor.`);
   });
 });
+
+$('filtro-materias').addEventListener('change',()=>{$('listar-rascunhos').click();});
