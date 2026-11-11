@@ -61,6 +61,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
   async function draftArticle(input){
     if(!idPattern.test(input?.id||'')||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Escolha um rascunho salvo com revisão confirmada.');
     const draft=await drafts.get(input.id);
+    if(draft.lixeira)throw fail(409,'Restaure o rascunho da lixeira antes de publicar.');
     if(draft.revisao!==input.revisao)throw fail(409,'Existe uma revisão mais recente. Reabra o rascunho antes de publicar.');
     if(draft.tipo!=='noticias')throw fail(400,'Esta etapa publica somente reportagens.');
     return draft.registro.acervo?{titulo:draft.registro.titulo,acervo:validarAcervo(draft.registro.acervo)}:validatePublicArticle(draft.registro);
@@ -91,6 +92,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       draft=await drafts.save({id,revisao:0,tipo:'noticias',registro:{titulo:entry.titulo,acervo:{path:entry.path,original,baseHash:digest(original),edicoes:[]}}});
     }
     if(draft.registro?.acervo?.path!==entry.path)throw fail(409,'O rascunho do acervo precisa ser conferido pela equipe.');
+    if(draft.lixeira)throw fail(409,'Esta reportagem está na lixeira. Restaure pela lista de matérias.');
     return {draft,campos:aplicarAcervo(draft.registro.acervo).campos};
   }
   async function saveArchive(input){
@@ -161,7 +163,15 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     if(!idPattern.test(input?.id||'')||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Abra um rascunho salvo antes de retirar a matéria.');
     const draft=await drafts.get(input.id);
     if(draft.tipo!=='noticias'||draft.revisao!==input.revisao)throw fail(409,'O rascunho mudou. Reabra a revisão salva.');
-    const state=await repositoryState(),item=state.manifest.publicacoes.find(item=>item.id===input.id),path=item?.path;
+    const state=await repositoryState();let item=state.manifest.publicacoes.find(item=>item.id===input.id);
+    if(!item&&draft.registro?.acervo){
+      const imported=validarAcervo(draft.registro.acervo);
+      if(input.id!==acervoId(imported.path))throw fail(400,'Vínculo do acervo inválido.');
+      const source=await content(imported.path,state.head);
+      if(digest(source.bytes.toString('utf8'))!==imported.baseHash)throw fail(409,'A página original mudou. Confira a edição antes de inativar.');
+      item={id:input.id,revisao:draft.revisao,path:imported.path,titulo:draft.registro.titulo,baseHash:imported.baseHash,hash:digest(JSON.stringify(imported)),htmlHash:digest(source.bytes.toString('utf8').replace(/\r\n/g,'\n'))};
+    }
+    const path=item?.path;
     if(!item)throw fail(404,'Nenhuma publicação gerenciada foi encontrada para este rascunho.');
     if((path!=='pages/reportagem-'+input.id+'.html'&&!acervoPath(path))||!/^[a-f0-9]{64}$/.test(item.htmlHash||''))throw fail(502,'Registro de publicação inválido.');
     const existing=await content(path,state.head,true);
@@ -179,7 +189,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
     // Aviso público reversível: não apaga o rascunho, fotos ou histórico Git.
     const html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Reportagem indisponível | Campo Digital</title></head><body><main><h1>Reportagem indisponível</h1><p>Esta reportagem foi retirada do portal pela equipe responsável.</p><p><a href="https://fabcampo.com.br/">Voltar ao Campo Digital</a></p></main></body></html>';
     const canonical='https://fabcampo.com.br/'+plan.path;
-    state.site.noticias=state.site.noticias.filter(news=>news.editorialId!==plan.id);
+    state.site.noticias=state.site.noticias.filter(news=>news.editorialId!==plan.id&&news.link!==plan.path);
     state.search.pages=state.search.pages.filter(page=>page.url!==plan.path);
     state.sitemap=state.sitemap.replace(/<url\b[^>]*>[\s\S]*?<\/url>/g,entry=>entry.includes('<loc>'+canonical+'</loc>')?'':entry);
     state.manifest.publicacoes=state.manifest.publicacoes.filter(entry=>entry.id!==plan.id).concat({...item,retirada:true,htmlHash:digest(html)});
@@ -224,7 +234,17 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       return {status:active?'publicada':'aguardando',id,link:path,revisao:item.revisao};
     }catch{return {status:'aguardando',id,link:path,revisao:item.revisao};}
   }
-  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw,openArchive,saveArchive,previewArchive};
+  async function trash(input,restore=false){
+    if(!idPattern.test(input?.id||'')||input.confirmado!==true||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Confira a matéria e confirme a operação.');
+    const draft=await drafts.get(input.id);
+    if(draft.revisao!==input.revisao)throw fail(409,'A revisão mudou. Atualize a lista.');
+    if(!restore&&draft.tipo==='noticias'){
+      const publication=await status(input.id);
+      if(!['nao-enviada','retirada'].includes(publication.status))throw fail(409,'Inative a reportagem e aguarde a confirmação no site antes de mover para a lixeira.');
+    }
+    return drafts.setTrash(input,!restore);
+  }
+  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw,openArchive,saveArchive,previewArchive,trash:input=>trash(input),restore:input=>trash(input,true)};
 }
 export function createPublicationRouter({auth,service=createPublicationService()}){
   const router=express.Router();
@@ -234,6 +254,8 @@ export function createPublicationRouter({auth,service=createPublicationService()
   router.post('/api/editorial/publicacoes/confirmar',express.json({limit:'4kb'}),execute(req=>service.publish(req.body)));
   router.post('/api/editorial/publicacoes/preparar-retirada',express.json({limit:'4kb'}),execute(req=>service.prepareWithdrawal(req.body)));
   router.post('/api/editorial/publicacoes/retirar',express.json({limit:'4kb'}),execute(req=>service.withdraw(req.body)));
+  router.post('/api/editorial/publicacoes/lixeira',express.json({limit:'4kb'}),execute(req=>service.trash(req.body)));
+  router.post('/api/editorial/publicacoes/restaurar',express.json({limit:'4kb'}),execute(req=>service.restore(req.body)));
   router.get('/api/editorial/publicacoes/acervo/catalogo',execute(()=>acervoCatalogo));
   router.post('/api/editorial/publicacoes/acervo/abrir',express.json({limit:'4kb'}),execute(req=>service.openArchive(req.body)));
   router.post('/api/editorial/publicacoes/acervo/salvar',express.json({limit:'256kb'}),execute(req=>service.saveArchive(req.body)));

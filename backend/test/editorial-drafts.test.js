@@ -64,3 +64,9 @@ test('rotas de rascunhos verificam acesso em cada operação e recusam sobrescri
     assert.equal(conflict.status,409);assert.equal((await conflict.json()).error,'Conflito de revisão');
   }finally{await new Promise(resolve=>server.close(resolve));}
 });
+
+test('lixeira e restauração usam operação atômica sem apagar conteúdo ou histórico',async()=>{
+ let argsSeen;const store=createDraftStore({redis:{eval:async(script,keys,args)=>{argsSeen=args;assert.ok(script.includes("item.lixeira=ARGV[3]=='true'"));assert.ok(!script.includes('HDEL'));assert.equal(keys.length,2);return 1;}}});
+ assert.equal((await store.setTrash({id,revisao:1},true)).lixeira,true);assert.deepEqual(argsSeen,[id,1,'true']);assert.equal((await store.setTrash({id,revisao:1},false)).lixeira,false);
+ await assert.rejects(()=>createDraftStore({redis:{eval:async()=>-3}}).save(input),error=>error.status===409);
+});

@@ -42,6 +42,7 @@ local old=nil
 if raw then old=cjson.decode(raw) end
 local expected=tonumber(ARGV[2])
 if (old and old.revisao~=expected) or (not old and expected~=0) then return -1 end
+if old and old.lixeira then return -3 end
 if not old and redis.call('HLEN',KEYS[1])>=50 then return -2 end
 local next=cjson.decode(ARGV[3])
 next.revisao=expected+1
@@ -53,6 +54,19 @@ end
 redis.call('HSET',KEYS[1],ARGV[1],cjson.encode(next))
 redis.call('HSET',KEYS[2],ARGV[1],cjson.encode({id=next.id,tipo=next.tipo,revisao=next.revisao,titulo=ARGV[4],atualizadoEm=next.atualizadoEm,origem=ARGV[5]}))
 return next.revisao`;
+export const TRASH_DRAFT_SCRIPT=`
+local raw=redis.call('HGET',KEYS[1],ARGV[1])
+if not raw then return -2 end
+local item=cjson.decode(raw)
+if item.revisao~=tonumber(ARGV[2]) then return -1 end
+local indexRaw=redis.call('HGET',KEYS[2],ARGV[1])
+if not indexRaw then return -2 end
+local entry=cjson.decode(indexRaw)
+item.lixeira=ARGV[3]=='true'
+entry.lixeira=item.lixeira
+redis.call('HSET',KEYS[1],ARGV[1],cjson.encode(item))
+redis.call('HSET',KEYS[2],ARGV[1],cjson.encode(entry))
+return item.revisao`;
 
 export function createDraftStore({redis=environmentRedis(),clock=Date.now}={}) {
   const namespace=process.env.VERCEL_ENV || 'local';
@@ -74,10 +88,19 @@ export function createDraftStore({redis=environmentRedis(),clock=Date.now}={}) {
     const revision=Number(await redis.eval(SAVE_DRAFT_SCRIPT,keys,[id,value.revisao,JSON.stringify(document),title,value.registro.acervo?.path||'']));
     if(revision===-1)throw fail(409,'Existe uma versão mais recente. Seu texto foi preservado: baixe-o antes de abrir a versão do painel.');
     if(revision===-2)throw fail(409,'O painel atingiu o limite de 50 rascunhos. Baixe o arquivo e procure a equipe responsável.');
+    if(revision===-3)throw fail(409,'Este rascunho está na lixeira. Restaure-o antes de editar.');
     if(!Number.isInteger(revision) || revision!==value.revisao+1)throw fail(502,'O armazenamento não confirmou o salvamento.');
     return {...document,revisao:revision};
   }
-  return {configured:Boolean(redis),list,get,save};
+  async function setTrash(input,lixeira){
+    requireStore();if(!validId(input?.id)||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Escolha um rascunho com revisão salva.');
+    const result=Number(await redis.eval(TRASH_DRAFT_SCRIPT,keys,[input.id,input.revisao,String(lixeira)]));
+    if(result===-1)throw fail(409,'A revisão mudou. Atualize a lista antes de continuar.');
+    if(result===-2)throw fail(404,'Rascunho não encontrado.');
+    if(result!==input.revisao)throw fail(502,'A operação não foi confirmada.');
+    return {id:input.id,revisao:result,lixeira};
+  }
+  return {configured:Boolean(redis),list,get,save,setTrash};
 }
 
 export function createDraftRouter({auth,store=createDraftStore()}) {
