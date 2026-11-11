@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Prévia do painel editorial | Campo Digital</title>
   <link rel="stylesheet" href="../css/portal.css?v=20261105-3">
-  <link rel="stylesheet" href="painel.css?v=20261110-8">
+  <link rel="stylesheet" href="painel.css?v=20261111-2">
 </head>
 <body>
   <a class="link-pular" href="#conteudo">Pular para o conteúdo</a>
@@ -31,7 +31,7 @@
         <div class="cabecalho-editor"><div><p class="selo">Sua publicação</p><h2 id="titulo-edicao">Preparar reportagem</h2></div></div>
         <details class="registros-existentes"><summary>Continuar um registro existente</summary><label for="registro-editorial">Escolher registro</label><select id="registro-editorial"><option value="">Novo registro</option></select><p class="ajuda">Os registros anteriores precisam de revisão de textos e datas.</p></details>
         <nav class="etapas-editor" aria-label="Etapas de preparação"><button type="button" data-abrir-etapa="conteudo" aria-pressed="true"><span>1</span> Conteúdo</button><button type="button" data-abrir-etapa="midias" aria-pressed="false"><span>2</span> Fotos e vídeo</button><button type="button" data-abrir-etapa="revisao" aria-pressed="false"><span>3</span> Revisão</button></nav>
-        <form id="editorial-form" novalidate>
+        <p id="estado-edicao-atual" class="estado-edicao" role="status" aria-live="polite">Esta edição ainda não foi salva no painel.</p><form id="editorial-form" novalidate>
           <section data-etapa="conteudo" aria-labelledby="titulo-conteudo"><h3 id="titulo-conteudo" tabindex="-1">Conte a história</h3><p class="ajuda">Escolha: use a pesquisa com ajuda da IA ou escreva diretamente nos campos da reportagem.</p>
           <div data-campos="noticias">
             <details class="pesquisa-aluno"><summary id="titulo-pesquisa">Tenho uma pesquisa e quero ajuda para escrever — opcional</summary><p>Importe ou cole a pesquisa, gere uma proposta e confira os fatos. Se a reportagem já estiver escrita, preencha os campos abaixo.</p>
@@ -147,7 +147,7 @@
   <script type="module" src="pesquisa-arquivo.js"></script>
   <script type="module" src="galeria.js"></script>
   <script type="module" src="etapas.js"></script>
-  <script type="module" src="rascunhos.js?v=20261111-1"></script>
+  <script type="module" src="rascunhos.js?v=20261111-2"></script>
   <script type="module" src="publicacao.js?v=20261110-8"></script>
 </body>
 </html>
