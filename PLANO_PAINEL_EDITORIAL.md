@@ -1082,3 +1082,5 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Ao editar o h1, sincroniza title e os metadados og:title/twitter:title existentes; preserva sufixo institucional e escapa texto/atributos. Outras partes do HTML e metadados não são reserializados. Sem edição do título, mantém o comportamento anterior e importação byte a byte.
 - Teste com h1 dividido em span e caracteres especiais, preservação de descrição/script/cabeçalho/rodapé. Integração de publicação confere título na página, chamada e busca.
 - Todos os 186 testes passaram com acesso a loopback para testes de rotas. Nenhuma alteração de título de matéria real executada.
+
+- Backend 68f40f5 promovido na Vercel: 9euvEC4qFc6BYweFbAhpGX4LCp2p, build fabcampo-esudg6blt-sidep-ce.vercel.app. Saúde true antes/depois; domínio oficial atribuído confirmado; prévia de acervo sem autenticação retorna 401. Evidência tmp/validacao/acervo-titulos-backend-20261111.png.
