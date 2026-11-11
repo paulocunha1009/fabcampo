@@ -1048,3 +1048,10 @@ aos 20 testes direcionados de publicação/rascunhos, todos passaram. Conferênc
 local de interface com API simulada: inativar disponível para publicada, lixeira
 bloqueada para ativa e liberada para rascunho, confirmação desmarcada impede envio.
 Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
+
+
+### 10/11/2026 — acesso, busca e formulário
+- Indicador de conta conectada e aviso de sessão expirada, sem apagar os textos abertos; entrada do portal na mesma aba.
+- Busca por título sem acentos e filtros locais por estado confirmado e lixeira, sem novas consultas ao digitar.
+- Pesquisa com IA recolhida como caminho opcional; campos básicos diretamente acessíveis; subtítulo identificado como opcional. Regras de publicação preservadas.
+- Oito testes de sessão, filtros e fluxo de publicação passaram. Conferência visual local realizada. Verificador de links aponta dois diretórios PDF.js sem index.html, anteriores à mudança.

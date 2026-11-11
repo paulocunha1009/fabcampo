@@ -1,6 +1,6 @@
 import { GOOGLE_CLIENT_ID, EDITORIAL_API, GOOGLE_ALLOWED_ORIGINS } from './auth-config.js';
 import { createGoogleAccess } from './google-access.js';
-import { createEditorSession } from './editor-session.js';
+import { createEditorSession } from './editor-session.js?v=20261110-9';
 
 const start = document.getElementById('preparar-login');
 const signOut = document.getElementById('sair-painel');
@@ -11,7 +11,8 @@ let loading;
 let pageVersion = 0;
 let pendingAction;
 let initializedVersion=-1;
-const session=createEditorSession();
+const badge=document.getElementById('situacao-acesso');
+const session=createEditorSession({onExpire(){badge.textContent='Entre novamente';badge.dataset.estado='pendente';status.textContent='Seu acesso expirou. Clique no botão Google nesta aba para continuar. Os textos abertos foram preservados.';}});
 export function requestAuthorizedAction(action) {
   const credential=session.get();
   if(credential){void action(credential);return;}
@@ -34,6 +35,8 @@ const access = createGoogleAccess({ endpoint: EDITORIAL_API, identityEndpoint:ED
   status.textContent = state.status === 'pending' ? `Conta Google confirmada: ${state.email}. O acesso de editor ainda precisa ser autorizado pelo responsável.` : state.status === 'authorized'
     ? `Conta conferida: ${state.email}. Confira a revisão salva antes de publicar.` : messages[state.status];
   signOut.hidden = !['authorized', 'checking','pending'].includes(state.status);
+  badge.textContent=state.status==='authorized'?'Conta conectada':state.status==='checking'?'Conferindo conta…':'Entrada necessária';
+  badge.dataset.estado=state.status==='authorized'?'conectada':'pendente';
   // A response to an access check is not a persistent login session.
 } });
 
@@ -101,3 +104,5 @@ function leave() {
 signOut.addEventListener('click', leave);
 window.addEventListener('pagehide', leave);
 window.addEventListener('pageshow', event => { if (event.persisted) leave(); });
+// Prepara somente o botão; a escolha da conta continua sendo feita pelo professor.
+if(GOOGLE_CLIENT_ID&&GOOGLE_ALLOWED_ORIGINS.includes(location.origin))start.click();

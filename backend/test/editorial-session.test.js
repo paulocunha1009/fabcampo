@@ -14,3 +14,7 @@ test('sair remove a credencial e uma validade ausente nunca cria sessão',()=>{
   session.remember('test-only',Date.now()+60000);session.clear();assert.equal(session.get(),undefined);
   session.remember('test-only',undefined);assert.equal(session.get(),undefined);
 });
+
+test('aviso de expiração ocorre uma vez e não é disparado ao sair manualmente',()=>{
+ let now=1000000,count=0;const session=createEditorSession({clock:()=>now,onExpire:()=>count++});session.remember('test-only',now+30000);now+=20000;assert.equal(session.get(),undefined);session.get();assert.equal(count,1);session.remember('test-only',now+30000);session.clear();assert.equal(count,1);
+});
