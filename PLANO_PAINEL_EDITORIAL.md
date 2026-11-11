@@ -1076,3 +1076,9 @@ Sintaxe e links passaram. Evidência tmp/validacao/lista-inativar-lixeira.png.
 - Etapa Revisão mostra campos básicos ausentes, capa e primeira falha de validação; usa validação existente para complementar pendências. Não substitui revisão editorial nem validação final do servidor.
 - Botões levam à etapa/campo correto e abrem seções opcionais quando há erro nelas. Extras permanecem opcionais.
 - Dois testes direcionados passaram: básicos/capa/opcionais e formatos/eventos. Conferência local de interface confirmou navegação para Fotos e foco em Local, sem preencher ou salvar conteúdo real.
+
+
+### 11/11/2026 — títulos das reportagens antigas
+- Ao editar o h1, sincroniza title e os metadados og:title/twitter:title existentes; preserva sufixo institucional e escapa texto/atributos. Outras partes do HTML e metadados não são reserializados. Sem edição do título, mantém o comportamento anterior e importação byte a byte.
+- Teste com h1 dividido em span e caracteres especiais, preservação de descrição/script/cabeçalho/rodapé. Integração de publicação confere título na página, chamada e busca.
+- Todos os 186 testes passaram com acesso a loopback para testes de rotas. Nenhuma alteração de título de matéria real executada.

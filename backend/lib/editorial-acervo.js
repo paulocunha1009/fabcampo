@@ -28,9 +28,32 @@ export function analisarAcervo(html){
   }
   visit(document);if(!fields.length||fields.length>1500)throw fail('Não foi possível identificar os textos desta página.');return fields;
 }
+// Ajusta somente os metadados de título existentes quando o h1 foi editado.
+function sincronizarTitulo(html,titulo){
+  const document=parse(html,{sourceCodeLocationInfo:true}),patches=[];
+  function visit(node,inHead=false){
+    inHead=inHead||node.tagName==='head';
+    if(inHead&&node.tagName==='title'&&node.sourceCodeLocation?.endTag){
+      const anterior=(node.childNodes||[]).map(child=>child.value||'').join('');
+      const sufixo=anterior.includes(' | ')?anterior.slice(anterior.indexOf(' | ')):'';
+      patches.push({start:node.sourceCodeLocation.startTag.endOffset,end:node.sourceCodeLocation.endTag.startOffset,texto:escape(titulo+sufixo)});
+    }
+    if(inHead&&node.tagName==='meta'){
+      const attrs=Object.fromEntries((node.attrs||[]).map(attr=>[attr.name,attr.value]));
+      if(attrs.property?.toLowerCase()==='og:title'||attrs.name?.toLowerCase()==='twitter:title'){
+        const loc=node.sourceCodeLocation?.attrs?.content;
+        if(loc){const anterior=attrs.content||'',sufixo=anterior.includes(' | ')?anterior.slice(anterior.indexOf(' | ')):'';patches.push({start:loc.startOffset,end:loc.endOffset,texto:'content="'+escape(titulo+sufixo)+'"'});}
+      }
+    }
+    for(const child of node.childNodes||[])visit(child,inHead);
+  }
+  visit(document);for(const patch of patches.sort((a,b)=>b.start-a.start))html=html.slice(0,patch.start)+patch.texto+html.slice(patch.end);
+  return html;
+}
 export function aplicarAcervo(value){
   const record=validarAcervo(value),fields=analisarAcervo(record.original),changes=new Map(record.edicoes.map(edit=>[edit.indice,edit.texto]));
   if([...changes.keys()].some(index=>index>=fields.length))throw fail('Um trecho não pertence à página importada.');
   let html=record.original;for(const field of [...fields].reverse()){const changed=changes.get(field.indice);if(changed!==undefined&&changed!==field.texto)html=html.slice(0,field.start)+field.prefix+escape(changed)+field.suffix+html.slice(field.end);}
+  if(/<h1(?:\s|>)/i.test(record.original)){const anterior=tituloAcervo(record.original),atual=tituloAcervo(html);if(anterior!==atual)html=sincronizarTitulo(html,atual);}
   return {html,campos:fields.map(({start,end,prefix,suffix,...field})=>({...field,texto:changes.get(field.indice)??field.texto}))};
 }

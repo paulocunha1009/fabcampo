@@ -155,3 +155,15 @@ test('reportagem antiga importada pode ser inativada antes de qualquer atualiza�
  const plan=await service.prepareWithdrawal({id:legacyId,revisao:1});assert.equal(state.writes.length,0);await service.withdraw({...plan,confirmado:true});assert.equal((await service.status(legacyId)).status,'retirada');assert.equal(JSON.parse(state.files.get('data/site.json')).noticias.length,0);
  await service.trash({id:legacyId,revisao:1,confirmado:true});await service.restore({id:legacyId,revisao:1,confirmado:true});await service.publish({...await service.prepare({id:legacyId,revisao:1}),confirmado:true});assert.equal(state.files.get(legacyPath).toString(),source);
 });
+
+test('publicação de novo título no acervo mantém chamada, busca e metadados coerentes',async()=>{
+ const path='pages/reportagem-educacao.html',original='<html><head><title>Original | Escola</title><meta property="og:title" content="Original | Escola"></head><body><main><h1>Original</h1><p>Texto preservado.</p></main></body></html>';
+ const raw=createHash('sha256').update('acervo:'+path).digest('hex').slice(0,32),legacyId=[raw.slice(0,8),raw.slice(8,12),raw.slice(12,16),raw.slice(16,20),raw.slice(20)].join('-');
+ const {service,state}=fixture({record:{titulo:'Título revisado',acervo:{path,original,baseHash:createHash('sha256').update(original).digest('hex'),edicoes:[{indice:0,texto:'Título revisado'}]}}});
+ state.files.set(path,Buffer.from(original));state.files.set('data/site.json',Buffer.from(JSON.stringify({noticias:[{titulo:'Original',resumo:'Resumo preservado',link:path}],eventos:[]})));
+ await service.publish({...await service.prepare({id:legacyId,revisao:1}),confirmado:true});
+ const html=state.files.get(path).toString();assert.match(html,/<title>Título revisado \| Escola<\/title>/);assert.match(html,/content="Título revisado \| Escola"/);
+ assert.equal(JSON.parse(state.files.get('data/site.json')).noticias[0].titulo,'Título revisado');
+ assert.ok(state.files.get('data/busca.json').toString().includes('Título revisado'));
+ assert.equal((await service.status(legacyId)).status,'publicada');
+});
