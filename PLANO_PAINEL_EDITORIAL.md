@@ -971,3 +971,31 @@ novo inclui citação + fonte (par obrigatório se usado) e tabela opcional de a
 prévia completa e publicador preservam esses campos. Renderização escapa texto.
 Sem blocos preenchidos, não insere citação/tabela vazia. Cards e vídeo continuam
 opcionais. Fonte: documentação oficial parse5 de localizações de nós.
+
+## Edição visual do acervo — 10/11/2026
+
+Professor considerou o editor de centenas de trechos pouco intuitivo. Substituído
+por reportagem visual clicável e um campo para o texto selecionado, com rótulo
+humano (título/parágrafo/legenda/tabela) e indicação da seção. Seletor de seções,
+alteração na prévia em tempo real e desfazer por trecho até a revisão salva.
+Salvar rascunho permanece separado de Publicar alterações, em área própria.
+Layout lado a lado no computador e empilhado no celular.
+
+Somente frontend: root 09d293e e 46f27f8; master final 52aef47. Backend permanece
+0f6d450. Original público é convertido em DOM separado; trechos recebem spans
+com índices validados contra o número de campos do servidor. Scripts originais,
+handlers inline, bases, iframes e refresh são removidos da prévia. Só o script de
+seleção controlado é executado no sandbox allow-scripts sem allow-same-origin.
+Mensagens são conferidas por source do iframe, nonce efêmero e índice válido;
+textos atualizados com textContent. Dados/credenciais não são persistidos no frame.
+Nada disso é usado para gerar o HTML público: o backend continua aplicando apenas
+substituições de texto escapadas no original com hash conferido.
+
+QA local usa cópias integrais das três reportagens públicas, API e identificação
+simuladas exclusivamente no fixture, sem chamadas de escrita reais. Correspondência
+329/217/38 campos conferida; seleção de título e parágrafo, digitação na prévia,
+desfazer e navegação por seção. Retocado clique em parágrafos de várias linhas.
+Também conferida largura útil de celular sem overflow. Checagem de sintaxe e links
+passou. Testes anteriores do backend (173) não repetidos: backend não foi alterado.
+Nenhuma matéria ou rascunho real foi modificado nesta revisão de interface.
+Evidência: tmp/validacao/editor-visual-paragrafo-selecionado.png.
