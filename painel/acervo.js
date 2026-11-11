@@ -1,20 +1,21 @@
-import {obterCapaAcervo,definirCapaAcervo} from './acervo-capa.js?v=20261111-5';
+import {montarCopiaAcervo,lerCopiaAcervo,LIMITE_COPIA_ACERVO} from './acervo-copia.mjs?v=20261111-7';
+import {obterCapaAcervo,definirCapaAcervo,exportarCapaAcervo} from './acervo-capa.js?v=20261111-7';
 import {validarOpcoesAcervo} from '../backend/lib/editorial-acervo-opcoes.mjs?v=20261111-5';
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
 import {montarPreviaVisual,obterCardsVisuais,tituloVisualAcervo} from './acervo-visual.js?v=20261111-5';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 const paths=['pages/reportagem-educacao.html','pages/reportagem-clima.html','pages/materia_ia_educacao_v2.html'];
-let draft=null,fields=[],dirty=false,busy=false,writing=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';
+let draft=null,fields=[],dirty=false,busy=false,writing=false,plan=null,epoch=0,selected=null,nonce="",savedFields=[],hiddenMarks=false,cards=[],selectedCard=null;let savedOptions='';let backupPending=null,backupRead=0;
 const message=text=>{$('estado-editor-acervo').textContent=text;};
-function resetPlan(){plan=null;$('confirmacao-acervo').checked=false;$('publicar-acervo').disabled=true;}
+function resetPlan(){if(backupPending){$('confirmar-copia-acervo').checked=false;$('aplicar-copia-acervo').disabled=true;}plan=null;$('confirmacao-acervo').checked=false;$('publicar-acervo').disabled=true;}
 async function call(path,credential,body){
   const response=await fetch(endpoint+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+credential,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(120000)});
   const result=await response.json();if(!response.ok)throw new Error(result.error||'A operação não foi confirmada.');return result;
 }
 function refreshButtons(){
   for(const id of ['salvar-acervo','preparar-acervo','confirmacao-acervo'])$(id).disabled=busy;
-  $('fechar-acervo').disabled=writing;$('editor-acervo').setAttribute('aria-busy',String(busy));
+  $('aplicar-copia-acervo').disabled=busy||!backupPending||!$('confirmar-copia-acervo').checked;$('arquivo-copia-acervo').disabled=busy;$('fechar-acervo').disabled=writing;$('editor-acervo').setAttribute('aria-busy',String(busy));
   $('publicar-acervo').disabled=busy||dirty||!plan?.habilitada||!$('confirmacao-acervo').checked;
 }
 function authorized(action,{text='',write=false}={}){
@@ -23,6 +24,24 @@ function authorized(action,{text='',write=false}={}){
 }
 
 const edits=()=>fields.map(field=>({indice:field.indice,texto:field.texto}));
+function clearBackup(){backupRead++;backupPending=null;$('confirmar-copia-acervo').checked=false;$('aplicar-copia-acervo').disabled=true;$('conferencia-copia-acervo').hidden=true;$('arquivo-copia-acervo').value='';}
+$('baixar-copia-acervo').addEventListener('click',()=>{
+ if(!draft)return;let url;const link=document.createElement('a');
+ try{const snapshot=montarCopiaAcervo({draft,fields,resumo:$('chamada-resumo-acervo').value,...exportarCapaAcervo()});const blob=new Blob([JSON.stringify(snapshot)],{type:'application/json;charset=utf-8'});if(blob.size>LIMITE_COPIA_ACERVO)throw new Error('A cópia ultrapassa 512 KB.');url=URL.createObjectURL(blob);link.href=url;link.download='fabcampo-'+draft.registro.acervo.path.split('/').at(-1).replace(/\.html$/,'')+'-copia.json';document.body.append(link);link.click();$('estado-copia-acervo').textContent='Download solicitado. Confira se o arquivo foi baixado. A cópia não inclui fotos locais ainda não enviadas nem salva ou publica no portal.';}
+ catch(error){$('estado-copia-acervo').textContent=error.message;}finally{link.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}
+});
+$('arquivo-copia-acervo').addEventListener('change',async event=>{
+ backupPending=null;$('confirmar-copia-acervo').checked=false;$('aplicar-copia-acervo').disabled=true;$('conferencia-copia-acervo').hidden=true;const reading=++backupRead,file=event.target.files[0];if(!file||!draft)return;const id=draft.id;
+ try{if(file.size>LIMITE_COPIA_ACERVO)throw new Error('Escolha uma cópia JSON de até 512 KB.');const text=await file.text();if(reading!==backupRead||draft?.id!==id)return;backupPending=lerCopiaAcervo(text,{draft,fields});$('detalhes-copia-acervo').textContent=backupPending.titulo+' · Cópia da revisão '+backupPending.revisaoOrigem+' · Revisão aberta: '+draft.revisao+'. Os campos só serão substituídos após sua confirmação.'+(backupPending.imagemPendente?' A foto local pendente não está no arquivo: selecione-a novamente depois.':'');$('conferencia-copia-acervo').hidden=false;$('estado-copia-acervo').textContent='Arquivo conferido neste computador. Nenhum dado foi enviado ao servidor.';}
+ catch(error){if(reading===backupRead)$('estado-copia-acervo').textContent=error.message;}
+});
+$('confirmar-copia-acervo').addEventListener('change',()=>{$('aplicar-copia-acervo').disabled=busy||!backupPending||!$('confirmar-copia-acervo').checked;});
+$('aplicar-copia-acervo').addEventListener('click',()=>{
+ if(busy||!draft||!backupPending||!$('confirmar-copia-acervo').checked)return;
+ try{const backup=lerCopiaAcervo(JSON.stringify(backupPending),{draft,fields});fields=fields.map((field,index)=>({...field,texto:backup.edicoes[index].texto}));$('chamada-resumo-acervo').value=backup.resumo;definirCapaAcervo(backup.capa,draft.id,{pendente:backup.imagemPendente});resetPlan();dirty=true;selected=null;selectedCard=null;refreshCards();$('campos-acervo').hidden=true;$('acervo-card-editor').hidden=true;$('acervo-vazio').hidden=false;nonce=crypto.randomUUID();$('previa-acervo-frame').srcdoc=montarPreviaVisual(draft.registro.acervo.original,fields,nonce,{capa:backup.capa});updateCall();clearBackup();$('estado-copia-acervo').textContent='Cópia aplicada somente à edição aberta. Confira os campos e use “Salvar rascunho” para guardar no painel.'+(backup.imagemPendente?' Selecione novamente a foto que ainda não havia sido enviada.':'');message('Cópia recuperada. Nenhuma gravação ou publicação foi feita.');}
+ catch(error){$('estado-copia-acervo').textContent=error.message;}
+});
+
 function options(){return validarOpcoesAcervo({resumo:$('chamada-resumo-acervo').value,capa:obterCapaAcervo()});}
 function hasChanges(){try{return fields.some((field,index)=>field.texto!==savedFields[index])||JSON.stringify(options())!==savedOptions;}catch{return true;}}
 function updateCall(){if(!draft)return;$('chamada-titulo-acervo').textContent=tituloVisualAcervo(draft.registro.acervo.original,fields)||draft.registro.titulo;$('chamada-previa-resumo-acervo').textContent=$('chamada-resumo-acervo').value;try{const capa=obterCapaAcervo();$('chamada-previa-imagem-acervo').hidden=!capa;if(capa){$('chamada-previa-imagem-acervo').src='https://fabcampo.com.br/'+capa.imagem;$('chamada-previa-imagem-acervo').alt=capa.textoAlternativo;}}catch{}}
@@ -57,8 +76,9 @@ $('restaurar-card-acervo').addEventListener('click',()=>{
   if(selectedCard===null)return;for(const part of cards[selectedCard].campos){fields[part.indice].texto=savedFields[part.indice];send({tipo:'acervo-atualizar',indice:part.indice,texto:savedFields[part.indice]});}selectCard(selectedCard);dirty=hasChanges();resetPlan();updateCall();message(dirty?'Card restaurado. Há outras alterações não salvas.':'Card restaurado à revisão salva.');
 });
 function updateSummary(){if(draft){$('resumo-acervo').textContent=draft.registro.titulo+' · Rascunho salvo: revisão '+draft.revisao;updateCall();}}
+function refreshCards(){cards=obterCardsVisuais(draft.registro.acervo.original,fields);$('acervo-card-editor').hidden=true;const cardSelect=$('card-acervo');cardSelect.replaceChildren(new Option('Escolha um card',''));for(const card of cards)cardSelect.append(new Option((card.id+1)+'. '+card.titulo,String(card.id)));cardSelect.disabled=!cards.length;}
 function render(){
-  updateSummary();selected=null;selectedCard=null;cards=obterCardsVisuais(draft.registro.acervo.original,fields);$('acervo-card-editor').hidden=true;const cardSelect=$('card-acervo');cardSelect.replaceChildren(new Option('Escolha um card',''));for(const card of cards)cardSelect.append(new Option((card.id+1)+'. '+card.titulo,String(card.id)));cardSelect.disabled=!cards.length;nonce=crypto.randomUUID();savedFields=fields.map(field=>field.texto);hiddenMarks=false;
+  updateSummary();selected=null;selectedCard=null;refreshCards();nonce=crypto.randomUUID();savedFields=fields.map(field=>field.texto);hiddenMarks=false;
   $('previa-acervo').textContent='Visualizar sem marcações';$('campos-acervo').hidden=true;$('acervo-vazio').hidden=false;
   const select=$('secao-acervo');select.replaceChildren(new Option('Escolha uma seção',''));const seen=new Set();
   for(const field of fields)if(!seen.has(field.grupo)){seen.add(field.grupo);select.append(new Option(field.grupo,String(field.indice)));}
@@ -77,7 +97,7 @@ function open(path){
   if(dirty){if(!$('editor-acervo').open)$('editor-acervo').showModal();message('Há uma edição em andamento. Salve os textos antes de abrir outra matéria.');return;}
   authorized(async(credential,version)=>{
     const result=await call('/acervo/abrir',credential,{path});if(version!==epoch)return;
-    draft=result.draft;fields=result.campos;if(!draft?.registro?.acervo||!Array.isArray(fields))throw new Error('A importação não foi confirmada.');
+    draft=result.draft;fields=result.campos;clearBackup();if(!draft?.registro?.acervo||!Array.isArray(fields))throw new Error('A importação não foi confirmada.');
     $('chamada-resumo-acervo').value=result.resumo||'';definirCapaAcervo(draft.registro.acervo.capa,draft.id);savedOptions=JSON.stringify(options());resetPlan();dirty=false;if(!$('editor-acervo').open)$('editor-acervo').showModal();render();message('Rascunho salvo. Clique em um texto da reportagem para começar.');
   });
 }
@@ -112,4 +132,4 @@ $('publicar-acervo').addEventListener('click',()=>{
     resetPlan();document.dispatchEvent(new Event('editorial-publication-changed'));message(result.status==='enviada'?'Atualização enviada. Aguarde o portal atualizar e busque a lista de matérias para conferir o estado.':'Envio não confirmado. Confira a lista antes de tentar novamente.');
   },{text:'Enviando a revisão para publicação. Aguarde a confirmação; não feche esta página.',write:true});
 });
-document.addEventListener('editorial-access-cleared',()=>{epoch++;draft=null;fields=[];dirty=false;resetPlan();$('editor-acervo').close();$('texto-selecionado-acervo').value='';$('campos-acervo').hidden=true;$('catalogo-acervo').replaceChildren();$('previa-acervo-frame').srcdoc='';});
+document.addEventListener('editorial-access-cleared',()=>{epoch++;draft=null;fields=[];dirty=false;clearBackup();resetPlan();$('editor-acervo').close();$('texto-selecionado-acervo').value='';$('campos-acervo').hidden=true;$('catalogo-acervo').replaceChildren();$('previa-acervo-frame').srcdoc='';});
