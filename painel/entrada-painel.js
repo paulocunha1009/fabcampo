@@ -27,9 +27,10 @@ const orientacaoReportagem=$('orientacao-trabalho').innerHTML;
 function ajustarFuncao(){
   const evento=document.querySelector('[data-tipo="eventos"]').getAttribute('aria-pressed')==='true';
   for(const id of ['ir-publicacao','area-publicacao','acervo-equipe'])$(id).hidden=evento;
+  $('publicacao-evento').hidden=!evento;
   document.querySelector('[data-atalho-painel="acervo"]').hidden=evento;
   document.querySelector('[data-atalho-painel="edicao"] strong').textContent=evento?'Dados, imagem e revisão':'Texto, fotos e revisão';
-  $('orientacao-trabalho').innerHTML=evento?'Salve seu evento no painel e aguarde a confirmação da revisão. Atualizar a prévia não salva no servidor. A publicação de eventos na agenda ainda não está disponível.':orientacaoReportagem;
+  $('orientacao-trabalho').innerHTML=evento?'Salve seu evento no painel e aguarde a confirmação da revisão. Atualizar a prévia não salva no servidor. Para publicar, abra Publicação do evento na agenda e confirme as informações.':orientacaoReportagem;
 }
 document.addEventListener('editorial-record-loaded',()=>queueMicrotask(ajustarFuncao));
 ajustarFuncao();

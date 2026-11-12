@@ -2,7 +2,7 @@ import {descreverEstadoEdicao} from './estado-edicao.mjs?v=20261111-3';
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261110-4';
-import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261111-3';
+import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261112-6';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
@@ -38,14 +38,14 @@ async function renderList(drafts,credential){
     row.append(title,state,detail,actions);container.append(row);
     if(draft.lixeira){state.textContent='Lixeira';detail.textContent='Rascunho preservado. Restaurar não publica a matéria.';actionButton('Restaurar','restaurar');continue;}
     const history=document.createElement('button');history.type='button';history.className='botao-secundario';history.textContent='Histórico de versões';history.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-historico',{detail:{id:draft.id}}));});actions.append(history);
-    actions.append(open);const trash=actionButton('Mover para a lixeira','lixeira');trash.disabled=draft.tipo==='noticias';
+    actions.append(open);const trash=actionButton('Mover para a lixeira','lixeira');trash.disabled=true;
 
-    if(draft.tipo!=='noticias')continue;
+
     queue.push(async()=>{
       try{
-        const result=await call(EDITORIAL_API.replace(/\/me$/,'/publicacoes/')+encodeURIComponent(draft.id),credential);
+        const result=await call(EDITORIAL_API.replace(/\/me$/,'/publicacoes/')+(draft.tipo==='eventos'?'eventos/':'')+encodeURIComponent(draft.id),credential);
         if(version!==listVersion)return;const description=descreverPublicacao(draft,result);
-        row.dataset.estado=result.status==='publicada'?(draft.revisao===result.revisao?'publicada':'pendente'):({existente:'publicada','nao-enviada':'rascunho',retirada:'retirada',aguardando:'aguardando'}[result.status]||'desconhecida');filtrarLista();state.textContent=description.rotulo;detail.textContent=description.detalhe;trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
+        row.dataset.estado=result.status==='publicada'?(draft.revisao===result.revisao?'publicada':'pendente'):({existente:'publicada','nao-enviada':'rascunho',retirada:'retirada',aguardando:'aguardando'}[result.status]||'desconhecida');filtrarLista();state.textContent=description.rotulo;detail.textContent=description.detalhe;if(draft.tipo==='eventos'){state.textContent=({publicada:draft.revisao===result.revisao?'Evento publicado':'Evento com alterações pendentes',retirada:'Evento retirado da agenda','nao-enviada':'Rascunho de evento',aguardando:'Agenda em atualização'}[result.status]||'Estado não conferido');detail.textContent='Revisão salva: '+draft.revisao+(result.revisao?' · revisão da agenda: '+result.revisao:'');}trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(draft.tipo==='noticias'&&['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
         if(description.link){const link=document.createElement('a');link.href=description.link;link.textContent='Abrir no portal';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
       }catch{if(version===listVersion){state.textContent='Publicação não conferida';detail.textContent='Não foi possível confirmar o estado. Busque a lista novamente.';}}
     });
@@ -62,6 +62,11 @@ export function obterVinculoPublicacao(){
   if(current.tipo!=='noticias')throw new Error('A publicação está disponível para reportagens.');
   if(!binding?.revisao||binding.snapshot!==JSON.stringify(current))throw new Error('Salve esta edição no painel e aguarde a confirmação da revisão antes de preparar a publicação.');
   return {id:binding.id,revisao:binding.revisao};
+}
+export function obterVinculoEvento(){
+ const binding=bindings.get(key()),current=obterRegistroAtual();
+ if(current.tipo!=='eventos'||!binding?.revisao||binding.snapshot!==JSON.stringify(current))throw new Error('Salve o evento no painel e aguarde a confirmação da revisão.');
+ return {id:binding.id,revisao:binding.revisao};
 }
 const key=()=>document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo+':'+$('registro-editorial').value;
 const status=text=>{$('estado-salvamento').textContent=text;};
