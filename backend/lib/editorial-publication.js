@@ -1,3 +1,4 @@
+import {criarPublicacaoEventos} from './editorial-events.js';
 import express from 'express';
 import {createHash} from 'node:crypto';
 import sharp from 'sharp';
@@ -235,6 +236,7 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       return {status:active?'publicada':'aguardando',id,link:path,revisao:item.revisao};
     }catch{return {status:'aguardando',id,link:path,revisao:item.revisao};}
   }
+  const eventos=criarPublicacaoEventos({github,content,drafts,images,configured,enabled,siteRequest});
   async function trash(input,restore=false){
     if(!idPattern.test(input?.id||'')||input.confirmado!==true||!Number.isInteger(input.revisao)||input.revisao<1)throw fail(400,'Confira a matéria e confirme a operação.');
     const draft=await drafts.get(input.id);
@@ -243,9 +245,10 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
       const publication=await status(input.id);
       if(!['nao-enviada','retirada'].includes(publication.status))throw fail(409,'Inative a reportagem e aguarde a confirmação no site antes de mover para a lixeira.');
     }
+    if(!restore&&draft.tipo==='eventos'){const evento=await eventos.status(input.id);if(!['nao-enviada','retirada'].includes(evento.status))throw fail(409,'Retire o evento da agenda e confira o estado antes de mover para a lixeira.');}
     return drafts.setTrash(input,!restore);
   }
-  return {enabled,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw,openArchive,saveArchive,previewArchive,trash:input=>trash(input),restore:input=>trash(input,true)};
+  return {enabled,eventos,prepare:async input=>(await prepare(input)).plan,publish,status,prepareWithdrawal:async input=>(await prepareWithdrawal(input)).plan,withdraw,openArchive,saveArchive,previewArchive,trash:input=>trash(input),restore:input=>trash(input,true)};
 }
 export function createPublicationRouter({auth,service=createPublicationService()}){
   const router=express.Router();
@@ -261,6 +264,9 @@ export function createPublicationRouter({auth,service=createPublicationService()
   router.post('/api/editorial/publicacoes/acervo/abrir',express.json({limit:'4kb'}),execute(req=>service.openArchive(req.body)));
   router.post('/api/editorial/publicacoes/acervo/salvar',express.json({limit:'256kb'}),execute(req=>service.saveArchive(req.body)));
   router.post('/api/editorial/publicacoes/acervo/previa',express.json({limit:'256kb'}),execute(req=>service.previewArchive(req.body)));
+  router.post('/api/editorial/publicacoes/eventos/preparar',express.json({limit:'4kb'}),execute(req=>service.eventos.prepare(req.body)));
+  router.post('/api/editorial/publicacoes/eventos/confirmar',express.json({limit:'4kb'}),execute(req=>service.eventos.publish(req.body)));
+  router.get('/api/editorial/publicacoes/eventos/:id',execute(req=>service.eventos.status(req.params.id)));
   router.get('/api/editorial/publicacoes/:id',execute(req=>service.status(req.params.id)));
   return router;
 }
