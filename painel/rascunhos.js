@@ -37,6 +37,7 @@ async function renderList(drafts,credential){
     const actionButton=(label,acao)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.className='botao-secundario';button.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-acao-materia',{detail:{draft,acao}}));});actions.append(button);return button;};
     row.append(title,state,detail,actions);container.append(row);
     if(draft.lixeira){state.textContent='Lixeira';detail.textContent='Rascunho preservado. Restaurar não publica a matéria.';actionButton('Restaurar','restaurar');continue;}
+    const history=document.createElement('button');history.type='button';history.className='botao-secundario';history.textContent='Histórico de versões';history.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-historico',{detail:{id:draft.id}}));});actions.append(history);
     actions.append(open);const trash=actionButton('Mover para a lixeira','lixeira');trash.disabled=draft.tipo==='noticias';
 
     if(draft.tipo!=='noticias')continue;

@@ -92,3 +92,5 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .entrada-painel h2,.inicio-painel h2{margin:0 0 12px}.entrada-painel .acesso-equipe{margin-top:24px}.entrada-painel .painel-acoes{flex-wrap:wrap}
 .inicio-painel{padding:12px 0 28px}.funcao-painel{max-width:560px;padding:26px;margin-top:22px;background:#fff;border:1px solid #c9d9c7;border-radius:14px}.funcao-painel h3{margin:6px 0 12px;font-size:1.5rem}
 @media(max-width:680px){.entrada-painel{padding:20px;margin:16px 0}.painel-apresentacao{flex-wrap:wrap}.funcao-painel{padding:20px}}
+
+.historico-materia{width:min(760px,90vw);max-height:85vh;overflow:auto;border:1px solid #c9d9c7;border-radius:14px;padding:24px;color:#193b2c}.historico-materia::backdrop{background:#102c2299}.historico-materia select{width:100%}.historico-materia pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;max-height:40vh;overflow:auto;background:#f3f5f1;padding:16px;border-radius:8px}.historico-materia pre:empty{display:none}
