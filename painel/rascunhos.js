@@ -7,6 +7,14 @@ const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
 let listVersion=0;
+// Referência local apenas em memória; não é confirmação de gravação no servidor.
+function camposAbertos(){return JSON.stringify(Array.from($('editorial-form').elements||[]).map(el=>[el.id,el.value,el.checked,Array.from(el.files||[]).map(file=>[file.name,file.size,file.lastModified])]));}
+let camposDeReferencia=camposAbertos();
+document.addEventListener('editorial-record-loaded',()=>queueMicrotask(()=>{camposDeReferencia=camposAbertos();}));
+globalThis.addEventListener?.('beforeunload',event=>{
+  if(!busy&&camposAbertos()===camposDeReferencia)return;
+  event.preventDefault();event.returnValue='';
+});
 function filtrarLista(){
   const filtros={busca:$('busca-materias').value,grupo:$('filtro-materias').value,estado:$('estado-materias').value};
   const rows=Array.from($('lista-materias').children),items=rows.map(row=>({titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado}));
@@ -88,14 +96,14 @@ $('salvar-no-painel').addEventListener('click',()=>{
   const originalKey=key();
   const binding=bindings.get(originalKey) || {id:crypto.randomUUID(),revisao:0};
   bindings.set(originalKey,binding);
-  const original=JSON.stringify(draft);
+  const original=JSON.stringify(draft),camposEnviados=camposAbertos();
   authorized(async credential=>{
     if(originalKey!==key() || original!==JSON.stringify(obterRegistroAtual())){status('A edição mudou. Confira e solicite o salvamento novamente.');return;}
     status('Salvando rascunho no painel...');
     const result=await call(endpoint,credential,{...draft,...binding});
     if(result.id!==binding.id || !Number.isInteger(result.revisao) || result.revisao!==binding.revisao+1 || result.status!=='rascunho')throw new Error('O servidor não confirmou a revisão esperada. Confira antes de tentar novamente.');
     bindings.set(originalKey,{id:result.id,revisao:result.revisao,snapshot:original});
-    clearList();atualizarEstadoEdicao();
+    camposDeReferencia=camposEnviados;clearList();atualizarEstadoEdicao();
     const mudou=originalKey!==key() || original!==JSON.stringify(obterRegistroAtual());
     status(`Rascunho salvo no painel — revisão ${result.revisao}.${mudou?' Há alterações locais posteriores que ainda precisam ser salvas.':' Nenhuma publicação foi feita.'}`);
   });

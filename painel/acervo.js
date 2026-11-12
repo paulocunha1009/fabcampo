@@ -180,3 +180,6 @@ $('publicar-acervo').addEventListener('click',()=>{
   },{text:'Enviando a revisão para publicação. Aguarde a confirmação; não feche esta página.',write:true});
 });
 document.addEventListener('editorial-access-cleared',()=>{stopFollow(true);epoch++;draft=null;fields=[];dirty=false;clearBackup();resetPlan();$('editor-acervo').close();$('texto-selecionado-acervo').value='';$('campos-acervo').hidden=true;$('catalogo-acervo').replaceChildren();$('previa-acervo-frame').srcdoc='';});
+
+// O navegador apresenta seu próprio aviso; nenhuma gravação ocorre ao sair.
+globalThis.addEventListener?.('beforeunload',event=>{if(!writing&&!(draft&&hasChanges()))return;event.preventDefault();event.returnValue='';});
