@@ -96,3 +96,5 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .historico-materia{width:min(760px,90vw);max-height:85vh;overflow:auto;border:1px solid #c9d9c7;border-radius:14px;padding:24px;color:#193b2c}.historico-materia::backdrop{background:#102c2299}.historico-materia select{width:100%}.historico-materia pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;max-height:40vh;overflow:auto;background:#f3f5f1;padding:16px;border-radius:8px}.historico-materia pre:empty{display:none}
 
 .funcoes-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.funcoes-grade .funcao-painel{max-width:none;margin-top:8px}@media(max-width:680px){.funcoes-grade{grid-template-columns:1fr}}
+
+.guia-painel{background:#fff;border:1px solid #c9d9c7;border-radius:12px;padding:18px 22px;margin-top:24px;max-width:920px}.guia-painel>summary{font-weight:700;cursor:pointer}.guia-painel section{margin-top:22px}.guia-painel h3{font-size:1.1rem}.guia-painel li{margin:10px 0;line-height:1.65}.guia-painel ol,.guia-painel ul{padding-left:24px}
