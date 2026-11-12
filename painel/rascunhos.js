@@ -2,7 +2,7 @@ import {descreverEstadoEdicao} from './estado-edicao.mjs?v=20261111-3';
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261110-4';
-import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261112-6';
+import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261112-7';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
@@ -16,11 +16,11 @@ globalThis.addEventListener?.('beforeunload',event=>{
   event.preventDefault();event.returnValue='';
 });
 function filtrarLista(){
-  const filtros={busca:$('busca-materias').value,grupo:$('filtro-materias').value,estado:$('estado-materias').value};
-  const rows=Array.from($('lista-materias').children),items=rows.map(row=>({titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado}));
+  const filtros={busca:$('busca-materias').value,grupo:$('filtro-materias').value,estado:$('estado-materias').value,tipo:$('tipo-materias').value||'todos'};
+  const rows=Array.from($('lista-materias').children),items=rows.map(row=>({titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado,tipo:row.dataset.tipo}));
   rows.forEach((row,index)=>{row.hidden=!correspondeFiltroMateria(items[index],filtros);});
   $('resultado-materias').textContent=$('lista-materias').dataset.carregada==='true'?resumirFiltroMaterias(items,filtros).texto:'Busque os rascunhos da equipe para carregar a lista.';
-  $('limpar-filtros-materias').disabled=!filtros.busca&&!['rascunho','publicada','pendente','retirada','aguardando','desconhecida'].includes(filtros.estado);
+  $('limpar-filtros-materias').disabled=filtros.tipo==='todos'&&!filtros.busca&&!['rascunho','publicada','pendente','retirada','aguardando','desconhecida'].includes(filtros.estado);
   $('estado-materias').disabled=filtros.grupo==='lixeira';
 }
 
@@ -32,7 +32,7 @@ async function renderList(drafts,credential){
   const queue=[];
   for(const draft of drafts){
     const row=document.createElement('li'),title=document.createElement('strong'),state=document.createElement('p'),detail=document.createElement('p'),actions=document.createElement('div'),open=document.createElement('button');
-    row.dataset.titulo=draft.titulo;row.dataset.lixeira=String(Boolean(draft.lixeira));row.dataset.estado=draft.tipo==='noticias'?'desconhecida':'rascunho';title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
+    row.dataset.tipo=draft.tipo;row.dataset.titulo=draft.titulo;row.dataset.lixeira=String(Boolean(draft.lixeira));row.dataset.estado=draft.tipo==='noticias'?'desconhecida':'rascunho';title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
     open.addEventListener('click',()=>{if(version!==listVersion)return;$('rascunho-remoto').value=draft.id;$('abrir-rascunho-remoto').disabled=false;$('abrir-rascunho-remoto').click();});
     const actionButton=(label,acao)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.className='botao-secundario';button.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-acao-materia',{detail:{draft,acao}}));});actions.append(button);return button;};
     row.append(title,state,detail,actions);container.append(row);
@@ -142,6 +142,9 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
 });
 
 $('filtro-materias').addEventListener('change',()=>{$('estado-materias').value='todos';filtrarLista();});
-$('limpar-filtros-materias').addEventListener('click',()=>{$('busca-materias').value='';$('estado-materias').value='todos';filtrarLista();$('busca-materias').focus();});
+$('limpar-filtros-materias').addEventListener('click',()=>{$('busca-materias').value='';$('tipo-materias').value='todos';$('estado-materias').value='todos';filtrarLista();$('busca-materias').focus();});
 $('estado-materias').addEventListener('change',filtrarLista);
 $('busca-materias').addEventListener('input',filtrarLista);
+
+$('tipo-materias').addEventListener('change',filtrarLista);
+document.addEventListener('editorial-funcao-aberta',event=>{if(!['noticias','eventos'].includes(event.detail))return;$('tipo-materias').value=event.detail;filtrarLista();});

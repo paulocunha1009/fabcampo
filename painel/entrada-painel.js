@@ -19,7 +19,7 @@ function abrirFuncao(tipo){
   const selecionado=botao.getAttribute('aria-pressed')==='true';
   if(!selecionado&&botao.disabled){$('estado-funcoes').textContent='Existe uma edição em andamento. Volte à função aberta e guarde a prévia ou descarte a edição antes de trocar de função. Para retomar depois, salve também no painel.';return;}
   if(!selecionado)botao.click();
-  $('estado-funcoes').textContent='';tela('trabalho');
+  $('estado-funcoes').textContent='';document.dispatchEvent(new CustomEvent('editorial-funcao-aberta',{detail:tipo}));tela('trabalho');
 }
 $('abrir-reportagens').addEventListener('click',()=>abrirFuncao('noticias'));
 $('abrir-eventos').addEventListener('click',()=>abrirFuncao('eventos'));

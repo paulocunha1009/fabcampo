@@ -13,9 +13,9 @@ export function descreverPublicacao(draft,result){
   return {rotulo:draft.revisao===result.revisao?'Publicado':'Alterações pendentes',detalhe:'No site: revisão '+result.revisao+'. No painel: revisão '+draft.revisao+'.',link:'https://fabcampo.com.br/'+path};
 }
 
-export function correspondeFiltroMateria(item,{busca='',grupo='ativas',estado='todos'}={}){
+export function correspondeFiltroMateria(item,{busca='',grupo='ativas',estado='todos',tipo='todos'}={}){
   const normalizar=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
-  return (grupo==='lixeira'?item.lixeira:!item.lixeira)&&normalizar(item.titulo).includes(normalizar(busca).trim())&&(estado==='todos'||item.estado===estado);
+  return (grupo==='lixeira'?item.lixeira:!item.lixeira)&&normalizar(item.titulo).includes(normalizar(busca).trim())&&(estado==='todos'||item.estado===estado)&&(tipo==='todos'||item.tipo===tipo);
 }
 
 export function resumirFiltroMaterias(items,filtros={}){
