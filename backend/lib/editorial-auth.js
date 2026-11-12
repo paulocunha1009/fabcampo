@@ -1,4 +1,5 @@
 import {createEditorialEnrollment} from './editorial-enrollment.js';
+import {createEditorialTeam} from './editorial-team.js';
 import { OAuth2Client } from 'google-auth-library';
 
 const google = new OAuth2Client();
@@ -12,6 +13,9 @@ export function createEditorialAuth({
   draftSubjects = process.env.EDITORIAL_DRAFT_GOOGLE_SUBJECTS || '',
   approvedPublisherEmails = process.env.EDITORIAL_ENROLL_PUBLISH_EMAILS || '',
   enrollment = createEditorialEnrollment(),
+  team = createEditorialTeam(),
+  teamEnabled = process.env.EDITORIAL_TEAM_ENABLED === 'true',
+  managerEmail = 'paulo.cunha1@prof.ce.gov.br',
   verifyIdToken = options => google.verifyIdToken(options),
   clock = Date.now,
 } = {}) {
@@ -20,6 +24,8 @@ export function createEditorialAuth({
   const emails=approvedPublisherEmails.split(',').map(value=>value.trim().toLowerCase()).filter(Boolean);
   const approvedEmails=new Set(emails.length<=20&&emails.every(email=>email.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&!email.includes('*'))?emails:[]);
   const publisherAccounts=new WeakSet();
+  const draftAccounts=new WeakSet();
+  const isManager=account=>subjects.has(account.id)&&account.email.toLowerCase()===managerEmail;
   const configured = Boolean(clientId.trim() && subjects.size);
 
   async function identify(authorization) {
@@ -51,16 +57,25 @@ export function createEditorialAuth({
     if (!configured) throw deny(503, 'EDITORIAL_NOT_CONFIGURED');
     const account = await identify(authorization);
     let publisher=subjects.has(account.id);
-    if(!publisher&&approvedEmails.has(account.email.toLowerCase())){
+    let preparer=preparers.has(account.id);
+    const member=teamEnabled&&!isManager(account)?await team.find(account.email):null;
+    if(member){
+      if(member.papel==='inativo')throw deny(403,'EDITORIAL_ACCESS_DENIED');
+      const bound=await enrollment.bind(account);
+      if(!bound)throw deny(403,'EDITORIAL_ACCOUNT_BINDING_MISMATCH');
+      publisher=member.papel==='publicador';preparer=member.papel==='rascunhos';
+    }else if(!publisher&&approvedEmails.has(account.email.toLowerCase())){
       // Only Google-signed verified claims reach this point. Bind once, atomically.
       publisher=await enrollment.bind(account);
       if(!publisher)throw deny(403,'EDITORIAL_ACCOUNT_BINDING_MISMATCH');
     }
-    if (!publisher && !preparers.has(account.id)) throw deny(403, 'EDITORIAL_ACCESS_DENIED');
+    if (!publisher && !preparer) throw deny(403, 'EDITORIAL_ACCESS_DENIED');
     if (publicar && !publisher) throw deny(403, 'EDITORIAL_PUBLISH_DENIED');
     if(publisher)publisherAccounts.add(account);
+    if(preparer)draftAccounts.add(account);
     return account;
   }
 
-  return { configured, authenticate, identify, permissions:account=>({rascunhos:publisherAccounts.has(account)||subjects.has(account.id)||preparers.has(account.id),publicar:publisherAccounts.has(account)||subjects.has(account.id)}) };
+  return { configured, authenticate, identify, team, approvedEmails:[...approvedEmails],isManager:account=>teamEnabled&&isManager(account),isProtectedEmail:email=>email===managerEmail,
+    permissions:account=>({rascunhos:publisherAccounts.has(account)||draftAccounts.has(account),publicar:publisherAccounts.has(account)}) };
 }

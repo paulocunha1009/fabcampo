@@ -24,6 +24,7 @@ import { validateRequest } from './lib/validate-request.js';
 import { buildAcervoContext } from './lib/acervo.js';
 import { normalizeAnswer } from './lib/assistant-answer.js';
 import { createEditorialAuth } from './lib/editorial-auth.js';
+import {createTeamRouter} from './lib/editorial-team.js';
 import { createEditorialImageRouter } from './lib/editorial-images.js';
 import { CARD_PROMPT, validateCardSource, cardSelectionSource, validateCardSelection } from './lib/editorial-cards.js';
 import { createReportRouter } from './lib/editorial-report.js';
@@ -131,6 +132,7 @@ app.use(createEditorialImageRouter({ auth: editorialAuth }));
 app.use(createDraftRouter({ auth: editorialAuth }));
 app.use(createReportRouter({auth:editorialAuth,aiClient,rateLimiter,model:GEMINI_MODEL,maxTokens:MAX_TOKENS}));
 app.use(createPublicationRouter({auth:editorialAuth}));
+app.use(createTeamRouter({auth:editorialAuth}));
 app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));
 
@@ -179,7 +181,7 @@ app.get('/api/editorial/identidade', async (req, res) => {
 app.get('/api/editorial/me', async (req, res) => {
   try {
     const account = await editorialAuth.authenticate(req.headers.authorization);
-    return res.json({ account, role: 'editor', permissions:editorialAuth.permissions(account) });
+    return res.json({ account, role: 'editor', permissions:{...editorialAuth.permissions(account),gerenciarEquipe:editorialAuth.isManager?.(account)===true} });
   } catch (error) {
     const status = [401, 403, 503].includes(error.status) ? error.status : 503;
     const messages = { 401: 'Entre novamente com sua conta Google.',
