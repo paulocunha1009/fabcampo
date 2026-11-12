@@ -2,7 +2,7 @@ import {descreverEstadoEdicao} from './estado-edicao.mjs?v=20261111-3';
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261110-4';
-import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261112-7';
+import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261112-17';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
@@ -20,7 +20,7 @@ function filtrarLista(){
   const rows=Array.from($('lista-materias').children),items=rows.map(row=>({titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado,tipo:row.dataset.tipo}));
   rows.forEach((row,index)=>{row.hidden=!correspondeFiltroMateria(items[index],filtros);});
   $('resultado-materias').textContent=$('lista-materias').dataset.carregada==='true'?resumirFiltroMaterias(items,filtros).texto:'Busque os rascunhos da equipe para carregar a lista.';
-  $('limpar-filtros-materias').disabled=filtros.tipo==='todos'&&!filtros.busca&&!['rascunho','publicada','pendente','retirada','aguardando','desconhecida'].includes(filtros.estado);
+  $('limpar-filtros-materias').disabled=filtros.tipo==='todos'&&!filtros.busca&&!['no-ar','rascunho','publicada','pendente','retirada','aguardando','desconhecida'].includes(filtros.estado);
   $('estado-materias').disabled=filtros.grupo==='lixeira';
 }
 

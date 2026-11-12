@@ -1,7 +1,7 @@
 import {acompanharPublicacao} from './publicacao-acompanhamento.mjs?v=20261111-10';
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {obterVinculoPublicacao} from './rascunhos.js?v=20261112-7';
+import {obterVinculoPublicacao} from './rascunhos.js?v=20261112-17';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes');
 let plan=null,busy=false,tracking=null,autoController=null,autoVersion=0,contextVersion=0;
 const info=text=>{$('estado-publicacao').textContent=text;};

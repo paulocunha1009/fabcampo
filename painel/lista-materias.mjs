@@ -15,7 +15,7 @@ export function descreverPublicacao(draft,result){
 
 export function correspondeFiltroMateria(item,{busca='',grupo='ativas',estado='todos',tipo='todos'}={}){
   const normalizar=value=>String(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
-  return (grupo==='lixeira'?item.lixeira:!item.lixeira)&&normalizar(item.titulo).includes(normalizar(busca).trim())&&(estado==='todos'||item.estado===estado)&&(tipo==='todos'||item.tipo===tipo);
+  return (grupo==='lixeira'?item.lixeira:!item.lixeira)&&normalizar(item.titulo).includes(normalizar(busca).trim())&&(estado==='todos'||(estado==='no-ar'?['publicada','pendente'].includes(item.estado):item.estado===estado))&&(tipo==='todos'||item.tipo===tipo);
 }
 
 export function resumirFiltroMaterias(items,filtros={}){

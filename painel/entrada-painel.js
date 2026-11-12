@@ -19,10 +19,19 @@ function abrirFuncao(tipo){
   const selecionado=botao.getAttribute('aria-pressed')==='true';
   if(!selecionado&&botao.disabled){$('estado-funcoes').textContent='Existe uma edição em andamento. Volte à função aberta e guarde a prévia ou descarte a edição antes de trocar de função. Para retomar depois, salve também no painel.';return;}
   if(!selecionado)botao.click();
-  $('estado-funcoes').textContent='';document.dispatchEvent(new CustomEvent('editorial-funcao-aberta',{detail:tipo}));tela('trabalho');
+  $('estado-funcoes').textContent='';document.dispatchEvent(new CustomEvent('editorial-funcao-aberta',{detail:tipo}));tela('trabalho');return true;
 }
-$('abrir-reportagens').addEventListener('click',()=>abrirFuncao('noticias'));
-$('abrir-eventos').addEventListener('click',()=>abrirFuncao('eventos'));
+$('abrir-reportagens').addEventListener('click',()=>{if(abrirFuncao('noticias')){$('titulo-edicao').scrollIntoView({block:'start'});$('titulo-edicao').focus();}});
+$('abrir-eventos').addEventListener('click',()=>{if(abrirFuncao('eventos')){$('titulo-edicao').scrollIntoView({block:'start'});$('titulo-edicao').focus();}});
+function abrirLista(publicadas){
+ if(!conectado)return;
+ tela('trabalho',false);$('materias-equipe').open=true;
+ $('filtro-materias').value='ativas';$('tipo-materias').value='todos';$('estado-materias').value=publicadas?'no-ar':'todos';$('busca-materias').value='';
+ $('estado-materias').dispatchEvent(new Event('change'));
+ $('materias-equipe').scrollIntoView({block:'start'});$('listar-rascunhos').focus();
+}
+$('abrir-rascunhos-central').addEventListener('click',()=>abrirLista(false));
+$('abrir-publicacoes-central').addEventListener('click',()=>abrirLista(true));
 const orientacaoReportagem=$('orientacao-trabalho').innerHTML;
 function ajustarFuncao(){
   const evento=document.querySelector('[data-tipo="eventos"]').getAttribute('aria-pressed')==='true';
