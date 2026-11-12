@@ -1,5 +1,5 @@
 import { GOOGLE_CLIENT_ID, EDITORIAL_API, GOOGLE_ALLOWED_ORIGINS } from './auth-config.js';
-import { createGoogleAccess } from './google-access.js';
+import { createGoogleAccess } from './google-access.js?v=20261112-18';
 import { createEditorSession } from './editor-session.js?v=20261110-9';
 
 const start = document.getElementById('preparar-login');
@@ -31,6 +31,7 @@ const messages = {
   error: 'Não foi possível conferir o acesso. Tente novamente. Seu rascunho foi preservado.',
 };
 const access = createGoogleAccess({ endpoint: EDITORIAL_API, identityEndpoint:EDITORIAL_API.replace(/\/me$/,'/identidade'), onState(state) {
+  document.dispatchEvent(new CustomEvent('editorial-permissions',{detail:state.status==='authorized'?state.permissions:null}));
   status.dataset.googleSubject=state.status === 'pending' ? state.id:'';
   status.textContent = state.status === 'pending' ? `Conta Google confirmada: ${state.email}. O acesso de editor ainda precisa ser autorizado pelo responsável.` : state.status === 'authorized'
     ? `Conta conferida: ${state.email}. Confira a revisão salva antes de publicar.` : messages[state.status];

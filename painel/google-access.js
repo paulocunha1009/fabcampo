@@ -46,7 +46,7 @@ export function createGoogleAccess({ endpoint, identityEndpoint, request = fetch
       }
       // Do not retain ID tokens, even after success. Future writes must implement
       // their own server authorization; this result never enables publication.
-      onState({ status: 'authorized', email: data.account.email });
+      onState({ status: 'authorized', email: data.account.email, ...(data.permissions?{permissions:data.permissions}:{}) });
       return data.account;
     } catch {
       if (current === generation) onState({ status: 'error' });

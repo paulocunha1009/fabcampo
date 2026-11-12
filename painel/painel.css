@@ -102,3 +102,5 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 #plano-evento{white-space:pre-line;overflow-wrap:anywhere;padding:18px;background:#edf4e7;border:1px solid #c9d9c7;border-radius:10px}#plano-evento:empty{display:none}
 
 .descarte-local{width:min(560px,90vw);max-height:85vh;overflow:auto;border:1px solid #c9d9c7;border-radius:14px;padding:24px;color:#193b2c}.descarte-local::backdrop{background:#102c2299}
+
+#equipe-dialog{margin:auto;width:min(92vw,760px);box-sizing:border-box;max-height:90vh;overflow:auto;padding:26px;border:1px solid #b6cdbd;border-radius:14px}#equipe-dialog::backdrop{background:#102d24b8}#equipe-dialog p,#equipe-lista{overflow-wrap:anywhere}#equipe-lista{padding-left:20px}#equipe-lista li{padding:12px 0;border-bottom:1px solid #c9d9c7}#equipe-form{margin-top:24px}
