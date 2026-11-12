@@ -53,6 +53,26 @@ class PortalLinksTest(unittest.TestCase):
         self.write('pages/other.html', '<main>Outra</main>')
         self.assertTrue(any('pages/index.html' in error for error in check(self.root)[0]))
 
+    def test_mjs_dependencies_are_checked_recursively(self):
+        self.write('index.html', '<script type="module" src="js/app.mjs"></script>')
+        self.write('js/app.mjs', "export { value } from './nested/core.mjs?v=1';")
+        self.write('js/nested/core.mjs', "import '../missing.mjs';")
+        self.assertTrue(any('js/missing.mjs' in error for error in check(self.root)[0]))
+
+    def test_literal_dynamic_imports_are_checked(self):
+        self.write('index.html', '<script src="js/app.js"></script>')
+        self.write('js/app.js', "await import('./feature.mjs?v=2');")
+        self.write('js/feature.mjs', "import './absent.js';")
+        self.assertTrue(any('js/absent.js' in error for error in check(self.root)[0]))
+
+    def test_valid_module_graph_with_cycle_is_visited_once(self):
+        self.write('index.html', '<script type="module" src="js/app.mjs"></script>')
+        self.write('js/app.mjs', "import './child.mjs';")
+        self.write('js/child.mjs', "import('./app.mjs');")
+        errors, pages, dependencies = check(self.root)
+        self.assertEqual(errors, [])
+        self.assertEqual((pages, dependencies), (1, 3))
+
     def test_external_links_and_pending_images_are_not_requested(self):
         self.write('index.html', '<a href="https://example.test/fora">Externo</a><a href="mailto:teste@example.test">Contato</a><img src="imagem-pendente.jpg">')
         errors, pages, dependencies = check(self.root)

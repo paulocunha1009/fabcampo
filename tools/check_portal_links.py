@@ -80,22 +80,23 @@ def check(root):
                 target = require(target_url, relative)
                 if not target:
                     continue
-                if target.endswith(('.html', '.js', '.css')):
+                if target.endswith(('.html', '.js', '.mjs', '.css')):
                     visit(target_url, relative)
                 fragment = unquote(urlsplit(target_url).fragment)
                 if anchor and fragment and target.endswith('.html') and target in pages and fragment not in pages[target].ids:
                     errors.append(f'{relative}: âncora não encontrada: {target}#{fragment}')
-        elif relative.endswith('.js'):
+        elif relative.endswith(('.js', '.mjs')):
             patterns = [
                 r'\b(?:import|export)\s+(?:[^;\n]*?\s+from\s+)?[\'\"]([^\'\"]+)[\'\"]',
                 r'new\s+URL\(\s*[\'\"]([^\'\"]+)[\'\"]\s*,\s*import\.meta\.url',
+                r'\bimport\(\s*[\'\"]([^\'\"]+)[\'\"]\s*\)',
             ]
             for pattern_index, pattern in enumerate(patterns):
                 for ref in re.findall(pattern, text):
                     if ref.startswith(('.', '/')):
                         dependency = urljoin(base, ref)
                         target = require(dependency, relative, directory=pattern_index == 1 and urlsplit(dependency).path.endswith('/'))
-                        if target and target.endswith(('.js', '.css')):
+                        if target and target.endswith(('.js', '.mjs', '.css')):
                             visit(dependency, relative)
 
     sitemap = ElementTree.parse(root / 'sitemap.xml')
