@@ -37,6 +37,22 @@ class PortalLinksTest(unittest.TestCase):
         self.assertTrue(any('#ausente' in e for e in errors))
         self.assertTrue(any('js/ausente.js' in e for e in errors))
 
+    def test_resource_directory_is_checked_without_requiring_index(self):
+        self.write('index.html', '<script src="js/app.js"></script>')
+        self.write('js/app.js', "new URL('../assets/fonts/', import.meta.url);")
+        self.write('assets/fonts/font.bin', 'fixture')
+        self.assertEqual(check(self.root)[0], [])
+
+    def test_missing_resource_directory_is_reported(self):
+        self.write('index.html', '<script src="js/app.js"></script>')
+        self.write('js/app.js', "new URL('../assets/missing/', import.meta.url);")
+        self.assertTrue(any('assets/missing' in error for error in check(self.root)[0]))
+
+    def test_navigation_directory_still_requires_index(self):
+        self.write('index.html', '<a href="pages/">Páginas</a>')
+        self.write('pages/other.html', '<main>Outra</main>')
+        self.assertTrue(any('pages/index.html' in error for error in check(self.root)[0]))
+
     def test_external_links_and_pending_images_are_not_requested(self):
         self.write('index.html', '<a href="https://example.test/fora">Externo</a><a href="mailto:teste@example.test">Contato</a><img src="imagem-pendente.jpg">')
         errors, pages, dependencies = check(self.root)

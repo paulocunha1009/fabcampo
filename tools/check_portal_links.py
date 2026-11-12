@@ -28,12 +28,12 @@ class Page(HTMLParser):
             self.refs.append((attrs['href'], False))
 
 
-def local_path(url):
+def local_path(url, directory=False):
     parsed = urlsplit(url)
     if parsed.scheme not in ('http', 'https') or parsed.hostname not in ('fabcampo.com.br', 'www.fabcampo.com.br'):
         return None
     path = unquote(parsed.path)
-    if path.endswith('/'):
+    if path.endswith('/') and not directory:
         path += 'index.html'
     return posixpath.normpath('/' + path.lstrip('/')).lstrip('/')
 
@@ -44,16 +44,20 @@ def check(root):
     pages = {}
     dependencies = set()
 
-    def require(url, source):
-        relative = local_path(url)
+    def require(url, source, directory=False):
+        relative = local_path(url, directory)
         if relative is None:
             return None
         current = root
-        for part in relative.split('/'):
+        for part in filter(None, relative.split('/')):
             if not current.is_dir() or part not in {p.name for p in current.iterdir()}:
                 errors.append(f'{source}: destino ausente ou com maiúsculas/minúsculas diferentes: {relative}')
                 return None
             current = current / part
+        if directory:
+            if not current.is_dir():
+                errors.append(f'{source}: destino não é pasta: {relative}')
+            return None
         if not current.is_file():
             errors.append(f'{source}: destino não é arquivo: {relative}')
             return None
@@ -86,11 +90,11 @@ def check(root):
                 r'\b(?:import|export)\s+(?:[^;\n]*?\s+from\s+)?[\'\"]([^\'\"]+)[\'\"]',
                 r'new\s+URL\(\s*[\'\"]([^\'\"]+)[\'\"]\s*,\s*import\.meta\.url',
             ]
-            for pattern in patterns:
+            for pattern_index, pattern in enumerate(patterns):
                 for ref in re.findall(pattern, text):
                     if ref.startswith(('.', '/')):
                         dependency = urljoin(base, ref)
-                        target = require(dependency, relative)
+                        target = require(dependency, relative, directory=pattern_index == 1 and urlsplit(dependency).path.endswith('/'))
                         if target and target.endswith(('.js', '.css')):
                             visit(dependency, relative)
 
