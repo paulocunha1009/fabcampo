@@ -1,5 +1,25 @@
+import {agruparEventos} from './agenda-core.mjs?v=20261112-8';
 const destino=document.getElementById('lista-agenda-escola'),estado=document.getElementById('estado-agenda-escola');
 function texto(tag,value,parent){const el=document.createElement(tag);el.textContent=value;parent.append(el);return el;}
+function cardEvento(item,parent,hoje){
+ const card=document.createElement('article');card.className='agenda-evento';
+ if(item.data===hoje)texto('p','Hoje',card).className='selo';
+ texto('h4',item.nome,card);
+ const dados=document.createElement('dl');dados.className='agenda-evento-dados';
+ const data=new Intl.DateTimeFormat('pt-BR',{dateStyle:'long',timeZone:'America/Fortaleza'}).format(new Date(item.data+'T12:00:00Z'));
+ for(const [label,value] of [['Data',data],['Horário',item.horario],['Local',item.local]]){texto('dt',label,dados);texto('dd',value,dados);}card.append(dados);
+ texto('p',item.descricao,card);
+ for(const [key,label] of [['publico','Público'],['participacao','Como participar'],['responsavel','Responsável'],['contato','Contato institucional']]){const p=document.createElement('p');texto('strong',label+': ',p);p.append(document.createTextNode(item[key]));card.append(p);}
+ if(/^img\/editorial\/[a-f0-9]{64}\.webp$/.test(item.imagem||'')){const image=document.createElement('img');image.src=item.imagem;image.alt=item.textoAlternativo||'';image.loading='lazy';card.append(image);texto('p',(item.legenda||'')+' · Crédito: '+(item.credito||''),card).className='agenda-legenda';}
+ parent.append(card);
+}
 if(destino&&estado){
- fetch(new URL('../data/eventos-escola.json',import.meta.url),{cache:'no-cache',signal:AbortSignal.timeout(8000)}).then(async response=>{if(!response.ok)throw Error();const data=await response.json();if(data.version!==1||!Array.isArray(data.eventos)||data.eventos.length>100)throw Error();const eventos=data.eventos.filter(item=>item&&typeof item.nome==='string'&&typeof item.descricao==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(item.data)&&!Number.isNaN(new Date(item.data+'T12:00:00Z').getTime())&&/^([01]\d|2[0-3]):[0-5]\d$/.test(item.horario)&&['local','publico','participacao','responsavel','contato'].every(key=>typeof item[key]==='string')).sort((a,b)=>(a.data+a.horario).localeCompare(b.data+b.horario));if(eventos.length!==data.eventos.length)throw Error();destino.replaceChildren();for(const item of eventos){const card=document.createElement('article');card.className='evento';card.style.cssText='padding:16px 0;border-bottom:1px solid #d6e1d2;overflow-wrap:anywhere';texto('h3',item.nome,card);const date=new Intl.DateTimeFormat('pt-BR',{dateStyle:'long',timeZone:'America/Fortaleza'}).format(new Date(item.data+'T12:00:00Z'));texto('p',date+' · '+item.horario+' · '+item.local,card);texto('p',item.descricao,card);for(const [key,label] of [['publico','Público'],['participacao','Como participar'],['responsavel','Responsável'],['contato','Contato institucional']])texto('p',label+': '+item[key],card);if(/^img\/editorial\/[a-f0-9]{64}\.webp$/.test(item.imagem||'')){const image=document.createElement('img');image.src=item.imagem;image.alt=item.textoAlternativo||'';image.loading='lazy';image.style.cssText='width:100%;height:auto';card.append(image);texto('p',(item.legenda||'')+' · Crédito: '+(item.credito||''),card);}destino.append(card);}estado.textContent=eventos.length?'Confira os detalhes e a forma de participação de cada evento.':'Nenhum evento foi divulgado nesta agenda ainda.';}).catch(()=>{estado.textContent='Não foi possível carregar a agenda. Tente novamente mais tarde.';});
+ fetch(new URL('../data/eventos-escola.json',import.meta.url),{cache:'no-cache',signal:AbortSignal.timeout(8000)}).then(async response=>{
+  if(!response.ok)throw Error();const data=await response.json();if(data.version!==1)throw Error();const grupos=agruparEventos(data.eventos),conteudo=document.createDocumentFragment();
+  texto('h3','Próximos eventos',conteudo);
+  if(!grupos.proximos.length)texto('p','Nenhum evento divulgado para hoje ou para os próximos dias.',conteudo);
+  for(const item of grupos.proximos)cardEvento(item,conteudo,grupos.hoje);
+  if(grupos.anteriores.length){const anteriores=document.createElement('details');anteriores.className='agenda-anteriores';texto('summary',`Eventos anteriores (${grupos.anteriores.length})`,anteriores);texto('p','Eventos com data anterior a hoje, do mais recente ao mais antigo.',anteriores);for(const item of grupos.anteriores)cardEvento(item,anteriores,grupos.hoje);conteudo.append(anteriores);}
+  destino.replaceChildren(conteudo);estado.textContent=data.eventos.length?'Datas organizadas pelo horário de Fortaleza. Os eventos de hoje permanecem em Próximos eventos durante todo o dia.':'Nenhum evento foi divulgado nesta agenda ainda.';
+ }).catch(()=>{estado.textContent='Não foi possível carregar a agenda. Tente novamente mais tarde.';});
 }
