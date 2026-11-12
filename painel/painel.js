@@ -1,5 +1,6 @@
-import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js?v=20261110-4';
-import { videoEmbed, imagemPrevia } from './midias-core.js';
+import { validarRegistro, montarRascunho, pendenciasPublicacao } from './editorial-core.js?v=20261112-20';
+import { videoEmbed, imagemPrevia } from './midias-core.js?v=20261112-20';
+import {blocosTexto} from '../backend/lib/editorial-photo-layout.mjs';
 const $ = id => document.getElementById(id);
 const campos = ['titulo','subtitulo','pesquisa','pesquisaArquivo','resumo','categoria','fonte','link','nome','descricao','data','texto','local','horario','publico','participacao','responsavel','contato','imagem','legenda','credito','textoAlternativo','modelo','cards','fotos','video','citacao','citacaoFonte','dadosTitulo','dadosTexto'];
 const nomes = { local:'local', texto:'texto completo', data:'data confirmada', horario:'horário confirmado', publico:'público', participacao:'como participar', responsavel:'equipe responsável', contato:'contato institucional', legenda:'legenda', credito:'crédito da imagem', textoAlternativo:'descrição da imagem para acessibilidade', fotos:'1 a 10 fotos enviadas, com uma capa, legendas, créditos e descrições acessíveis' };
@@ -43,8 +44,9 @@ function previa(registro){
   const texto = document.createElement('p'); texto.textContent = registro.resumo || registro.descricao;
   area.append(titulo, detalhes, texto);
   if(registro.subtitulo && registro.subtitulo!==registro.resumo){const sub=document.createElement('p');sub.textContent=registro.subtitulo;area.insertBefore(sub,detalhes);}
+  const media={area,registro};
   if(tipo === 'noticias') {
-    document.dispatchEvent(new CustomEvent('editorial-preview-media',{detail:{area,registro}}));
+    document.dispatchEvent(new CustomEvent('editorial-preview-media',{detail:media}));
     if(registro.video){
       try {
         const src = videoEmbed(registro.video);
@@ -64,8 +66,9 @@ function previa(registro){
     if(registro[campo]){ const p = document.createElement('p'); p.textContent = nomes[campo]+': '+registro[campo]; area.append(p); }
   }
   if(registro.texto){
-    registro.texto.split(/\n/).forEach(trecho => { if(!trecho.trim())return;const heading=/^##\s+(.+)$/.exec(trecho);const p = document.createElement(heading?'h4':'p'); p.textContent = heading?heading[1]:trecho; p.style.whiteSpace = 'pre-wrap'; area.append(p); });
+    let paragraph=0;blocosTexto(registro.texto).forEach(block=>{const p=document.createElement(block.tipo==='titulo'?'h4':'p');p.textContent=block.texto;p.style.whiteSpace='pre-wrap';area.append(p);if(block.tipo==='paragrafo')media.inserirParagrafo?.(++paragraph);});
   }
+  media.inserirGaleria?.();
   if(registro.fonte){ const fonte = document.createElement('p'); fonte.textContent = 'Fonte: '+registro.fonte; area.append(fonte); }
   if(registro.link){
     try {

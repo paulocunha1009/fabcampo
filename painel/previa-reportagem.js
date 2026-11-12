@@ -1,5 +1,5 @@
-import {obterRegistroAtual} from './painel.js?v=20261110-4';
-import {renderEditorialPage} from '../backend/lib/editorial-page.mjs?v=20261110-4';
+import {obterRegistroAtual} from './painel.js?v=20261112-20';
+import {renderEditorialPage} from '../backend/lib/editorial-page.mjs?v=20261112-20';
 const $=id=>document.getElementById(id);
 $('abrir-pagina-reportagem').addEventListener('click',()=>{
   try{

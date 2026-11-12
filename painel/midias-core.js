@@ -1,3 +1,4 @@
+import {validarPosicaoFoto} from '../backend/lib/editorial-photo-layout.mjs';
 export function validarVideo(value = '') {
   if(value === '') return '';
   if(typeof value !== 'string') throw new Error('Informe um único link do YouTube.');
@@ -43,7 +44,7 @@ export function validarFotos(value = []) {
     if(photo.capa !== undefined && typeof photo.capa !== 'boolean') throw new Error('Confira a escolha da capa.');
     if(photo.capa && ++covers > 1) throw new Error('Escolha somente uma foto de capa.');
     return { id:photo.id, imagem:path(photo.imagem), capaImagem:path(photo.capaImagem), capa:photo.capa === true,
-      legenda:text(photo.legenda,400),credito:text(photo.credito,240),textoAlternativo:text(photo.textoAlternativo,400) };
+      legenda:text(photo.legenda,400),credito:text(photo.credito,240),textoAlternativo:text(photo.textoAlternativo,400),...(photo.aposParagrafo!==undefined?{aposParagrafo:validarPosicaoFoto(photo.aposParagrafo)}:{}) };
   });
 }
 // Imagens editoriais permanecem na branch de preparação até a publicação.
@@ -55,4 +56,3 @@ export function imagemPrevia(value) {
   if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) throw new Error('Endereço de imagem inválido.');
   return url.href;
 }
-

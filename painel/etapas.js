@@ -1,4 +1,4 @@
-import {listarPendenciasRevisao} from './revisao-core.mjs?v=20261111-4';
+import {listarPendenciasRevisao} from './revisao-core.mjs?v=20261112-20';
 const $ = id => document.getElementById(id);
 const steps = ['conteudo','midias','revisao'];
 let current = 0;
@@ -28,6 +28,7 @@ function show(step, focus = true) {
   $('guardar-rascunho').classList.toggle('botao-secundario',current!==2);
   $('guardar-rascunho').textContent=current===2 ? 'Guardar e conferir rascunho':'Guardar e atualizar prévia';
   summary();
+  document.dispatchEvent(new CustomEvent('editorial-etapa-aberta',{detail:steps[current]}));
   if(focus) document.querySelector(`[data-etapa="${steps[current]}"]>h3`).focus();
 }
 document.querySelectorAll('[data-abrir-etapa]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.abrirEtapa)));

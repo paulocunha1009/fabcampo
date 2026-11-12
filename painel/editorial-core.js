@@ -1,6 +1,7 @@
-import { validarFotos, validarVideo } from './midias-core.js';
+import { validarFotos, validarVideo } from './midias-core.js?v=20261112-20';
 import { validarPesquisaArquivo } from './pesquisa-core.js';
 import {validarBlocos} from '../backend/lib/editorial-blocks.mjs';
+import {conferirPosicoesFotos} from '../backend/lib/editorial-photo-layout.mjs';
 export const CATEGORIAS = {
   Portal:{ icone:'📌', classe:'badge--portal' },
   Tecnologia:{ icone:'🤖', classe:'badge--tech' },
@@ -81,6 +82,7 @@ export function pendenciasPublicacao(tipo, value){
   if(registro.imagem) obrigatorios.push('legenda','credito','textoAlternativo');
   const faltantes = obrigatorios.filter(campo => !registro[campo]);
   if(tipo === 'noticias') {
+    try{conferirPosicoesFotos(registro.fotos,registro.texto);}catch(error){erro('fotos',error.message);}
     if(!registro.fotos.length || !registro.fotos.some(foto=>foto.capa) ||
       registro.fotos.some(foto=>!foto.imagem || (foto.capa && !foto.capaImagem) || !foto.legenda || !foto.credito || !foto.textoAlternativo)) faltantes.push('fotos');
   }

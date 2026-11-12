@@ -1,13 +1,14 @@
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
-import { imagemPrevia } from './midias-core.js';
+import { imagemPrevia } from './midias-core.js?v=20261112-20';
+import {blocosTexto} from '../backend/lib/editorial-photo-layout.mjs';
 const $ = id => document.getElementById(id);
 let photos = [], version = 0, busy = false, upload;
 const files = new Map();
 const key = () => document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo+':'+$('registro-editorial').value;
 function info(text) { $('estado-galeria').textContent = `${photos.length} de 10 fotos. ${text}`; }
 function save() { $('fotos').value = JSON.stringify(photos); $('fotos').dispatchEvent(new Event('input',{bubbles:true})); }
-function button(text, action, disabled = false) { const node=document.createElement('button'); node.type='button'; node.className='botao-secundario'; node.textContent=text; node.disabled=disabled; if(text.startsWith('Mover foto')){node.textContent=text.endsWith('cima') ? '↑':'↓';node.setAttribute('aria-label',text);node.title=text;} if(text.startsWith('Remover foto')){node.textContent='Remover';node.setAttribute('aria-label',text);} node.addEventListener('click',action); return node; }
+function button(text, action, disabled = false) { const node=document.createElement('button'); node.type='button'; node.className='botao-secundario'; node.textContent=text; node.disabled=disabled; if(text.startsWith('Mover foto')){node.textContent=text.endsWith('cima') ? 'Subir':'Descer';node.dataset.mover='true';node.setAttribute('aria-label',text);node.title=text;} if(text.startsWith('Remover foto')){node.textContent='Remover';node.setAttribute('aria-label',text);} node.addEventListener('click',action); return node; }
 function draw() {
   const list=$('lista-galeria'); list.replaceChildren();
   photos.forEach((photo,index)=>{
@@ -15,15 +16,24 @@ function draw() {
     const title=document.createElement('h4'); title.textContent=`Foto ${index+1}${photo.capa ? ' — capa':''}`; box.append(title);
     const local=files.get(photo.id);
     if(local?.url || photo.imagem){ const image=document.createElement('img'); image.src=local?.url || imagemPrevia(photo.imagem); image.alt=photo.textoAlternativo || 'Foto em preparação'; image.referrerPolicy='no-referrer'; box.append(image); }
-    const metadata=document.createElement('details');const metadataTitle=document.createElement('summary');metadataTitle.textContent='Legenda, crédito e descrição';metadata.append(metadataTitle);box.append(metadata);
+    const metadata=document.createElement('details');const metadataTitle=document.createElement('summary');metadataTitle.textContent='Legenda, crédito e descrição';metadata.open=!photo.legenda||!photo.credito||!photo.textoAlternativo;metadata.append(metadataTitle);box.append(metadata);
     for(const [field,name,max] of [['legenda','Legenda',400],['credito','Crédito',240],['textoAlternativo','Descrição acessível',400]]) {
       const label=document.createElement('label'); label.textContent=name+' da foto '+(index+1);
       const input=document.createElement('input'); input.value=photo[field] || ''; input.maxLength=max; input.disabled=busy;
       input.addEventListener('input',()=>{photo[field]=input.value; save();}); label.append(input); metadata.append(label);
     }
+    if(!photo.capa){
+      const label=document.createElement('label');label.textContent='Onde mostrar a foto '+(index+1)+'?';
+      const select=document.createElement('select');select.disabled=busy;select.append(new Option('Galeria ao final da reportagem','galeria'));
+      const paragraphs=blocosTexto($('texto').value).filter(block=>block.tipo==='paragrafo');
+      paragraphs.forEach((block,index)=>select.append(new Option(`Após o parágrafo ${index+1}: ${block.texto.slice(0,65)}${block.texto.length>65?'…':''}`,String(index+1))));
+      if(photo.aposParagrafo!==undefined&&photo.aposParagrafo>paragraphs.length)select.append(new Option('Posição anterior não existe mais — escolha outra',String(photo.aposParagrafo)));
+      select.value=photo.aposParagrafo===undefined?'galeria':String(photo.aposParagrafo);
+      select.addEventListener('change',()=>{if(select.value==='galeria')delete photo.aposParagrafo;else photo.aposParagrafo=Number(select.value);save();info('Posição atualizada. Confira na página completa antes de publicar.');});label.append(select);box.append(label);
+    }else{const note=document.createElement('p');note.textContent='A capa aparece no cabeçalho da reportagem.';box.append(note);}
     box.append(button(photo.capa ? 'Foto de capa':'Usar como capa',()=>{
       if(local && (local.width<1200 || local.height<675)){info('Para a capa, escolha uma foto com pelo menos 1200 × 675 pixels.');return;}
-      photos.forEach(item=>{item.capa=item===photo;}); save();draw();
+      photos.forEach(item=>{item.capa=item===photo;});delete photo.aposParagrafo; save();draw();
     },photo.capa || busy));
     if(local && photo.capa){
       const crop=document.createElement('details');const cropTitle=document.createElement('summary');cropTitle.textContent='Ajustar recorte da capa';crop.append(cropTitle);box.append(crop);
@@ -33,8 +43,9 @@ function draw() {
       const render=()=>{ const scale=Math.max(1200/local.width,675/local.height);const w=1200/scale,h=675/scale;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,1200,675);ctx.drawImage(local.bitmap,(local.width-w)*Number(range.value)/100,(local.height-h)*Number(range.value)/100,w,h,0,0,1200,675); };
       range.addEventListener('input',()=>{local.position=Number(range.value);photo.capaImagem='';render();save();});label.append(range);crop.append(label,canvas); render(); local.canvas=canvas;
     }
-    box.append(button('Mover foto '+(index+1)+' para cima',()=>{[photos[index-1],photos[index]]=[photos[index],photos[index-1]];save();draw();},index===0 || busy),
-      button('Mover foto '+(index+1)+' para baixo',()=>{[photos[index],photos[index+1]]=[photos[index+1],photos[index]];save();draw();},index===photos.length-1 || busy),
+    const move=(target)=>{[photos[target],photos[index]]=[photos[index],photos[target]];save();draw();info(`Foto ${index+1} movida para a posição ${target+1}. A posição escolhida no texto foi mantida.`);$('lista-galeria').children[target]?.querySelector('[data-mover]:not([disabled])')?.focus();};
+    box.append(button('Mover foto '+(index+1)+' para cima',()=>move(index-1),index===0 || busy),
+      button('Mover foto '+(index+1)+' para baixo',()=>move(index+1),index===photos.length-1 || busy),
       button('Remover foto '+(index+1),()=>{photos.splice(index,1);save();draw();info('Foto removida do rascunho. Nenhum arquivo foi excluído do GitHub.');},busy));
     const replacement=document.createElement('details');const replaceTitle=document.createElement('summary');replaceTitle.textContent='Trocar esta foto';replacement.append(replaceTitle);box.append(replacement);
     const replaceLabel=document.createElement('label');replaceLabel.textContent='Substituir foto '+(index+1);
@@ -67,7 +78,7 @@ async function add(selected,replacement) {
       const id=crypto.randomUUID();const previous=replacement===undefined ? null:photos[replacement];
       if(previous?.capa && (local.width<1200 || local.height<675)){local.bitmap.close();URL.revokeObjectURL(local.url);throw new Error('A foto anterior foi preservada: a substituta da capa precisa de pelo menos 1200 × 675 pixels.');}
       files.set(id,local);
-      const photo={id,imagem:'',capaImagem:'',capa:previous?.capa || (!photos.length && local.width>=1200 && local.height>=675),legenda:previous?.legenda || '',credito:previous?.credito || '',textoAlternativo:previous?.textoAlternativo || ''};
+      const photo={id,imagem:'',capaImagem:'',capa:previous?.capa || (!photos.length && local.width>=1200 && local.height>=675),legenda:previous?.legenda || '',credito:previous?.credito || '',textoAlternativo:previous?.textoAlternativo || '',...(previous?.aposParagrafo!==undefined?{aposParagrafo:previous.aposParagrafo}:{})};
       if(replacement===undefined) photos.push(photo);else photos[replacement]=photo;
       save();
     }
@@ -106,12 +117,16 @@ document.addEventListener('editorial-record-loaded',()=>{
 });
 document.addEventListener('editorial-preview-media',event=>{
   const {area,registro}=event.detail;
+  const figures=[],paragraphCount=blocosTexto(registro.texto||'').filter(block=>block.tipo==='paragrafo').length;
   for(const photo of [...(registro.fotos || [])].sort((a,b)=>Number(b.capa)-Number(a.capa))){
     const local=files.get(photo.id),path=photo.capa ? photo.capaImagem || photo.imagem:photo.imagem;
     if(!local?.url && !path)continue;
     const figure=document.createElement('figure');const img=document.createElement('img');img.src=photo.capa && local?.canvas ? local.canvas.toDataURL('image/webp',0.82) : local?.url || imagemPrevia(path);img.alt=photo.textoAlternativo || '';img.loading='lazy';img.referrerPolicy='no-referrer';img.className='foto-previa';
-    const caption=document.createElement('figcaption');caption.textContent=[photo.capa ? 'Capa':'',photo.legenda,photo.credito ? 'Crédito: '+photo.credito:''].filter(Boolean).join(' — ');figure.append(img,caption);area.append(figure);
+    const caption=document.createElement('figcaption');caption.textContent=[photo.capa ? 'Capa':'',photo.legenda,photo.credito ? 'Crédito: '+photo.credito:'',!photo.capa&&photo.aposParagrafo>paragraphCount?'Posição no texto precisa ser ajustada':''].filter(Boolean).join(' — ');figure.append(img,caption);if(photo.capa)area.append(figure);else figures.push({photo,figure});
   }
+  event.detail.inserirParagrafo=number=>{for(const item of figures.filter(item=>item.photo.aposParagrafo===number))area.append(item.figure);};
+  event.detail.inserirGaleria=()=>{for(const item of figures.filter(item=>item.photo.aposParagrafo===undefined||item.photo.aposParagrafo>paragraphCount))area.append(item.figure);};
 });
+document.addEventListener('editorial-etapa-aberta',event=>{if(event.detail==='midias')draw();});
 document.addEventListener('editorial-access-cleared',()=>upload?.abort());
 window.addEventListener('pagehide',()=>{version++;upload?.abort();for(const local of files.values()){local.bitmap.close();URL.revokeObjectURL(local.url);}files.clear();});

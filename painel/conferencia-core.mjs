@@ -6,7 +6,7 @@ function display(value,key){
  if(typeof value==='string')return value||'Não informado';
  if(Array.isArray(value)&&!value.length)return 'Nenhum item';
  if(key==='cards'&&Array.isArray(value))return value.map((item,index)=>`Card ${index+1}: ${item.titulo||'Sem título'}\n${item.texto||''}`).join('\n\n');
- if(key==='fotos'&&Array.isArray(value))return value.map((item,index)=>`Foto ${index+1}${item.capa?' — capa':''}\nArquivo: ${item.imagem||'Não informado'}${item.capaImagem?'\nArquivo da capa: '+item.capaImagem:''}\nLegenda: ${item.legenda||'Não informada'}\nCrédito: ${item.credito||'Não informado'}\nDescrição acessível: ${item.textoAlternativo||'Não informada'}`).join('\n\n');
+ if(key==='fotos'&&Array.isArray(value))return value.map((item,index)=>`Foto ${index+1}${item.capa?' — capa':''}\nPosição: ${item.capa?'cabeçalho':item.aposParagrafo===undefined?'galeria final':'após o parágrafo '+item.aposParagrafo}\nArquivo: ${item.imagem||'Não informado'}${item.capaImagem?'\nArquivo da capa: '+item.capaImagem:''}\nLegenda: ${item.legenda||'Não informada'}\nCrédito: ${item.credito||'Não informado'}\nDescrição acessível: ${item.textoAlternativo||'Não informada'}`).join('\n\n');
  return JSON.stringify(value,null,2);
 }
 export function conferirVersaoSalva(draft,publication,binding){

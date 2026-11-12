@@ -1,5 +1,6 @@
 import {header,footer} from './editorial-chrome.mjs';
 import {validarBlocos} from './editorial-blocks.mjs';
+import {blocosTexto,conferirPosicoesFotos} from './editorial-photo-layout.mjs';
 const origin='https://fabcampo.com.br';
 const escape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function text(value,max){if(typeof value!=='string'||value.length>max)throw new Error('Conteúdo da reportagem inválido.');return value;}
@@ -22,20 +23,16 @@ export function renderEditorialPage(record,{preview=true}={}){
   const cover=photos.find(photo=>photo.capa && (photo.capaImagem||photo.imagem));
   const coverURL=cover?url(cover.capaImagem||cover.imagem,{preview,image:true}):'';
   const caption=photo=>[photo.legenda,photo.credito?'Crédito: '+photo.credito:''].filter(Boolean).map(value=>escape(text(value,650))).join(' — ');
+  conferirPosicoesFotos(photos,body);
+  const figure=photo=>'<figure class="editorial-foto-texto"><img src="'+escape(url(photo.imagem,{preview,image:true}))+'" alt="'+escape(text(photo.textoAlternativo||'',400))+'" loading="lazy" decoding="async"><figcaption>'+caption(photo)+'</figcaption></figure>';
   let section=0,hasLead=false;const toc=[];
-  const content=body.split(/\n\s*\n/).map(block=>{
-    const lines=block.split('\n');let result='';
-    for(let index=0;index<lines.length;){
-      const heading=/^##\s+(.+)$/.exec(lines[index]);
-      if(heading){const id='secao-'+(++section);toc.push({id,title:heading[1]});result+='<h2 class="artigo-titulo-secao" id="'+id+'">'+escape(heading[1])+'</h2>';index++;}
-      else{const paragraph=[];while(index<lines.length&&!/^##\s+/.test(lines[index]))paragraph.push(lines[index++]);const lead=!hasLead;hasLead=true;result+='<p'+(lead?' class="artigo-lead"':'')+'>'+escape(paragraph.join('\n')).replace(/\n/g,'<br>')+'</p>';}
-    }
-    return result;
+  let paragraph=0;
+  const content=blocosTexto(body).map(block=>{
+    if(block.tipo==='titulo'){const id='secao-'+(++section);toc.push({id,title:block.texto});return '<h2 class="artigo-titulo-secao" id="'+id+'">'+escape(block.texto)+'</h2>';}
+    const lead=!hasLead;hasLead=true;paragraph++;
+    return '<p'+(lead?' class="artigo-lead"':'')+'>'+escape(block.texto).replace(/\n/g,'<br>')+'</p>'+photos.filter(photo=>!photo.capa&&photo.imagem&&photo.aposParagrafo===paragraph).map(figure).join('');
   }).join('');
-  const gallery=photos.filter(photo=>photo.imagem && !photo.capa).map(photo=>{
-    const src=url(photo.imagem,{preview,image:true});
-    return '<figure><img src="'+escape(src)+'" alt="'+escape(text(photo.textoAlternativo||'',400))+'" loading="lazy" decoding="async"><figcaption>'+caption(photo)+'</figcaption></figure>';
-  }).join('');
+  const gallery=photos.filter(photo=>photo.imagem && !photo.capa && photo.aposParagrafo===undefined).map(figure).join('');
   const highlights=cards.length?'<section class="editorial-cards editorial-cards--'+(record.modelo||'destaques')+'" aria-label="Destaques da reportagem">'+cards.map(card=>'<section><h2>'+escape(text(card.titulo,90))+'</h2><p>'+escape(text(card.texto,500))+'</p></section>').join('')+'</section>':'';
   let video='';
   if(record.video){const parsed=new URL(record.video);const id=parsed.searchParams.get('v');if(parsed.origin!=='https://www.youtube.com'||parsed.pathname!=='/watch'||!/^[A-Za-z0-9_-]{11}$/.test(id||''))throw new Error('Vídeo inválido.');video='<section class="editorial-video"><h2>Vídeo da reportagem</h2><button type="button" class="botao" data-video="'+id+'">Carregar vídeo do YouTube</button><p>O vídeo será carregado somente ao clicar.</p></section>';}
@@ -49,7 +46,7 @@ export function renderEditorialPage(record,{preview=true}={}){
   const missing=preview?'<div class="editorial-aviso" role="note"><strong>Prévia privada — não publicada.</strong> Confira fatos, fontes, fotos e créditos antes de publicar.</div>':'';
   const html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
     '<meta name="robots" content="'+(preview?'noindex,nofollow':'index,follow')+'"><meta name="description" content="'+escape(text(record.resumo||subtitle,1200))+'"><meta name="referrer" content="no-referrer">'+ 
-    '<title>'+escape(title)+' | Campo Digital</title><link rel="icon" href="../img/logo/favicon-campo-digital.png"><link rel="stylesheet" href="../css/portal.css?v=20261105-3"><link rel="stylesheet" href="../css/portal-responsivo.css?v=20261105-1"><link rel="stylesheet" href="../css/reportagem-editorial.css?v=20261110-1"></head><body data-page="reportagem-editorial"><a class="link-pular" href="#conteudo" target="_self">Pular para o conteúdo</a>'+header+missing+
+    '<title>'+escape(title)+' | Campo Digital</title><link rel="icon" href="../img/logo/favicon-campo-digital.png"><link rel="stylesheet" href="../css/portal.css?v=20261105-3"><link rel="stylesheet" href="../css/portal-responsivo.css?v=20261105-1"><link rel="stylesheet" href="../css/reportagem-editorial.css?v=20261112-20"></head><body data-page="reportagem-editorial"><a class="link-pular" href="#conteudo" target="_self">Pular para o conteúdo</a>'+header+missing+
     '<section class="hero editorial-hero'+(coverURL?' editorial-hero--foto':'')+'">'+(coverURL?'<div class="hero__imagem"><img src="'+escape(coverURL)+'" alt="'+escape(text(cover.textoAlternativo||'',400))+'"></div>':'')+'<div class="container hero__conteudo"><p class="selo">'+escape(text(record.categoria||'Reportagem',90))+'</p><h1>'+escape(title)+'</h1><p>'+escape(subtitle)+'</p>'+(place?'<p>'+place+'</p>':'')+'</div></section>'+
     '<div class="artigo-barra"><div class="container artigo-barra__conteudo"><div class="artigo-barra__info">'+date+(source?'<span>Fonte/autoria: '+source+'</span>':'')+'</div></div></div>'+
     '<main id="conteudo"><div class="container artigo-layout"><article class="artigo-corpo">'+(cover?'<p class="editorial-legenda-capa">'+caption(cover)+'</p>':'')+content+quote+table+highlights+(gallery?'<section class="editorial-galeria" aria-label="Fotos da reportagem"><h2>Fotos da reportagem</h2>'+gallery+'</section>':'')+video+
