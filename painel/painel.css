@@ -100,3 +100,5 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .guia-painel{background:#fff;border:1px solid #c9d9c7;border-radius:12px;padding:18px 22px;margin-top:24px;max-width:920px}.guia-painel>summary{font-weight:700;cursor:pointer}.guia-painel section{margin-top:22px}.guia-painel h3{font-size:1.1rem}.guia-painel li{margin:10px 0;line-height:1.65}.guia-painel ol,.guia-painel ul{padding-left:24px}
 
 #plano-evento{white-space:pre-line;overflow-wrap:anywhere;padding:18px;background:#edf4e7;border:1px solid #c9d9c7;border-radius:10px}#plano-evento:empty{display:none}
+
+.descarte-local{width:min(560px,90vw);max-height:85vh;overflow:auto;border:1px solid #c9d9c7;border-radius:14px;padding:24px;color:#193b2c}.descarte-local::backdrop{background:#102c2299}
