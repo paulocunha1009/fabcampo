@@ -85,3 +85,10 @@ fieldset { margin-top:20px;padding:14px;border:1px solid #ccdaca;border-radius:1
 .contador-texto{font-size:.8rem;color:#52634f;margin:6px 0 12px}.contador-texto[data-estado=limite]{color:#834600;font-weight:700}
 
 .identificacao-edicao{font-size:.95rem;color:#36583c;overflow-wrap:anywhere;max-width:65ch;margin:8px 0 0}
+
+/* Entrada e central de funções: ocultação visual não substitui autorização da API. */
+[hidden]{display:none!important}
+.entrada-painel{max-width:650px;margin:36px auto;padding:30px;background:#fff;border:1px solid #d6e1d2;border-radius:16px;box-shadow:0 10px 32px #193b2c0a}
+.entrada-painel h2,.inicio-painel h2{margin:0 0 12px}.entrada-painel .acesso-equipe{margin-top:24px}.entrada-painel .painel-acoes{flex-wrap:wrap}
+.inicio-painel{padding:12px 0 28px}.funcao-painel{max-width:560px;padding:26px;margin-top:22px;background:#fff;border:1px solid #c9d9c7;border-radius:14px}.funcao-painel h3{margin:6px 0 12px;font-size:1.5rem}
+@media(max-width:680px){.entrada-painel{padding:20px;margin:16px 0}.painel-apresentacao{flex-wrap:wrap}.funcao-painel{padding:20px}}
