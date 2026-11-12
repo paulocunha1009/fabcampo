@@ -13,7 +13,26 @@ function conferir(){
   if(!conectado)for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();
   tela(conectado?'inicio':'entrada');
 }
-$('abrir-reportagens').addEventListener('click',()=>{if(conectado)tela('trabalho');});
+function abrirFuncao(tipo){
+  if(!conectado)return;
+  const botao=document.querySelector(`[data-tipo="${tipo}"]`);
+  const selecionado=botao.getAttribute('aria-pressed')==='true';
+  if(!selecionado&&botao.disabled){$('estado-funcoes').textContent='Existe uma edição em andamento. Volte à função aberta e guarde a prévia ou descarte a edição antes de trocar de função. Para retomar depois, salve também no painel.';return;}
+  if(!selecionado)botao.click();
+  $('estado-funcoes').textContent='';tela('trabalho');
+}
+$('abrir-reportagens').addEventListener('click',()=>abrirFuncao('noticias'));
+$('abrir-eventos').addEventListener('click',()=>abrirFuncao('eventos'));
+const orientacaoReportagem=$('orientacao-trabalho').innerHTML;
+function ajustarFuncao(){
+  const evento=document.querySelector('[data-tipo="eventos"]').getAttribute('aria-pressed')==='true';
+  for(const id of ['ir-publicacao','area-publicacao','acervo-equipe'])$(id).hidden=evento;
+  document.querySelector('[data-atalho-painel="acervo"]').hidden=evento;
+  document.querySelector('[data-atalho-painel="edicao"] strong').textContent=evento?'Dados, imagem e revisão':'Texto, fotos e revisão';
+  $('orientacao-trabalho').innerHTML=evento?'Salve seu evento no painel e aguarde a confirmação da revisão. Atualizar a prévia não salva no servidor. A publicação de eventos na agenda ainda não está disponível.':orientacaoReportagem;
+}
+document.addEventListener('editorial-record-loaded',()=>queueMicrotask(ajustarFuncao));
+ajustarFuncao();
 $('voltar-inicio-painel').addEventListener('click',()=>{if(conectado)tela('inicio');});
 new MutationObserver(conferir).observe(badge,{attributes:true,attributeFilter:['data-estado']});
 tela('entrada',false);conferir();
