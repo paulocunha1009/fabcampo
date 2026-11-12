@@ -51,6 +51,11 @@ test('preparação é somente leitura e flag desligada impede toda escrita',asyn
   const {service,state}=fixture({enabled:false});const plan=await service.prepare({id,revisao:1});assert.equal(plan.habilitada,false);assert.equal(state.writes.length,0);
   await assert.rejects(()=>service.publish({...plan,confirmado:true}),error=>error.status===503);assert.equal(state.writes.length,0);
 });
+test('transação de publicação preserva foto posicionada entre parágrafos sem duplicar na galeria',async()=>{
+ const record={...article,texto:'Primeiro parágrafo.\n\nSegundo parágrafo.',fotos:[article.fotos[0],{...article.fotos[0],id:'interna',capa:false,aposParagrafo:1,legenda:'Foto interna posicionada'}]};
+ const {service,state}=fixture({record}),plan=await service.prepare({id,revisao:1});await service.publish({...plan,confirmado:true});const html=state.files.get('pages/reportagem-'+id+'.html').toString();
+ assert.ok(html.indexOf('Primeiro parágrafo.')<html.indexOf('<figcaption>Foto interna posicionada'));assert.ok(html.indexOf('<figcaption>Foto interna posicionada')<html.indexOf('Segundo parágrafo.'));assert.equal(html.split('<figcaption>Foto interna posicionada').length-1,1);assert.equal((await service.status(id)).status,'publicada');
+});
 test('uma transação Git inclui fotos, página e listas, preserva conteúdo manual e permite repetição segura',async()=>{
   const {service,state}=fixture(),plan=await service.prepare({id,revisao:1});
   const result=await service.publish({...plan,confirmado:true});assert.equal(result.status,'enviada');

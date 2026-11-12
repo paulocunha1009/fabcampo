@@ -6,6 +6,7 @@ import {createDraftStore} from './editorial-drafts.js';
 import {renderEditorialPage} from './editorial-page.mjs';
 import {acervoCatalogo,acervoPath,validarAcervo,analisarAcervo,aplicarAcervo,tituloAcervo,resumoOriginalAcervo} from './editorial-acervo.js';
 import {validarBlocos} from './editorial-blocks.mjs';
+import {validarPosicaoFoto,conferirPosicoesFotos} from './editorial-photo-layout.mjs';
 
 const repo='paulocunha1009/fabcampo',branch='master';
 const fail=(status,message)=>Object.assign(new Error(message),{status});
@@ -23,8 +24,10 @@ export function validatePublicArticle(value){
   if(!Array.isArray(value.fotos)||!value.fotos.length||value.fotos.length>10||value.fotos.filter(photo=>photo?.capa===true).length!==1)throw fail(400,'Use de uma a dez fotos enviadas, com uma capa.');
   const ids=new Set();record.fotos=value.fotos.map(photo=>{
     if(typeof photo?.id!=='string'||!/^[A-Za-z0-9_-]{1,80}$/.test(photo.id)||ids.has(photo.id)||!photoPattern.test(photo.imagem)|| (photo.capa===true&&!photoPattern.test(photo.capaImagem)))throw fail(400,'Confira os arquivos das fotos enviadas.');
-    ids.add(photo.id);return {id:photo.id,capa:photo.capa===true,imagem:photo.imagem,capaImagem:photo.capa===true?photo.capaImagem:'',legenda:text(photo.legenda,400),credito:text(photo.credito,240),textoAlternativo:text(photo.textoAlternativo,400)};
+    let position;try{position=validarPosicaoFoto(photo.aposParagrafo);}catch(error){throw fail(400,error.message);}
+    ids.add(photo.id);return {id:photo.id,capa:photo.capa===true,imagem:photo.imagem,capaImagem:photo.capa===true?photo.capaImagem:'',legenda:text(photo.legenda,400),credito:text(photo.credito,240),textoAlternativo:text(photo.textoAlternativo,400),...(position!==undefined?{aposParagrafo:position}:{})};
   });
+  try{conferirPosicoesFotos(record.fotos,record.texto);}catch(error){throw fail(400,error.message);}
   if(!Array.isArray(value.cards||[])||(value.cards||[]).length>3)throw fail(400,'Use até três cards.');
   record.cards=(value.cards||[]).map(card=>({titulo:text(card?.titulo,90),texto:text(card?.texto,500)}));
   Object.assign(record,validarBlocos(value));
