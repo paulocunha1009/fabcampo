@@ -20,12 +20,21 @@ function cardEvento(item,parent,hoje){
  parent.append(card);
 }
 if(destino&&estado){
- fetch(new URL('../data/eventos-escola.json',import.meta.url),{cache:'no-cache',signal:AbortSignal.timeout(8000)}).then(async response=>{
+ const atualizar=texto('button','Atualizar agenda',document.createDocumentFragment());atualizar.type='button';atualizar.id='atualizar-agenda-escola';atualizar.className='agenda-calendario';atualizar.setAttribute('aria-controls','lista-agenda-escola');destino.before(atualizar);
+ let carregando=false,carregada=false;
+ async function carregar(){
+  if(carregando)return;carregando=true;atualizar.disabled=true;atualizar.textContent='Carregando…';destino.setAttribute('aria-busy','true');estado.textContent=carregada?'Atualizando os eventos…':'Carregando agenda…';
+  try{
+  const url=new URL('../data/eventos-escola.json',import.meta.url);url.searchParams.set('v',String(Date.now()));
+  const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(8000)});
   if(!response.ok)throw Error();const data=await response.json();if(data.version!==1)throw Error();const grupos=agruparEventos(data.eventos),conteudo=document.createDocumentFragment();
   texto('h3','Próximos eventos',conteudo);
   if(!grupos.proximos.length)texto('p','Nenhum evento divulgado para hoje ou para os próximos dias.',conteudo);
   for(const item of grupos.proximos)cardEvento(item,conteudo,grupos.hoje);
   if(grupos.anteriores.length){const anteriores=document.createElement('details');anteriores.className='agenda-anteriores';texto('summary',`Eventos anteriores (${grupos.anteriores.length})`,anteriores);texto('p','Eventos com data anterior a hoje, do mais recente ao mais antigo.',anteriores);for(const item of grupos.anteriores)cardEvento(item,anteriores,grupos.hoje);conteudo.append(anteriores);}
-  destino.replaceChildren(conteudo);estado.textContent=data.eventos.length?'Datas organizadas pelo horário de Fortaleza. Os eventos de hoje permanecem em Próximos eventos durante todo o dia.':'Nenhum evento foi divulgado nesta agenda ainda.';
- }).catch(()=>{estado.textContent='Não foi possível carregar a agenda. Tente novamente mais tarde.';});
+  destino.replaceChildren(conteudo);carregada=true;atualizar.textContent='Atualizar agenda';estado.textContent=data.eventos.length?'Datas organizadas pelo horário de Fortaleza. Os eventos de hoje permanecem em Próximos eventos durante todo o dia.':'Nenhum evento foi divulgado nesta agenda ainda.';
+  }catch{estado.textContent=carregada?'Não foi possível atualizar a agenda. Os eventos exibidos são da consulta anterior. Tente novamente.':'Não foi possível carregar a agenda. Use Tentar novamente para consultar os eventos.';atualizar.textContent='Tentar novamente';}
+  finally{carregando=false;atualizar.disabled=false;destino.setAttribute('aria-busy','false');}
+ }
+ atualizar.addEventListener('click',carregar);void carregar();
 }
