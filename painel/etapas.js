@@ -5,6 +5,8 @@ let current = 0;
 function summary() {
   const news = document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo === 'noticias';
   $('revisao-titulo').textContent = $(news ? 'titulo':'nome').value.trim() || 'Título ainda não informado';
+  const tituloAtual=$(news ? 'titulo':'nome').value.trim();
+  $('identificacao-edicao').textContent=tituloAtual ? `Em edição: ${tituloAtual}` : (news ? 'Nova reportagem — informe o título abaixo.' : 'Novo evento — informe o nome abaixo.');
   let photos = []; try { photos = JSON.parse($('fotos').value || '[]'); } catch {}
   $('revisao-fotos').textContent = news ? (photos.length ? `${photos.length} de 10 fotos · ${photos.some(photo=>photo.capa) ? 'capa escolhida':'escolha uma capa'}`:'Nenhuma foto adicionada') : ($('imagem').value ? 'Imagem registrada':'Sem imagem');
   $('revisao-video').textContent = news && $('video').value.trim() ? 'Link adicionado · conferir na prévia':'Sem vídeo';
