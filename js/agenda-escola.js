@@ -1,3 +1,4 @@
+import {gerarCalendarioEvento} from './agenda-calendario.mjs?v=20261112-10';
 import {agruparEventos} from './agenda-core.mjs?v=20261112-8';
 const destino=document.getElementById('lista-agenda-escola'),estado=document.getElementById('estado-agenda-escola');
 function texto(tag,value,parent){const el=document.createElement(tag);el.textContent=value;parent.append(el);return el;}
@@ -11,6 +12,11 @@ function cardEvento(item,parent,hoje){
  texto('p',item.descricao,card);
  for(const [key,label] of [['publico','Público'],['participacao','Como participar'],['responsavel','Responsável'],['contato','Contato institucional']]){const p=document.createElement('p');texto('strong',label+': ',p);p.append(document.createTextNode(item[key]));card.append(p);}
  if(/^img\/editorial\/[a-f0-9]{64}\.webp$/.test(item.imagem||'')){const image=document.createElement('img');image.src=item.imagem;image.alt=item.textoAlternativo||'';image.loading='lazy';card.append(image);texto('p',(item.legenda||'')+' · Crédito: '+(item.credito||''),card).className='agenda-legenda';}
+ if(item.data>=hoje&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(item.id||'')){
+  const botao=texto('button','Adicionar ao calendário',card);botao.type='button';botao.className='agenda-calendario';
+  const ajuda=texto('p','Baixa um arquivo de calendário com o início do evento. Abra no seu aplicativo para adicionar. O arquivo não acompanha mudanças posteriores da agenda.',card);ajuda.className='agenda-legenda';
+  botao.addEventListener('click',()=>{let url;const link=document.createElement('a');try{url=URL.createObjectURL(new Blob([gerarCalendarioEvento(item)],{type:'text/calendar;charset=utf-8'}));link.href=url;link.download='fabcampo-evento-'+item.id+'.ics';document.body.append(link);link.click();ajuda.textContent='Download solicitado. Abra o arquivo no seu aplicativo de calendário e confira os dados antes de adicionar.';}catch{ajuda.textContent='Não foi possível gerar o arquivo. Confira os dados do evento na agenda.';}finally{link.remove();if(url)setTimeout(()=>URL.revokeObjectURL(url),1000);}});
+ }
  parent.append(card);
 }
 if(destino&&estado){
