@@ -73,3 +73,13 @@ test('biblioteca Google valida assinatura real e rejeita token adulterado sem re
   const forged = `${header}.${encode({ ...payload, sub: 'intruso' })}.${signature}`;
   await assert.rejects(gate.authenticate(`Bearer ${forged}`), { status: 401 });
 });
+
+test('preparador autorizado acessa rascunhos, mas não recebe permissão de publicação',async()=>{
+ const gate=auth({...claims,sub:'preparador'},{draftSubjects:'preparador'});
+ const account=await gate.authenticate(token);assert.equal(account.id,'preparador');assert.deepEqual(gate.permissions(account),{rascunhos:true,publicar:false});
+ await assert.rejects(gate.authenticate(token,{publicar:true}),{status:403,code:'EDITORIAL_PUBLISH_DENIED'});
+});
+test('publicador mantém acesso e e-mail igual não concede papel de outra conta',async()=>{
+ const gate=auth(claims,{draftSubjects:'preparador'});const account=await gate.authenticate(token,{publicar:true});assert.deepEqual(gate.permissions(account),{rascunhos:true,publicar:true});
+ await assert.rejects(auth({...claims,sub:'intruso'},{draftSubjects:'preparador'}).authenticate(token),{status:403});
+});

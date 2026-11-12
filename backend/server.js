@@ -179,7 +179,7 @@ app.get('/api/editorial/identidade', async (req, res) => {
 app.get('/api/editorial/me', async (req, res) => {
   try {
     const account = await editorialAuth.authenticate(req.headers.authorization);
-    return res.json({ account, role: 'editor' });
+    return res.json({ account, role: 'editor', permissions:editorialAuth.permissions(account) });
   } catch (error) {
     const status = [401, 403, 503].includes(error.status) ? error.status : 503;
     const messages = { 401: 'Entre novamente com sua conta Google.',

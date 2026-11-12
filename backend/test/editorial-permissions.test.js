@@ -1,0 +1,9 @@
+import test from 'node:test';import assert from 'node:assert/strict';import express from 'express';import {once} from 'node:events';import {createEditorialAuth} from '../lib/editorial-auth.js';import {createPublicationRouter} from '../lib/editorial-publication.js';
+test('somente rascunhos não publica nem retira, incluindo rotas com caixa diferente e barra final',async t=>{
+ let chamadas=0;const auth=createEditorialAuth({clientId:'fixture',allowedSubjects:'publicador',draftSubjects:'preparador',verifyIdToken:async({idToken})=>({getPayload:()=>({sub:idToken==='p.p.p'?'publicador':'preparador',email:'fixture@example.test',email_verified:true,aud:'fixture',iss:'https://accounts.google.com',exp:Date.now()/1000+60})})});
+ const action=async()=>{chamadas++;return{ok:true};};const app=express();app.use(createPublicationRouter({auth,service:{prepare:action,publish:action,prepareWithdrawal:action,withdraw:action,saveArchive:action,eventos:{prepare:action,publish:action}}}));const server=app.listen(0,'127.0.0.1');await once(server,'listening');t.after(()=>server.close());const base='http://127.0.0.1:'+server.address().port;
+ for(const path of ['/preparar','/confirmar','/confirmar/','/CONFIRMAR','/preparar-retirada','/retirar','/eventos/preparar','/eventos/confirmar/']){const r=await fetch(base+'/api/editorial/publicacoes'+path,{method:'POST',headers:{Authorization:'Bearer d.d.d','Content-Type':'application/json'},body:'{inválido'});assert.equal(r.status,403,path);}
+ assert.equal(chamadas,0);
+ const privado=await fetch(base+'/api/editorial/publicacoes/acervo/salvar',{method:'POST',headers:{Authorization:'Bearer d.d.d','Content-Type':'application/json'},body:'{}'});assert.equal(privado.status,200);
+ const publicado=await fetch(base+'/api/editorial/publicacoes/confirmar',{method:'POST',headers:{Authorization:'Bearer p.p.p','Content-Type':'application/json'},body:'{}'});assert.equal(publicado.status,200);assert.equal(chamadas,2);
+});

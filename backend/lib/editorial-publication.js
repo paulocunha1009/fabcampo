@@ -252,7 +252,8 @@ export function createPublicationService({drafts=createDraftStore(),token=proces
 }
 export function createPublicationRouter({auth,service=createPublicationService()}){
   const router=express.Router();
-  router.use('/api/editorial/publicacoes',async(req,res,next)=>{try{await auth.authenticate(req.headers.authorization);next();}catch(error){res.status([401,403,503].includes(error.status)?error.status:503).json({error:'Entre com uma conta autorizada para preparar publicações.'});}});
+  const acoesPrivadas=new Set(['/acervo/abrir','/acervo/salvar','/acervo/previa','/lixeira','/restaurar']);
+  router.use('/api/editorial/publicacoes',async(req,res,next)=>{try{const caminho=req.path.replace(/\/+$/,'').toLowerCase();await auth.authenticate(req.headers.authorization,{publicar:!['GET','HEAD'].includes(req.method)&&!acoesPrivadas.has(caminho)});next();}catch(error){res.status([401,403,503].includes(error.status)?error.status:503).json({error:'Entre com uma conta autorizada para preparar publicações.'});}});
   const execute=action=>async(req,res)=>{try{res.json(await action(req));}catch(error){res.status([400,404,409,503].includes(error.status)?error.status:502).json({error:error.status?error.message:'Não foi possível confirmar a publicação. Confira o estado antes de tentar novamente.'});}};
   router.post('/api/editorial/publicacoes/preparar',express.json({limit:'4kb'}),execute(req=>service.prepare(req.body)));
   router.post('/api/editorial/publicacoes/confirmar',express.json({limit:'4kb'}),execute(req=>service.publish(req.body)));
