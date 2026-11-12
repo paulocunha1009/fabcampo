@@ -217,9 +217,13 @@ body.menu-aberto .cabecalho {
 }
 
 .menu__botao-submenu::after {
-  content: "▾";
-  font-size: 0.75rem;
-  line-height: 1;
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  flex-shrink: 0;
 }
 
 .menu a:hover,
