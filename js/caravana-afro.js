@@ -1,5 +1,5 @@
-import {mascarasCaravana} from './caravana-mascaras.mjs?v=20261113-2';
-import {criarSessaoCamera,transformarMascara,centrosDosOlhos} from './caravana-camera.mjs?v=20261113-2';
+import {mascarasCaravana} from './caravana-mascaras.mjs?v=20261113-3';
+import {criarSessaoCamera,transformarMascara,centrosDosOlhos} from './caravana-camera.mjs?v=20261113-3';
 const $=id=>document.getElementById(id),tela=$('tela'),ctx=tela.getContext('2d'),video=$('video');
 let atual=0,modoDemo=true,FaceLandmarker,FilesetResolver,photoURL,captureVersion=0,lastFaces=-1;
 const images=new Map(),buttons=[],calibration={scale:1,offset:0};
@@ -24,8 +24,8 @@ function render({video,faces}){
  tela.width=video.videoWidth;tela.height=video.videoHeight;ctx.save();ctx.setTransform(-1,0,0,1,tela.width,0);ctx.drawImage(video,0,0,tela.width,tela.height);
  const mask=mascarasCaravana[atual],image=images.get(mask.id);
  if(image)for(const points of faces){
-  const eyes=centrosDosOlhos(points,tela.width,tela.height);if(!eyes)continue;const transform=transformarMascara(eyes[0],eyes[1],{...mask,width:image.naturalWidth,height:image.naturalHeight},calibration);if(!transform)continue;
-  ctx.save();ctx.translate(transform.x,transform.y);ctx.rotate(transform.angle);ctx.scale(transform.scale,transform.scale);ctx.drawImage(image,-transform.sourceX,-transform.sourceY);ctx.restore();
+  const eyes=centrosDosOlhos(points,tela.width,tela.height);if(!eyes)continue;const transform=transformarMascara(eyes[0],eyes[1],{...mask,width:image.naturalWidth,height:image.naturalHeight},{...calibration,chin:points[152]?{x:points[152].x*tela.width,y:points[152].y*tela.height}:null});if(!transform)continue;
+  ctx.save();ctx.translate(transform.x,transform.y);ctx.rotate(transform.angle);ctx.scale(transform.scale,transform.scaleY);ctx.drawImage(image,-transform.sourceX,-transform.sourceY);ctx.restore();
  }
  ctx.restore();$('btnFoto').disabled=!image||faces.length===0;
  if(faces.length!==lastFaces){lastFaces=faces.length;say(faces.length?`${faces.length} ${faces.length===1?'rosto detectado.':'rostos detectados.'} Confira o encaixe e tire a foto.`:'Posicione o rosto de frente para a câmera, com boa iluminação.');}
@@ -51,6 +51,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)session.sto
 window.addEventListener('resize',()=>{if(modoDemo)drawDemo();});
 window.addEventListener('pagehide',()=>{session.stop();clearPhoto();});
 select(0);say('Explore as máscaras. Abra a câmera somente quando quiser fotografar.');
+
+
 
 
 
