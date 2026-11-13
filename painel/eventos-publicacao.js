@@ -1,7 +1,7 @@
 import {resumirAcaoEvento} from './eventos-resumo.mjs?v=20261112-12';
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {obterVinculoEvento} from './rascunhos.js?v=20261112-20';
+import {obterVinculoEvento} from './rascunhos.js?v=20261112-21';
 const $=id=>document.getElementById(id),endpoint=EDITORIAL_API.replace(/\/me$/,'/publicacoes/eventos');let plan=null,busy=false,epoch=0;
 const info=text=>{$('estado-publicacao-evento').textContent=text;};
 function reset(){epoch++;plan=null;$('plano-evento').textContent='';$('confirmar-acao-evento').checked=false;$('confirmar-acao-evento').disabled=true;$('enviar-evento').disabled=true;$('link-agenda-evento').hidden=true;}

@@ -2,7 +2,7 @@ import {descreverEstadoEdicao} from './estado-edicao.mjs?v=20261111-3';
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
 import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261112-20';
-import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias} from './lista-materias.mjs?v=20261112-17';
+import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias,estadoConfirmadoMateria,dataEdicaoMateria,ordenarMaterias,contarMaterias} from './lista-materias.mjs?v=20261112-21';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');
 const bindings=new Map();let busy=false;
@@ -17,10 +17,15 @@ globalThis.addEventListener?.('beforeunload',event=>{
 });
 function filtrarLista(){
   const filtros={busca:$('busca-materias').value,grupo:$('filtro-materias').value,estado:$('estado-materias').value,tipo:$('tipo-materias').value||'todos'};
-  const rows=Array.from($('lista-materias').children),items=rows.map(row=>({titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado,tipo:row.dataset.tipo}));
+  const container=$('lista-materias'),rows=Array.from(container.children),items=rows.map(row=>({id:row.dataset.id,titulo:row.dataset.titulo,lixeira:row.dataset.lixeira==='true',estado:row.dataset.estado,tipo:row.dataset.tipo,atualizadoEm:row.dataset.atualizadoEm,row}));
   rows.forEach((row,index)=>{row.hidden=!correspondeFiltroMateria(items[index],filtros);});
+  const ordered=ordenarMaterias(items,$('ordem-materias').value).map(item=>item.row);
+  if(ordered.some((row,index)=>row!==rows[index])){const focus=document.activeElement,restore=container.contains(focus);container.append(...ordered);if(restore)focus.focus({preventScroll:true});}
+  const loaded=container.dataset.carregada==='true',counts=contarMaterias(items,filtros);$('resumo-lista-materias').hidden=!loaded;
+  for(const state of Object.keys(counts))$('contagem-'+state).textContent=String(counts[state]);
+  $('contagens-estados-materias').hidden=filtros.grupo==='lixeira';
   $('resultado-materias').textContent=$('lista-materias').dataset.carregada==='true'?resumirFiltroMaterias(items,filtros).texto:'Busque os rascunhos da equipe para carregar a lista.';
-  $('limpar-filtros-materias').disabled=filtros.tipo==='todos'&&!filtros.busca&&!['no-ar','rascunho','publicada','pendente','retirada','aguardando','desconhecida'].includes(filtros.estado);
+  $('limpar-filtros-materias').disabled=$('ordem-materias').value==='recentes'&&filtros.tipo==='todos'&&!filtros.busca&&!['no-ar','rascunho','publicada','pendente','importada','retirada','aguardando','desconhecida'].includes(filtros.estado);
   $('estado-materias').disabled=filtros.grupo==='lixeira';
 }
 
@@ -32,10 +37,11 @@ async function renderList(drafts,credential){
   const queue=[];
   for(const draft of drafts){
     const row=document.createElement('li'),title=document.createElement('strong'),state=document.createElement('p'),detail=document.createElement('p'),actions=document.createElement('div'),open=document.createElement('button');
-    row.dataset.tipo=draft.tipo;row.dataset.titulo=draft.titulo;row.dataset.lixeira=String(Boolean(draft.lixeira));row.dataset.estado=draft.tipo==='noticias'?'desconhecida':'rascunho';title.textContent=draft.titulo;state.textContent=draft.tipo==='noticias'?'Conferindo publicação…':'Rascunho de evento';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
+    row.dataset.id=draft.id;row.dataset.atualizadoEm=draft.atualizadoEm||'';row.dataset.tipo=draft.tipo;row.dataset.titulo=draft.titulo;row.dataset.lixeira=String(Boolean(draft.lixeira));row.dataset.estado='desconhecida';title.textContent=draft.titulo;state.textContent='Conferindo publicação…';detail.textContent='Revisão salva: '+draft.revisao;open.type='button';open.textContent='Editar';
     open.addEventListener('click',()=>{if(version!==listVersion)return;$('rascunho-remoto').value=draft.id;$('abrir-rascunho-remoto').disabled=false;$('abrir-rascunho-remoto').click();});
     const actionButton=(label,acao)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.className='botao-secundario';button.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-acao-materia',{detail:{draft,acao}}));});actions.append(button);return button;};
-    row.append(title,state,detail,actions);container.append(row);
+    const updated=document.createElement('p'),date=dataEdicaoMateria(draft.atualizadoEm);updated.className='materia-ultima-edicao';updated.textContent=date?'Última edição salva: '+date.toLocaleString('pt-BR',{timeZone:'America/Fortaleza',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (horário de Fortaleza)':'Última edição salva: data não disponível.';
+    row.append(title,state,detail,updated,actions);container.append(row);
     if(draft.lixeira){state.textContent='Lixeira';detail.textContent='Rascunho preservado. Restaurar não publica a matéria.';actionButton('Restaurar','restaurar');continue;}
     const history=document.createElement('button');history.type='button';history.className='botao-secundario';history.textContent='Histórico de versões';history.addEventListener('click',()=>{if(version===listVersion)document.dispatchEvent(new CustomEvent('editorial-historico',{detail:{id:draft.id}}));});actions.append(history);
     actions.append(open);const trash=actionButton('Mover para a lixeira','lixeira');trash.disabled=true;
@@ -45,9 +51,9 @@ async function renderList(drafts,credential){
       try{
         const result=await call(EDITORIAL_API.replace(/\/me$/,'/publicacoes/')+(draft.tipo==='eventos'?'eventos/':'')+encodeURIComponent(draft.id),credential);
         if(version!==listVersion)return;const description=descreverPublicacao(draft,result);
-        row.dataset.estado=result.status==='publicada'?(draft.revisao===result.revisao?'publicada':'pendente'):({existente:'publicada','nao-enviada':'rascunho',retirada:'retirada',aguardando:'aguardando'}[result.status]||'desconhecida');filtrarLista();state.textContent=description.rotulo;detail.textContent=description.detalhe;if(draft.tipo==='eventos'){state.textContent=({publicada:draft.revisao===result.revisao?'Evento publicado':'Evento com alterações pendentes',retirada:'Evento retirado da agenda','nao-enviada':'Rascunho de evento',aguardando:'Agenda em atualização'}[result.status]||'Estado não conferido');detail.textContent='Revisão salva: '+draft.revisao+(result.revisao?' · revisão da agenda: '+result.revisao:'');}trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(draft.tipo==='noticias'&&['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
+        row.dataset.estado=estadoConfirmadoMateria(draft,result);filtrarLista();state.textContent=description.rotulo;detail.textContent=description.detalhe;if(draft.tipo==='eventos'){state.textContent=({publicada:draft.revisao===result.revisao?'Evento publicado':'Evento com alterações pendentes',retirada:'Evento retirado da agenda','nao-enviada':'Rascunho de evento',aguardando:'Agenda em atualização'}[result.status]||'Estado não conferido');detail.textContent='Revisão salva: '+draft.revisao+(result.revisao?' · revisão da agenda: '+result.revisao:'');}trash.disabled=!['nao-enviada','retirada'].includes(result.status);if(draft.tipo==='noticias'&&['publicada','existente'].includes(result.status))actionButton('Inativar','inativar');
         if(description.link){const link=document.createElement('a');link.href=description.link;link.textContent='Abrir no portal';link.target='_blank';link.rel='noopener noreferrer';actions.append(link);}
-      }catch{if(version===listVersion){state.textContent='Publicação não conferida';detail.textContent='Não foi possível confirmar o estado. Busque a lista novamente.';}}
+      }catch{if(version===listVersion){row.dataset.estado='desconhecida';filtrarLista();state.textContent='Publicação não conferida';detail.textContent='Não foi possível confirmar o estado. Busque a lista novamente.';}}
     });
   }
   filtrarLista();
@@ -142,9 +148,10 @@ $('abrir-rascunho-remoto').addEventListener('click',()=>{
 });
 
 $('filtro-materias').addEventListener('change',()=>{$('estado-materias').value='todos';filtrarLista();});
-$('limpar-filtros-materias').addEventListener('click',()=>{$('busca-materias').value='';$('tipo-materias').value='todos';$('estado-materias').value='todos';filtrarLista();$('busca-materias').focus();});
+$('limpar-filtros-materias').addEventListener('click',()=>{$('busca-materias').value='';$('tipo-materias').value='todos';$('estado-materias').value='todos';$('ordem-materias').value='recentes';filtrarLista();$('busca-materias').focus();});
 $('estado-materias').addEventListener('change',filtrarLista);
 $('busca-materias').addEventListener('input',filtrarLista);
 
 $('tipo-materias').addEventListener('change',filtrarLista);
+$('ordem-materias').addEventListener('change',filtrarLista);
 document.addEventListener('editorial-funcao-aberta',event=>{if(!['noticias','eventos'].includes(event.detail))return;$('tipo-materias').value=event.detail;filtrarLista();});
