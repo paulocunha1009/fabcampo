@@ -1,5 +1,5 @@
-import {mascarasCaravana} from './caravana-mascaras.mjs?v=20261113-3';
-import {criarSessaoCamera,transformarMascara,centrosDosOlhos} from './caravana-camera.mjs?v=20261113-3';
+import {mascarasCaravana} from './caravana-mascaras.mjs?v=20261113-4';
+import {criarSessaoCamera,transformarMascara,centrosDosOlhos} from './caravana-camera.mjs?v=20261113-4';
 const $=id=>document.getElementById(id),tela=$('tela'),ctx=tela.getContext('2d'),video=$('video');
 let atual=0,modoDemo=true,FaceLandmarker,FilesetResolver,photoURL,captureVersion=0,lastFaces=-1;
 const images=new Map(),buttons=[],calibration={scale:1,offset:0};
@@ -10,7 +10,12 @@ function drawDemo(){
  const image=images.get(mascarasCaravana[atual].id);if(image){const scale=Math.min((portrait?900:510)/image.naturalHeight,(portrait?760:550)/image.naturalWidth),w=image.naturalWidth*scale,h=image.naturalHeight*scale;ctx.drawImage(image,(W-w)/2,portrait?155:105,w,h);}
  ctx.fillStyle='#f3e9cf';ctx.font=portrait?'700 40px Segoe UI':'700 30px Segoe UI';ctx.fillText(mascarasCaravana[atual].nome,W/2,H-100);ctx.fillStyle='#c8d4c5';ctx.font='18px Segoe UI';ctx.fillText('Demonstração • câmera desligada • não é uma fotografia',W/2,H-56);ctx.textAlign='start';
 }
-function select(index){atual=index;buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));$('cartaoNome').textContent=mascarasCaravana[index].nome;$('cartaoInfo').textContent=mascarasCaravana[index].info;if(modoDemo)drawDemo();}
+function mostrarContexto(mask){
+ const data=mask.contexto;if(!data)return;const target=$('cartaoContexto');if(!target)return;target.replaceChildren();
+ for(const [label,value] of [['Origem',data.origem],['Para que é ou era usada',data.uso],['Sobre esta ilustração',data.nota]]){const p=document.createElement('p'),strong=document.createElement('strong');strong.textContent=label+': ';p.append(strong,document.createTextNode(value));target.append(p);}
+ const links=document.createElement('p');links.textContent='Saiba mais nas fontes: ';for(const [label,url] of data.fontes){const a=document.createElement('a');a.textContent=label;a.href=url;a.target='_blank';a.rel='noopener noreferrer';links.append(a,document.createTextNode(' '));}target.append(links);
+}
+function select(index){atual=index;buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));$('cartaoNome').textContent=mascarasCaravana[index].nome;$('cartaoInfo').textContent=mascarasCaravana[index].info;mostrarContexto(mascarasCaravana[index]);if(modoDemo)drawDemo();}
 for(const [index,mask] of mascarasCaravana.entries()){
  const button=document.createElement('button');button.type='button';button.setAttribute('aria-pressed',String(index===0));const image=new Image();image.alt='';image.width=80;image.height=88;image.decoding='async';image.addEventListener('load',()=>{images.set(mask.id,image);if(atual===index&&modoDemo)drawDemo();});image.addEventListener('error',()=>{button.disabled=true;if(atual===index)say('Esta arte não carregou. Escolha outra máscara ou recarregue a página.');});image.src=mask.imagem;const label=document.createElement('span');label.textContent=mask.nome;button.append(image,label);button.addEventListener('click',()=>select(index));buttons.push(button);$('mascaras').append(button);
 }
@@ -51,6 +56,11 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)session.sto
 window.addEventListener('resize',()=>{if(modoDemo)drawDemo();});
 window.addEventListener('pagehide',()=>{session.stop();clearPhoto();});
 select(0);say('Explore as máscaras. Abra a câmera somente quando quiser fotografar.');
+
+
+
+
+
 
 
 

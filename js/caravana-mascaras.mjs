@@ -1,3 +1,4 @@
+import {contextosMascaras} from './caravana-contextos.mjs?v=20261113-4';
 // Ilustrações derivadas da referência fornecida, com auxílio de IA.
 // As âncoras normalizadas vêm das aberturas transparentes dos olhos.
 const dados=[
@@ -147,6 +148,7 @@ const dados=[
   }
 ];
 const queixos={"punu":0.9695876288659794,"dan":0.985909090909091,"baule":0.9777272727272728,"kanaga":0.9891304347826086,"mwana-pwo":0.9731818181818181,"bwa":0.9713636363636363,"chokwe":0.975909090909091,"dogon":0.9677272727272728,"yoruba":0.9673366834170855};
-export const mascarasCaravana=dados.map(item=>({...item,queixo:queixos[item.id],imagem:new URL("../img/mascaras/"+item.arquivo,import.meta.url).href}));
+export const mascarasCaravana=dados.map(item=>({...item,contexto:contextosMascaras[item.id],info:contextosMascaras[item.id].tema,queixo:queixos[item.id],imagem:new URL("../img/mascaras/"+item.arquivo,import.meta.url).href}));
 export const arteMascara=index=>mascarasCaravana[index]?.imagem||mascarasCaravana[0].imagem;
+
 
