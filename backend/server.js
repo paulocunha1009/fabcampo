@@ -1,3 +1,4 @@
+import {createScheduleRouter} from './lib/editorial-schedules.js';
 /**
  * Campo Digital — Backend do SabIA, Inteligência do Território
  * EEMPC Francisco Araújo Barros · Ceará Científico 2026
@@ -133,6 +134,7 @@ app.use(createDraftRouter({ auth: editorialAuth }));
 app.use(createReportRouter({auth:editorialAuth,aiClient,rateLimiter,model:GEMINI_MODEL,maxTokens:MAX_TOKENS}));
 app.use(createPublicationRouter({auth:editorialAuth}));
 app.use(createTeamRouter({auth:editorialAuth}));
+app.use(createScheduleRouter({auth:editorialAuth}));
 app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));
 
@@ -505,3 +507,4 @@ if (!process.env.VERCEL) {
 }
 
 export default app;
+
