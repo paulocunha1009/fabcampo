@@ -2,9 +2,9 @@ import express from 'express';
 import sharp from 'sharp';
 import {Redis} from '@upstash/redis';
 import {createHash,createHmac} from 'node:crypto';
-export const MURAL_CONSENT_VERSION='caravana-2026-v2';
+export const MURAL_CONSENT_VERSION='caravana-2026-v3';
 export const MURAL_LIMIT=200,RETENTION_SECONDS=90*86400;
-export const EVENT_START=Date.parse('2026-12-08T00:00:00-03:00'),EVENT_END=Date.parse('2026-12-09T00:00:00-03:00');
+export const EVENT_START=Date.parse('2026-11-14T00:00:00-03:00'),EVENT_END=Date.parse('2026-12-09T00:00:00-03:00');
 export function faseMural(now){return now<EVENT_START?'antes':now<EVENT_END?'evento':'encerrado';}
 const masks=new Set(['punu','dan','baule','kanaga','mwana-pwo','bwa','chokwe','dogon','yoruba']);
 const idOK=id=>typeof id==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
