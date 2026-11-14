@@ -1,3 +1,4 @@
+import {createMuralRouter} from './lib/caravana-mural.js';
 import {createScheduleRouter} from './lib/editorial-schedules.js';
 /**
  * Campo Digital — Backend do SabIA, Inteligência do Território
@@ -135,6 +136,7 @@ app.use(createReportRouter({auth:editorialAuth,aiClient,rateLimiter,model:GEMINI
 app.use(createPublicationRouter({auth:editorialAuth}));
 app.use(createTeamRouter({auth:editorialAuth}));
 app.use(createScheduleRouter({auth:editorialAuth}));
+app.use(createMuralRouter({auth:editorialAuth}));
 app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));
 
@@ -507,4 +509,5 @@ if (!process.env.VERCEL) {
 }
 
 export default app;
+
 
