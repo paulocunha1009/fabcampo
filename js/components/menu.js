@@ -1,3 +1,4 @@
+import {iniciarMenuAgendado} from './menu-agendado.js?v=20261113-1';
 export function iniciarMenu() {
   const botao = document.querySelector('.botao-menu');
   const menu = document.querySelector('#menu-principal');
@@ -5,6 +6,7 @@ export function iniciarMenu() {
   if (!botao || !menu) return;
   if(menu.dataset.preparado === 'true') return;
   menu.dataset.preparado = 'true';
+  iniciarMenuAgendado(menu);
   menu.querySelectorAll('.menu__botao-submenu').forEach((controle, indice) => {
     const submenu = controle.closest('.menu__grupo')?.querySelector('.submenu');
     if(!submenu) return;
@@ -111,3 +113,4 @@ function normalizarCaminho(caminho) {
     .replace('./', '')
     .toLowerCase();
 }
+

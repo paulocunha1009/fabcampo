@@ -1,0 +1,7 @@
+const endpoint='https://fabcampo-api.vercel.app/api/menu-agendado';
+const permitidas=new Map([['caravana-afro','/pages/caravana-afro.html']]);
+export function iniciarMenuAgendado(menu){
+ const list=menu.querySelector('ul');if(!list||menu.dataset.agendamentos==='true')return;menu.dataset.agendamentos='true';let busy=false;
+ async function atualizar(){if(busy||document.hidden)return;busy=true;try{const r=await fetch(endpoint,{credentials:'omit',cache:'no-store',signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();const data=await r.json();if(!Array.isArray(data.itens))throw Error();const ativos=new Set();for(const item of data.itens){if(permitidas.get(item.id)!==item.caminho||typeof item.titulo!=='string'||item.titulo.length>80)continue;ativos.add(item.id);let li=list.querySelector('[data-agendamento="'+item.id+'"]');if(!li){li=document.createElement('li');li.dataset.agendamento=item.id;li.append(document.createElement('a'));list.append(li);}const a=li.querySelector('a');a.href=item.caminho;a.textContent=item.titulo;if(location.pathname===item.caminho)a.setAttribute('aria-current','page');}for(const li of list.querySelectorAll('[data-agendamento]'))if(!ativos.has(li.dataset.agendamento))li.remove();}catch{for(const li of list.querySelectorAll('[data-agendamento]'))li.remove();}finally{busy=false;}}
+ void atualizar();setInterval(atualizar,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)void atualizar();});
+}
