@@ -3022,3 +3022,60 @@ body[data-page="materia-ia"] .grade-cards .card-link p {
   .busca-global__abrir { margin-left: auto; padding-inline: 12px; }
   .busca-global__painel { padding: 26px 18px 20px; }
 }
+
+/* Identidade Campo Digital aprovada em 16/11/2026 */
+:root{--cor-fundo:#f5efdd;--cor-superficie:#fffdf7;--cor-superficie-suave:#f2eedf;--cor-borda:#ddd7c4;--cor-texto:#253d30;--cor-texto-suave:#596350;--sombra:0 12px 30px rgba(65,53,24,.08);--sombra-suave:0 6px 18px rgba(65,53,24,.06)}
+body{background-color:#f5efdd;background-image:radial-gradient(circle,#b3924b24 .8px,transparent .9px);background-size:7px 7px;color:var(--cor-texto)}
+.inicio-vivo{background:transparent}
+.campo-digital-home{background:none}
+.artigo-corpo{background:#fffdf7;border:1px solid #e3dcc7;border-radius:8px;padding:30px;box-shadow:0 8px 25px #493b1f06}
+.artigo-barra{background:#ece5ce;border-color:#dcd2b6}
+.card-lateral,.card-link,.card-participacao,.card-noticia,.card-personagem,.cartao,.noticia-card{background-color:#fffdf7;border-color:#ddd6c0}
+.campo-digital__item{background:linear-gradient(135deg,#fffdf8,#f5f0df);border-color:#dfd9c5}
+.secao__cabecalho .selo{color:#846123}
+.artigo-titulo-secao{border-color:#b5913d}
+.pullquote{background:#eee8d4;border-left-color:#a98735}
+.linha-do-tempo li{background-color:#fffdf7}
+@media(max-width:720px){.artigo-corpo{padding:20px 17px}}
+
+.logo{position:relative;padding-bottom:15px}
+.logo::after{content:'UM PROJETO DA EEMPC FRANCISCO ARAÚJO BARROS';position:absolute;left:0;bottom:1px;font-size:7px;letter-spacing:.055em;color:#dbe4cd;white-space:nowrap}
+.cabecalho__conteudo{min-height:94px}
+.inicio-vivo__selo{color:#855d31}
+.inicio-vivo__selo::before{background:#a8842c}
+.inicio-vivo__primaria{background:#244b35}
+.inicio-vivo__origem{border-left:2px solid #9a5138;padding-left:12px}
+.painel-destaques__topo{border-top-color:#9b4d36}
+.painel-destaques__topo>span{color:#93472f}
+.movimento{width:min(1240px,calc(100% - 72px));margin:0 auto;padding:40px 0 44px}
+.movimento__topo{display:flex;justify-content:space-between;align-items:end;gap:28px;margin-bottom:22px}
+.movimento__kicker{font-size:10px;font-weight:750;letter-spacing:.16em;color:#955238;margin-bottom:8px;text-transform:uppercase}
+.movimento h2{font-size:34px;letter-spacing:-.045em;line-height:1.15;color:#1c4330}
+.movimento__topo>p{max-width:37ch;color:#68705e;font-size:13px;line-height:1.65}
+.movimento__grade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.movimento__card{background:#fffdf7;border:1px solid #ded7c4;overflow:hidden;border-radius:5px;transition:transform .2s,box-shadow .2s}
+.movimento__card:hover{transform:translateY(-3px);box-shadow:0 10px 24px #4a3d2010}
+.movimento__card>a{display:block;text-decoration:none;color:inherit;height:100%}
+.movimento__card img{width:100%;height:182px;object-fit:cover}
+.movimento__texto{padding:18px 20px 19px;border-top:3px solid var(--categoria)}
+.movimento__categoria{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--categoria);font-weight:750;margin-bottom:9px}
+.movimento h3{font-family:Georgia,serif;font-size:25px;line-height:1.17;font-weight:400;color:#214231;margin-bottom:10px}
+.movimento__resumo{font-size:12px;line-height:1.65;color:#65715f;min-height:40px;margin-bottom:17px}
+.movimento__meta{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #e6dfcc;padding-top:13px;font-size:10px;color:#6c765f}
+.movimento__meta span:last-child{color:#2b5a3a;font-weight:650}
+.movimento__nota{font-size:11px;color:#6b745f;margin-top:16px}
+.campo-digital-home{border-top:1px solid #ddd5bd;padding-top:30px}
+@media(max-width:950px){.logo::after{font-size:6px}.movimento__grade{gap:14px}.movimento h3{font-size:22px}}
+@media(max-width:700px){.cabecalho__conteudo{min-height:82px}.logo{padding-bottom:14px;min-width:0}.logo::after{font-size:5px;letter-spacing:0;max-width:220px}.movimento{width:calc(100% - 36px);padding:28px 0}.movimento__topo{display:block}.movimento__topo>p{margin-top:12px}.movimento h2{font-size:28px}.movimento__grade{grid-template-columns:1fr}.movimento__card img{height:190px}.movimento__resumo{min-height:0}}
+@media(prefers-reduced-motion:reduce){.movimento__card{transition:none}.movimento__card:hover{transform:none}}
+/* Usa a mesma família tipográfica do portal em todos os títulos e chamadas. */
+.chamada-texto h2,.destaques-atalhos strong,.movimento h3{font-family:inherit;font-weight:700}
+.chamada-texto h2{font-size:30px;line-height:1.18;letter-spacing:-.025em}
+.destaques-atalhos strong{font-size:18px;line-height:1.25;letter-spacing:-.015em}
+.movimento h3{font-size:23px;line-height:1.25;letter-spacing:-.025em}
+.logo::after{content:'Um projeto da EEMPC Francisco Araújo Barros';font-size:9px;letter-spacing:0;white-space:normal;line-height:1.3;max-width:240px}
+.movimento__categoria,.movimento__kicker{font-size:11px}
+.movimento__meta,.movimento__nota{font-size:12px}
+.movimento__resumo{font-size:14px;min-height:47px}
+@media(max-width:700px){.logo::after{font-size:8px;max-width:170px}.logo{padding-bottom:22px}.cabecalho__conteudo{min-height:92px}.movimento__resumo{min-height:0}}
+@media(max-width:700px){.chamada-texto h2{font-size:27px}.destaques-atalhos strong{font-size:18px}.movimento h3{font-size:22px}}

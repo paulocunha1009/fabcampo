@@ -100,3 +100,13 @@
 @media(max-width:700px){.inicio-vivo__grade{width:calc(100% - 36px);grid-template-columns:1fr;padding-top:29px;padding-bottom:26px;gap:28px}.inicio-vivo h1{font-size:39px;max-width:none}.inicio-vivo__selo{font-size:8px;margin-bottom:20px}.inicio-vivo__texto>p:not(.inicio-vivo__selo){font-size:15px;max-width:38ch}.inicio-vivo__origem{margin-top:22px}.chamada-principal{height:306px}.chamada-texto{left:18px;right:18px;bottom:19px}.chamada-texto h2{font-size:31px}.destaques-atalhos{gap:13px}.destaques-atalhos a{grid-template-columns:1fr;gap:9px}.destaques-atalhos img{width:100%;height:98px}.destaques-atalhos strong{font-size:20px}.destaques-atalhos small{font-size:8px}.inicio-vivo__temas{width:calc(100% - 36px)}.painel-destaques__topo small{display:block}.destaques-controles button{min-width:36px;min-height:36px}}
 
 .chamada-texto h2{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.chamada-texto p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* Mantém a família tipográfica original do portal e melhora a leitura dos detalhes. */
+.inicio-vivo{background:transparent}
+.chamada-texto h2,.destaques-atalhos strong{font-family:inherit;font-weight:700}
+.chamada-texto h2{font-size:30px;line-height:1.18;letter-spacing:-.025em;max-width:26ch}
+.destaques-atalhos strong{font-size:18px;line-height:1.25}
+.inicio-vivo__selo,.painel-destaques__topo>span,.painel-destaques__topo small,.chamada-texto>span,.chamada-numero,.destaques-atalhos small,.destaques-atalhos b,.inicio-vivo__temas>span{font-size:11px}
+.inicio-vivo__origem,.inicio-vivo__temas a,.chamada-texto>strong{font-size:12px}
+.chamada-texto p{font-size:14px}
+.destaques-atalhos a{min-height:110px}
+@media(max-width:700px){.chamada-texto h2{font-size:27px}.inicio-vivo__selo{font-size:10px}.painel-destaques__topo small{display:none}}
