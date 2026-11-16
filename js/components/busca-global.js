@@ -131,8 +131,13 @@ export function iniciarBuscaGlobal() {
       .then(dados => {
         if(dados?.version !== 1 || !Array.isArray(dados.pages)) throw new Error('Índice inválido');
         for(const pagina of dados.pages){
-          const item = itens.find(i => i.pagina === pagina?.url);
-          if(!item || !Array.isArray(pagina.chunks)) continue;
+          if(!pagina || typeof pagina.url !== 'string' || !/^pages\/[^/\\?#]+\.html$/.test(pagina.url) || pagina.url.includes('..') || !Array.isArray(pagina.chunks)) continue;
+          let item = itens.find(i => i.pagina === pagina.url);
+          if(!item){
+            if(typeof pagina.title !== 'string' || !pagina.title.trim()) continue;
+            item = {titulo:pagina.title.trim(),pagina:pagina.url,url:raiz+pagina.url,termos:pagina.title.trim()};
+            itens.push(item);
+          }
           item.trechos = pagina.chunks.filter(t => t && typeof t.text === 'string' && typeof t.section === 'string');
         }
         estadoAcervo = 'pronto';
@@ -149,6 +154,13 @@ export function iniciarBuscaGlobal() {
     campo.focus();
   };
   abrir.addEventListener('click', mostrar);
+  document.addEventListener('submit', (evento) => {
+    const formulario = evento.target.closest('[data-busca-inicio]');
+    if(!formulario) return;
+    evento.preventDefault();
+    campo.value = formulario.querySelector('input[type="search"]').value.slice(0,160);
+    mostrar();
+  });
   campo.addEventListener('input', renderizar);
   dialogo.querySelector('.busca-global__fechar').addEventListener('click', () => dialogo.close());
   dialogo.addEventListener('close', () => {
