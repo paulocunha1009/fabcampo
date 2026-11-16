@@ -1,3 +1,4 @@
+import './aparencia.js?v=20261116-1';
 import {iniciarMenuAgendado} from './menu-agendado.js?v=20261113-1';
 export function iniciarMenu() {
   const botao = document.querySelector('.botao-menu');
