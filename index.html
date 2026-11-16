@@ -67,6 +67,7 @@
   }
   </script>
   <link rel="stylesheet" href="css/agenda-escola.css?v=20261112-10">
+  <link rel="stylesheet" href="css/inicio-vivo.css?v=20261116-1">
 </head>
 <body data-page="inicio">
   <a class="link-pular" href="#conteudo">Pular para o conteúdo</a>
@@ -114,64 +115,19 @@
   </header>
 
   <main id="conteudo">
-    <section class="hero hero--banner-oficial">
-      <!-- BANNER ATUALIZADO -->
-      <div class="hero__imagem" data-image-placeholder="Imagem de capa do Campo Digital">
-        <picture>
-          <source type="image/webp" media="(max-width: 640px)" srcset="img/banner/campo-digital-banner-640.webp?v=20260920-2">
-          <source type="image/webp" media="(max-width: 960px)" srcset="img/banner/campo-digital-banner-960.webp?v=20260920-2">
-          <source
-            type="image/webp"
-            srcset="img/banner/campo-digital-banner-1280.webp?v=20260920-2 1280w, img/banner/campo-digital-banner-1774.webp?v=20260920-2 1774w"
-            sizes="100vw">
-          <img src="img/banner/campo-digital-banner-fallback.jpg?v=20260920-2" width="1774" height="887" fetchpriority="high" decoding="async" alt="Banner Campo Digital: Laboratório de Tecnologia, Memória e Território, Ceará Científico 2026, pesquisa, memória, território e inovação" data-fallback-hidden>
-        </picture>
-      </div>
-      <div class="container hero__conteudo sr-only">
-        <p class="selo">Educação, ciência e território</p>
-        <h1>EEMPC Francisco Araújo Barros – Campo Digital</h1>
-        <p>Laboratório de tecnologia, memória e território desenvolvido por estudantes da EEMPC Francisco Araújo Barros, escola do campo no Assentamento Lagoa do Mineiro, Itarema – CE.</p>
-        <div class="hero__acoes" aria-label="Ações principais">
-          <a class="botao" href="pages/historia.html">Conhecer a história</a>
-          <a class="botao botao--secundario" href="#noticias">Ver notícias</a>
-        </div>
-      </div>
-    </section>
-
-    <section class="container secao" aria-labelledby="titulo-rolo">
-      <div class="secao__cabecalho">
-        <div>
-          <p class="selo">Galeria da comunidade</p>
-          <h2 id="titulo-rolo">Rolo de fotos</h2>
-        </div>
-      </div>
-
-      <div class="rolo-fotos" data-carousel aria-label="Rolo de fotos da comunidade">
-        <div class="rolo-fotos__trilha">
-          <figure class="foto-card" data-image-placeholder="img/galeria/rolo-01.jpg">
-            <img src="img/galeria/rolo-01.jpg" alt="Foto 1 da comunidade" loading="lazy" data-fallback-hidden>
-            <figcaption>img/galeria/rolo-01.jpg</figcaption>
-          </figure>
-          <figure class="foto-card" data-image-placeholder="img/galeria/rolo-02.jpg">
-            <img src="img/galeria/rolo-02.jpg" alt="Foto 2 da comunidade" loading="lazy" data-fallback-hidden>
-            <figcaption>img/galeria/rolo-02.jpg</figcaption>
-          </figure>
-          <figure class="foto-card" data-image-placeholder="img/galeria/rolo-03.jpg">
-            <img src="img/galeria/rolo-03.jpg" alt="Foto 3 da comunidade" loading="lazy" data-fallback-hidden>
-            <figcaption>img/galeria/rolo-03.jpg</figcaption>
-          </figure>
-          <figure class="foto-card" data-image-placeholder="img/galeria/rolo-04.jpg">
-            <img src="img/galeria/rolo-04.jpg" alt="Foto 4 da comunidade" loading="lazy" data-fallback-hidden>
-            <figcaption>img/galeria/rolo-04.jpg</figcaption>
-          </figure>
-          <figure class="foto-card" data-image-placeholder="img/galeria/rolo-05.jpg">
-            <img src="img/galeria/rolo-05.jpg" alt="Foto 5 da comunidade" loading="lazy" data-fallback-hidden>
-            <figcaption>img/galeria/rolo-05.jpg</figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
-
+<section class="inicio-vivo" aria-labelledby="titulo-inicio-vivo">
+ <div class="inicio-vivo__grade">
+  <div class="inicio-vivo__texto">
+   <p class="inicio-vivo__selo">Educação do campo · Memória · Tecnologia</p>
+   <h1 id="titulo-inicio-vivo">Nossas raízes.<br>Novas formas<br>de <em>conectar.</em></h1>
+   <p>Somos o Campo Digital. Um portal feito por estudantes para compartilhar as histórias, os saberes e a vida do nosso território.</p>
+   <div class="inicio-vivo__acoes"><a class="inicio-vivo__primaria" href="#titulo-campo-digital">Conhecer o projeto <span aria-hidden="true">↗</span></a><a class="inicio-vivo__secundaria" href="pages/historia.html">Explorar o território →</a></div>
+   <div class="inicio-vivo__origem">EEMPC Francisco Araújo Barros<br>Assentamento Lagoa do Mineiro · Itarema, Ceará</div>
+  </div>
+  <div class="inicio-vivo__fotos"><button class="inicio-vivo__foto" type="button" data-foto-portal data-legenda="Escola Francisco Araújo Barros" aria-label="Ampliar foto: Escola Francisco Araújo Barros"><img src="img/galeria/educacao-escola.jpg" alt="Escola Francisco Araújo Barros" fetchpriority="high"><span class="inicio-vivo__legenda"><span><small>NOSSO PONTO DE ENCONTRO</small>A escola que conecta histórias</span><span class="inicio-vivo__ampliar" aria-hidden="true">↗</span></span></button><button class="inicio-vivo__foto" type="button" data-foto-portal data-legenda="Atividade coletiva no território" aria-label="Ampliar foto: Atividade coletiva no território"><img src="img/galeria/rolo-03.jpg" alt="Atividade coletiva no território" fetchpriority="high"><span class="inicio-vivo__legenda"><span><small>MEMÓRIA VIVA</small>Gente e comunidade</span><span class="inicio-vivo__ampliar" aria-hidden="true">↗</span></span></button><button class="inicio-vivo__foto" type="button" data-foto-portal data-legenda="Estudantes em atividade de campo" aria-label="Ampliar foto: Estudantes em atividade de campo"><img src="img/galeria/rolo-01.jpg" alt="Estudantes em atividade de campo" fetchpriority="high"><span class="inicio-vivo__legenda"><span><small>PESQUISA NO CAMPO</small>Aprender com o território</span><span class="inicio-vivo__ampliar" aria-hidden="true">↗</span></span></button><p class="inicio-vivo__instrucao">Cada imagem guarda uma história. Clique para ver de perto.</p></div>
+ </div>
+ <nav class="inicio-vivo__temas" aria-label="Explore o projeto"><span>Explore o Campo Digital</span><a href="pages/historia.html"><span>01</span> Nossa história</a><a href="pages/memoria.html"><span>02</span> Memória viva</a><a href="pages/agricola.html"><span>03</span> Saberes do campo</a><a href="#titulo-reportagens"><span>04</span> Vozes dos estudantes ↗</a></nav>
+</section>
     <section class="container secao campo-digital-home" aria-labelledby="titulo-campo-digital">
       <div class="secao__cabecalho">
         <div>
@@ -352,5 +308,7 @@
   <script src="js/noticias.js?v=20261105-1"></script>
   <script src="js/security/security-img.js"></script>
   <script type="module" src="js/agenda-escola.js?v=20261112-16"></script>
+<dialog id="foto-portal" aria-label="Foto ampliada"><button class="foto-portal__fechar" type="button">Fechar ×</button><img alt=""><p></p><small>Acervo do portal Campo Digital</small></dialog>
+  <script src="js/inicio-vivo.js?v=20261116-1" defer></script>
 </body>
 </html>
