@@ -3092,4 +3092,9 @@ body{background-color:#f5efdd;background-image:radial-gradient(circle,#b3924b24 
 .busca-inicio button:focus-visible{outline:3px solid #e2bf55;outline-offset:-4px}
 .busca-inicio form>p{margin-top:8px}
 .busca-global__painel{background:#fffdf7}
+.artigo-link-fontes{font-size:14px;font-weight:650;color:#28593c;text-underline-offset:4px;padding:8px 0}
+.artigo-link-fontes:focus-visible{outline:3px solid #b99b47;outline-offset:4px}
+#fontes-reportagem{scroll-margin-top:130px;background:#fffdf7}
+#fontes-reportagem>summary{font-size:1rem!important}
+#fontes-reportagem>ul{font-size:.95rem!important}
 @media(max-width:700px){.busca-inicio{width:calc(100% - 36px);grid-template-columns:1fr;gap:17px;padding:20px 17px;margin-top:20px}.busca-inicio h2{font-size:22px}.busca-inicio input{font-size:16px;padding-left:10px}.busca-inicio button{padding:12px}}
