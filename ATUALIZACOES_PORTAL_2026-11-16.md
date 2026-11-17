@@ -117,3 +117,26 @@ Correção e documentação publicadas no commit `4716dc4` da `master`, sobre a 
 - Impressão: cores de texto e visibilidade dos controles conferidas por emulação do navegador, sem alegar teste de impressora física.
 
 As capturas da linha do tempo publicada foram conferidas em 1440 e 390 px. Os relatórios JSON e capturas ficam em `tmp/auditoria-20261116/`; não contêm credenciais e não são publicados automaticamente.
+
+
+## Complemento — painel, câmera e envio
+
+- Suíte completa do backend e interfaces: **310 testes aprovados**, nenhum reprovado ou ignorado. Inclui autenticação, permissões, conta administradora, rascunhos, publicação/retirada, equipe, agenda, agendamento, importação, câmera, autorização de envio e mural. Serviços externos são simulados; isso não representa uma sessão Google real.
+- Revisão visual isolada de sete estados do painel (entrada, central, edição, acervo, mural, agendamentos e equipe), em 1440, 768, 390 e 320 pixels: **28 visualizações**, sem transbordamento ou problemas de contraste nos textos renderizados medidos após as correções. Nesta verificação, o HTML é exibido localmente sem os scripts de autenticação, sem acesso a dados privados. Listas dinâmicas preenchidas e prévias de matérias específicas não são avaliadas por este teste visual.
+- Ajustados os tons dos textos opcionais, etapas inativas, resumo da revisão, prévia vazia, legendas e placeholders do editor. A identidade verde e a tipografia existentes foram preservadas.
+- Removida mensagem desatualizada do envio que indicava liberação automática apenas em 08/12. O resultado agora distingue foto liberada e recebimento privado conforme o estado devolvido pelo backend; o período e as autorizações existentes não foram alterados.
+- Teste no Chrome com câmera sintética e API interceptada: câmera inicialmente desligada; abertura por clique; detecção sintética; captura JPEG e desligamento da câmera; download local; nenhum envio antes da autorização; autorização para reportagem independente; envio simulado único; limpeza das escolhas ao preparar outra foto. **Nenhuma foto ou autorização foi criada no servidor real.**
+
+Para repetir, com Playwright e Chrome instalados:
+
+```powershell
+node --test --test-reporter=spec backend/test/*.test.js
+node tools/auditar-painel-interno.cjs
+node tools/testar-camera-simulada.cjs
+```
+
+Os testes HTTP locais exigem permissão para conexões em 127.0.0.1. Relatórios e capturas ficam em `tmp/auditoria-20261116/`, sem publicação automática.
+
+### Limites do aceite deste complemento
+
+A revisão automatizada e simulada foi concluída. A permissão real da câmera no celular, a precisão do encaixe em rostos reais, o envio persistente com autorização e uma sessão Google verdadeira continuam exigindo os respectivos aparelhos/usuários. Não se deve substituir essas conferências por uma afirmação de funcionamento integral em produção. Os testes de permissões usam contas fictícias e não alteram os acessos da equipe.
