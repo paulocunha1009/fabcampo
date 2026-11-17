@@ -7,12 +7,19 @@ const stopwords = new Set('como para sobre quais quando onde quero saber expliqu
 
 export function buildAcervoContext(message) {
   const words = [...new Set(normalize(message).match(/[a-z0-9]{3,}/g) || [])].filter(w => !stopwords.has(w));
-  const ranked = acervo.pages.flatMap(page => page.chunks.map(chunk => {
-    const title = normalize(`${page.title} ${chunk.section}`);
-    const text = normalize(chunk.text);
-    const score = words.reduce((n, word) => n + (title.includes(word) ? 3 : 0) + (text.includes(word) ? 1 : 0), 0);
-    return { page, chunk, score };
-  })).filter(item => item.score > 0).sort((a, b) => b.score - a.score);
+  // Termos específicos no trecho pesam mais que nomes repetidos em títulos.
+  // Assim uma pergunta longa sobre a diretora não perde o parágrafo que contém o nome.
+  const candidates = acervo.pages.flatMap(page => page.chunks.map(chunk => ({
+    page, chunk,
+    title: new Set(normalize(`${page.title} ${chunk.section}`).match(/[a-z0-9]+/g) || []),
+    text: new Set(normalize(chunk.text).match(/[a-z0-9]+/g) || [])
+  })));
+  const weights = new Map(words.map(word => [word, Math.log(1 + candidates.length /
+    (1 + candidates.filter(item => item.title.has(word) || item.text.has(word)).length))]));
+  const ranked = candidates.map(({page,chunk,title,text}) => ({page,chunk,
+    score: words.reduce((score,word) => score + weights.get(word) *
+      ((text.has(word) ? 3 : 0) + (title.has(word) ? 1 : 0)), 0)
+  })).filter(item => item.score > 0).sort((a,b) => b.score - a.score);
   const excerpts = [];
   let size = 0;
   for (const { page, chunk } of ranked) {

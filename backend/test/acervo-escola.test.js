@@ -12,3 +12,11 @@ test('perguntas da turma recuperam os marcos da escola com fonte e limites docum
  const first=buildAcervoContext('Quem foi a primeira diretora?');
  assert.match(first,/não identifica quem foi a primeira diretora/);
 });
+
+test('consulta longa preserva o trecho específico da direção entre os primeiros resultados',()=>{
+ const c=buildAcervoContext('Segundo o PPP de 2025, quem é a diretora da Escola Francisco Araújo Barros? Informe a fonte e não confunda com a primeira diretora.');
+ const start=c.indexOf('Trechos selecionados para a pergunta atual:');
+ const excerpts=c.slice(start).split('\n').slice(1,4).join('\n');
+ assert.match(excerpts,/Maria Ivaniza Martins de Sousa Nascimento/);
+ assert.match(excerpts,/não identifica quem foi a primeira diretora/);
+});
