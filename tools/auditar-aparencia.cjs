@@ -45,6 +45,7 @@ function inspectContrast(){
  const results=[];
  for(const target of pages){
   await page.setViewportSize({width:1440,height:1000});const response=await page.goto(base+target,{waitUntil:'domcontentloaded',timeout:30000});
+  if(await page.locator('script[src*="tema-inicial.js"]').count())await page.locator('.controle-tema').waitFor({timeout:10000});
   for(const theme of ['claro','escuro']){
    if(await page.locator('.tema-ajustes').count()){await page.locator('.tema-ajustes').click();await page.locator(`[data-tema-opcao=${theme}]`).click()}
    await page.waitForTimeout(120);

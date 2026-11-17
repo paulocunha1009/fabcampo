@@ -50,7 +50,7 @@ O problema enviado pelo professor mostrou a limitação da primeira conferência
 - Resultado local após a correção: zero alertas abaixo dessa referência nos pares de cores que a ferramenta consegue calcular. As partes do título do mural foram classificadas para revisão visual, porque a faixa é pintada em `::before`; a mesma composição aparece repetida pelas rodadas e larguras do relatório.
 - A rotina considera cores e paradas de gradientes calculadas; não certifica texto sobre fotografias, vídeos, mapas, canvas, PDFs, iframes externos ou todos os estados possíveis.
 - Revisão visual: linha do tempo, ficha medicinal, blocos de Educação, recurso financeiro, Expedição e mural, nos dois temas.
-- Rotina funcional: 15 páginas, 36 visualizações, com a inicial entre 360 e 1920 px; menu, busca, preferência salva, modo Sistema, alto contraste e Escape. Nenhuma rolagem lateral indevida nessa matriz.
+- Rotina funcional após publicação: 15 páginas, 51 visualizações, com a inicial entre 320 e 1920 px; menu, busca, preferência salva, modo Sistema, alto contraste e Escape. Nenhuma rolagem lateral indevida nessa matriz.
 - As fotos são carregadas/decodificadas antes das capturas de revisão. Uma área ainda carregando não deve ser confundida com ausência do arquivo.
 - Links internos, âncoras estáticas, módulos e estilos foram conferidos com o verificador do projeto.
 - Testes de regressão relacionados ao frontend: 70 passaram (menu, busca, índices, contraste, catálogo, Expedição, agenda, formulário e estruturas editoriais/Caravana). Outros três testes cobrem imagem já falha antes da inicialização, falha tardia, recuperação e foto válida.
@@ -65,6 +65,7 @@ Em ambiente com Node, Playwright e Chrome disponíveis:
 ```text
 node tools/auditar-aparencia.cjs --root . --output tmp/auditoria-local
 node tools/auditar-aparencia.cjs --publicado --output tmp/auditoria-publicada
+node tools/testar-responsividade.cjs
 node --test tools/test-imagens.cjs
 python tools/check_portal_links.py
 python tools/verificar-documentacao.py
@@ -104,3 +105,15 @@ O verificador de Markdown confere a existência dos destinos locais nos document
 Frontend: GitHub Pages, branch `master`. Backend: Vercel, branch `main`. Os históricos divergem; não usar force push nem sincronização integral para uma correção visual. Enviar somente arquivos revisados sobre a versão atual de produção, aguardar o build e repetir a conferência pública.
 
 Para reverter esta rodada, identificar o commit da correção no histórico de `master` e aplicar um revert específico. Não apagar matérias, fotos, rascunhos ou preferências para corrigir CSS. Consulte [Operação e Recuperação](OPERACAO_E_RECUPERACAO.md).
+
+## Confirmação no portal publicado
+
+Correção e documentação publicadas no commit `4716dc4` da `master`, sobre a versão estável `7fea30d`. Aguardado o build do GitHub Pages e repetidas as verificações no domínio oficial.
+
+- Auditoria pública: 17 destinos, 68 visualizações; zero alertas de contraste calculável, zero rolagem lateral indevida e zero sobreposições detectadas no cabeçalho. O título do mural, com fundo pintado em pseudoelemento, foi revisto visualmente; suas observações repetidas não foram tratadas como medição de cor simples.
+- Rotina funcional pública: 15 páginas, 51 visualizações, incluindo 320 px e o menu de preferências aberto em cada largura da inicial. Busca, menu móvel, preferência salva, Sistema, Escape e prioridade do alto contraste passaram.
+- `/health`: respondeu `ok: true`, IA configurada e limitador Upstash. Não foi enviada pergunta ao Gemini nesta revisão; saúde da configuração não comprova a resposta da IA nem fluxos privados.
+- Documentação da branch pública: 11 arquivos Markdown técnicos, 15 destinos locais existentes e nenhum link local ausente no conjunto examinado. Os arquivos internos do checkout também foram conferidos separadamente.
+- Impressão: cores de texto e visibilidade dos controles conferidas por emulação do navegador, sem alegar teste de impressora física.
+
+As capturas da linha do tempo publicada foram conferidas em 1440 e 390 px. Os relatórios JSON e capturas ficam em `tmp/auditoria-20261116/`; não contêm credenciais e não são publicados automaticamente.
