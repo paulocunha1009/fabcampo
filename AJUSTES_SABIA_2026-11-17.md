@@ -38,3 +38,11 @@ Comandos: `node tools/test-sabia-aparencia.cjs`; na pasta backend, `node --test 
 A primeira pergunta real após a implantação revelou que uma consulta longa com o nome da escola podia priorizar títulos repetidos e excluir o trecho específico da diretora. Corrigido o ranqueamento: palavras completas, frequência dos termos no acervo e maior peso da ocorrência no texto. Um teste de regressão exige o nome da diretora e a ressalva sobre a primeira diretora nos três primeiros trechos da consulta longa.
 
 Após a correção: 312 testes no workspace e 228 na versão isolada da API, todos aprovados. A implantação deve ser acompanhada de nova pergunta real para confirmar o resultado. Os 32 estados visuais usam respostas simuladas.
+
+## Implantação e contingência
+
+API `45bf61c` promovida manualmente na Vercel para o domínio oficial em 17/11. O estado Ready/Production sem Current era apenas uma implantação preparada, com atribuição de domínio ignorada; não indicava que o endpoint oficial já usava a versão nova.
+
+Após a promoção, a conferência real retornou HTTP 429 do provedor Gemini. Não foi alterada chave, plano ou cota para contornar o limite. Acrescentadas respostas locais nos dois clientes do SabIA para as perguntas sobre início de funcionamento, direção, primeira diretora e fundação coletiva. Essas respostas são explicitamente identificadas como acervo local, sem geração por IA, e remetem à seção do PPP na História. O restante do fluxo de IA e dos modos Quiz/Explorar foi preservado.
+
+Oito testes adicionais verificam a contingência com API 429 nos dois clientes (`node --test tools/test-sabia-ppp.cjs`). A recuperação de trechos da API está testada; a qualidade da geração real não é considerada aprovada enquanto o provedor estiver limitado.

@@ -8,7 +8,7 @@
  *   🔍 Explorar  — recomendações de páginas
  */
 
-import { perguntarAssistente } from '../services/ai-service.js';
+import { perguntarAssistente } from '../services/ai-service.js?v=20261117-1';
 
 // ── Estado global ────────────────────────────────────────────────────────────
 let historico    = [];   // [{ role: 'user'|'assistant', content: string }]

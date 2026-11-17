@@ -39,8 +39,22 @@ export async function perguntarAssistente(mensagem, historico = []) {
 }
 
 // ── Fallback local (sem backend) ─────────────────────────────────────────────
+
+function respostaEscolaPPP(pergunta) {
+  const t=pergunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  if(/^(gere|recomende)|quiz|perguntas de quiz/.test(t)||!/escola|ppp|ivaniza|diretora/.test(t))return null;
+  let text='';
+  if(/diretor|direcao/.test(t))text='Segundo o PPP de 2025, a diretora geral indicada é Maria Ivaniza Martins de Sousa Nascimento (páginas 7 e 80 do PDF, gestão 2025–2027). O documento consultado não identifica quem foi a primeira diretora nem comprova alterações posteriores de gestão.';
+  else if(/quem/.test(t)&&/fund|criou|cria|criacao/.test(t))text='O PPP apresenta a escola como conquista coletiva das comunidades do Assentamento Lagoa do Mineiro, do MST e do poder público estadual/SEDUC (páginas 2–4 do PDF). Não identifica uma única pessoa como fundadora. Francisco Araújo Barros é a liderança homenageada no nome da escola, não seu fundador (páginas 16–17).';
+  else if(/quando|ano|data|funcion/.test(t)&&/cria|fund|inicio|comec|funcion|nasceu/.test(t))text='Segundo o PPP de 2025, a escola iniciou seu funcionamento em 3 de março de 2011 (páginas 3 e 7 do PDF). Início de funcionamento, autorização e inauguração são marcos diferentes. O campo de fundação em 15/02/2012, no bloco da mantenedora, exige esclarecimento com a gestão antes de ser tratado como a mesma data.';
+  if(!text)return null;
+  const url=window.location.pathname.includes('/pages/')?'historia.html':'pages/historia.html';
+  return {type:'recommendations',content:text+' Fonte: PPP da Escola Francisco Araújo Barros, edição 2025, fornecido pelo professor e conferido pela turma. Resposta do acervo local, sem geração por IA.',pages:[{title:'Nossa escola: informações do PPP',url,reason:'Fonte, páginas consultadas e limites das informações na página História.'}]};
+}
+
 function respostaLocal(pergunta) {
   const t = pergunta.toLowerCase();
+    const escola=respostaEscolaPPP(pergunta);if(escola)return escola;
 
   if (t.includes('quiz') || t.includes('me test') || t.includes('pergunta sobre')) {
     return {
