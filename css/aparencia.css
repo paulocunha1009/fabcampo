@@ -185,3 +185,28 @@ img[data-fallback-hidden][hidden]{display:none!important}
   .hero__imagem,.hero::before,.hero::after{display:none!important}
   .hero{min-height:0!important}.hero__conteudo{padding-block:20px!important}
 }
+
+/* SabIA: cores de todos os estados, incluindo conteúdo criado após abrir o chat. */
+@media screen {
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-chat__painel,.ai-chat__form,.ai-chat__privacidade,.ai-chat__tabs,.ai-topicos){background:#142e23;color:#f2eedf;border-color:#506c59}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-msg--bot,.ai-boas-vindas,.ai-typing,.ai-quiz__card,.ai-rec-card,.ai-quiz__explicacao){background:#213f31;color:#f2eedf;border-color:#58765f}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat .ai-msg--user{background:#493f29;color:#fff0cf}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-chat__tab,.ai-chat__privacidade,.ai-boas-vindas>small,.ai-rec-card__desc,.ai-quiz__numero,.ai-quiz__explicacao){color:#cfddcc}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-chat__tab--ativo,.ai-boas-vindas>strong,.ai-boas-vindas>span,.ai-quiz__pergunta,.ai-rec-card__titulo){color:#f2eedf}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-atalho,.ai-topico,.ai-quiz__opcao,input){background:#142e23;color:#f2eedf;border-color:#73907a}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat input::placeholder{color:#beccbe;opacity:1}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-atalho,.ai-topico,.ai-quiz__opcao):hover:not(:disabled){background:#31563e;color:#fff2ca}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat .ai-chat__tab:hover{color:#fff2ca}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-quiz__opcao--correta,.ai-quiz__score){background:#214d33!important;color:#dbffe1;border-color:#9bd5a5!important}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat .ai-quiz__opcao--errada{background:#552b2b!important;color:#ffe1dc;border-color:#eeaa9a!important}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat a{color:#f1d17c}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat .ai-rec-card__titulo{color:#f1d17c}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(.ai-chat__cabecalho,.ai-quiz__cabecalho){background:#17432f;color:#fff}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat .ai-quiz__cabecalho strong{color:#fff}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat .ai-chat__fechar{color:#fff}
+html:not([data-alto-contraste]) .ai-chat[data-open=true] .ai-chat__painel{display:flex;flex-direction:column;max-height:calc(100dvh - 100px)}
+html:not([data-alto-contraste]) .ai-chat__mensagens{min-height:0;flex:1 1 auto;overscroll-behavior:contain}
+html:not([data-alto-contraste]) .ai-chat__painel>:not(.ai-chat__mensagens){flex-shrink:0}
+html:not([data-alto-contraste]) .ai-chat :is(button,input,a):focus-visible{outline:3px solid #b37c18;outline-offset:2px}
+html[data-tema=escuro]:not([data-alto-contraste]) .ai-chat :is(button,input,a):focus-visible{outline-color:#f1d17c}
+}
