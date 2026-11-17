@@ -1,7 +1,7 @@
 import { iniciarMenu } from './components/menu.js?v=20261105-1';
 import { iniciarFormularioContato } from './components/formulario.js?v=20261105-1';
 import { iniciarCarrosseis } from './components/carrossel.js?v=20261105-1';
-import { prepararImagens } from './components/imagens.js';
+import { prepararImagens } from './components/imagens.js?v=20261116-1';
 import { carregarConteudo } from './components/conteudo.js?v=20261105-1';
 import { iniciarChatEducacional } from './components/chat-widget.js?v=20261105-2';
 import { iniciarBuscaGlobal } from './components/busca-global.js?v=20261116-1';

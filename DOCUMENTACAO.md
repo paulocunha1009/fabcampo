@@ -1,5 +1,7 @@
 # Documentação Técnica — Portal da Comunidade
 
+> **Revisão vigente de 16/11/2026:** [melhorias, auditoria visual, manutenção e pendências](ATUALIZACOES_PORTAL_2026-11-16.md). As seções históricas datadas abaixo registram entregas anteriores; não significam verificação atual de todos os fluxos.
+
 > **Estado atual:** o frontend está no GitHub Pages e o backend oficial está no projeto Vercel `fabcampo-api`, com limites no Upstash. As referências abaixo a backend “opcional”, Render, Railway ou outros provedores são históricas. Para a operação vigente, consulte `OPERACAO_E_RECUPERACAO.md` e `backend/DEPLOY_VERCEL.md`.
 
 Projeto educacional desenvolvido para o Ceará Científico, com foco em memória comunitária, educação do campo, produção agrícola, biodiversidade, plantas medicinais, reportagens escolares e uso responsável de inteligência artificial.
@@ -132,7 +134,7 @@ fabcampo/
 
 | Arquivo | Função |
 |---|---|
-| `index.html` | Página inicial, hero, rolo de fotos, atalhos, reportagens, notícias, eventos e assistente IA. |
+| `index.html` | Apresentação do projeto, destaques editoriais, busca, Nossa escola em movimento, notícias, agenda e assistente IA. O rolo de fotos foi retirado. |
 | `contato.html` | Página de contato e envio de contribuição. |
 
 ### Páginas internas
@@ -169,7 +171,9 @@ Essas páginas existem para evitar erro 404 caso algum visitante acesse um link 
 O visual principal do portal está concentrado em:
 
 - `css/portal.css`;
-- `css/portal-responsivo.css`.
+- `css/portal-responsivo.css`;
+- `css/inicio-vivo.css`;
+- `css/aparencia.css` (temas e correções de legibilidade por componente).
 
 ### Padrão visual utilizado
 
@@ -232,8 +236,11 @@ atualizarAno();
 |---|---|
 | `js/components/menu.js` | Controla menu mobile, submenus, tecla Escape e página ativa. |
 | `js/components/formulario.js` | Validação do formulário de contato e mensagens acessíveis. |
-| `js/components/carrossel.js` | Comportamento do rolo de fotos. |
-| `js/components/imagens.js` | Esconde imagens com erro quando usam `data-fallback-hidden`. |
+| `js/components/carrossel.js` | Componente preservado para galerias legadas; o rolo não aparece na inicial. |
+| `js/components/imagens.js` | Controla carregamento, falhas e recuperação, preservando legenda e contexto. |
+| `js/tema-inicial.js` / `js/components/aparencia.js` | Preferência Claro/Escuro/Sistema e seletor junto à logo. |
+| `js/inicio-vivo.js` | Destaques clicáveis e leitura das reportagens publicadas. |
+| `js/components/busca-global.js` | Páginas, plantas e novas reportagens presentes no índice público. |
 | `js/components/conteudo.js` | Carrega `data/site.json` e renderiza notícias, eventos e listas. |
 | `js/components/chat-widget.js` | Widget modular do assistente educacional. |
 | `js/services/ai-service.js` | Comunicação com o backend de IA. |
@@ -498,7 +505,7 @@ O projeto é compatível com GitHub Pages porque:
 1. Repositório: `paulocunha1009/fabcampo`.
 2. Em **Settings > Pages**, publicar a branch `master` e a pasta `/ (root)`.
 3. Manter o arquivo `CNAME` com `fabcampo.com.br`.
-4. Sincronizar `main` e `master` após cada publicação validada.
+4. Publicar o frontend na `master`; alterações do backend usam `main` e implantação separada na Vercel. Não substituir um histórico pelo outro nem sincronizar as branches integralmente para mudanças visuais.
 5. Confirmar o deploy na aba **Actions** e testar o domínio oficial.
 
 URL esperada:

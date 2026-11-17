@@ -1,6 +1,8 @@
 # Imagens pendentes do acervo
 
-Atualizado em 12 de setembro de 2026.
+Revisado em 16 de novembro de 2026.
+
+Inventário das páginas canônicas e Caravana/mural: nenhum caminho de imagem local ausente nas referências HTML examinadas; 20 usos de marcadores do acervo em documentação. Isso não verifica a correspondência histórica, o crédito ou a autorização das fotografias. A lista abaixo continua sendo uma demanda de curadoria, não autorização para usar fotos ilustrativas como registros dos fatos.
 
 As páginas usam provisoriamente `img/placeholder/acervo-em-documentacao.svg` nos pontos em que a fotografia citada no conteúdo ainda não foi entregue. O marcador não representa um fato histórico e não deve ser trocado por uma imagem apenas ilustrativa.
 

@@ -2,6 +2,12 @@
 
 Portal educacional do Assentamento Lagoa do Mineiro, desenvolvido pela EEMPC Francisco Araújo Barros. O frontend usa HTML, CSS e JavaScript no GitHub Pages; os recursos de IA usam um backend Node.js na Vercel.
 
+## Atualização visual e revisão técnica
+
+Estado revisto em 16/11/2026. Consulte [Melhorias e auditoria de novembro](ATUALIZACOES_PORTAL_2026-11-16.md) para o histórico das entregas, arquivos, paleta, testes e pendências.
+
+O portal possui temas Claro/Escuro/Sistema, controle sol/lua junto à logo, busca no cabeçalho e na inicial e destaques para reportagens. O rolo de fotos foi retirado da inicial. Alto contraste continua separado do tema visual.
+
 ## Produção atual
 
 - portal: `https://fabcampo.com.br`;
@@ -50,34 +56,19 @@ Portal educacional do Assentamento Lagoa do Mineiro, desenvolvido pela EEMPC Fra
     └── test/
 ```
 
-## Como editar notícias, eventos e listas
+## Como editar reportagens, eventos e listas
 
-Edite `data/site.json`.
+Use o painel com uma conta autorizada para preparar e revisar matérias, fotos, créditos e eventos. Salvar rascunho não publica. A publicação exige a confirmação editorial já existente; a equipe não deve editar diretamente os arquivos gerados de uma matéria gerenciada.
 
-Esse arquivo alimenta:
-- notícias da página inicial
-- eventos do mês
-- dicas agrícolas
-- cards de plantas nativas
-- cards de plantas medicinais
+`data/site.json` é a lista pública de conteúdo. As publicações do painel atualizam as entradas gerenciadas. O banner consulta essa lista, usa até cinco reportagens publicadas com `editorialId` e busca a capa na própria página. A seleção Nossa escola em movimento é manual. Educação & Inovação utiliza um carregador próprio.
 
-## Como adicionar imagens
+Em manutenção manual, preservar `editorialId`, manifesto e caminhos; conferir o fluxo descrito na [documentação da rodada](ATUALIZACOES_PORTAL_2026-11-16.md). O índice `data/busca.json` permite pesquisar títulos e trechos; `data/plantas.json` alimenta o catálogo.
 
-Os locais já estão prefixados no HTML. Basta salvar os arquivos nas pastas indicadas:
+## Imagens e fotografias
 
-- `img/banner/banner-principal.jpg`
-- `img/galeria/rolo-01.jpg`
-- `img/galeria/rolo-02.jpg`
-- `img/galeria/rolo-03.jpg`
-- `img/galeria/rolo-04.jpg`
-- `img/galeria/rolo-05.jpg`
-- `img/galeria/historia-foto-antiga.jpg`
-- `img/galeria/memoria-01.jpg`
-- `img/galeria/memoria-02.jpg`
-- `img/galeria/memoria-03.jpg`
-- `img/galeria/agricola-01.jpg`
+Reutilize fotos reais compatíveis com o assunto e confira legenda, autoria e autorização. O painel prepara as fotos da matéria e permite escolher a capa. O banner usa a capa da reportagem publicada.
 
-Enquanto as imagens não forem colocadas, o portal mostra caixas com o nome do arquivo esperado.
+Consulte [Imagens Pendentes](IMAGENS_PENDENTES.md) antes de substituir marcadores históricos. Eles não representam fotografias dos fatos narrados. Falhas no carregamento devem preservar legenda e contexto, com mensagem legível, sem mostrar o caminho técnico para o visitante.
 
 ## Inteligência Artificial
 

@@ -2,14 +2,14 @@
 
 Documento de referência para estudantes, professores e demais participantes responsáveis pelo portal.
 
-**Atualizado em:** 13 de setembro de 2026.
+**Atualizado em:** 16 de novembro de 2026.
 
 ## 1. Arquitetura oficial
 
 | Componente | Serviço | Endereço ou projeto | Branch de produção |
 |---|---|---|---|
 | Portal público | GitHub Pages | `https://fabcampo.com.br` | `master` |
-| Código-fonte | GitHub | `paulocunha1009/fabcampo` | `main` e `master` sincronizadas |
+| Código-fonte | GitHub | `paulocunha1009/fabcampo` | `master` para frontend; `main` para backend; históricos próprios |
 | Backend da IA | Vercel | projeto `fabcampo-api` | `main` |
 | API pública | Vercel | `https://fabcampo-api.vercel.app` | — |
 | Inteligência artificial | Google Gemini API | `gemini-2.5-flash-lite` | — |
@@ -42,6 +42,14 @@ O workflow `.github/workflows/monitoramento.yml` executa a cada 6 horas e també
 O monitor não envia perguntas à IA, não usa segredos e não consome a cota Gemini. Se uma verificação falhar, a execução fica vermelha na aba **Actions**. As notificações de falha dependem das configurações de notificação da conta GitHub responsável pelo repositório.
 
 O GitHub pode desativar workflows agendados de repositórios públicos após longos períodos sem atividade. Por isso, a rotina semanal abaixo continua necessária.
+
+### Depois de alterar a aparência
+
+- Conferir a página inteira, nos dois temas: títulos, textos pequenos, linha do tempo, tabelas, avisos, botões e rodapé. Abrir referências e detalhes informativos.
+- Medir cores calculadas e revisar fotografias, gradientes e fundos em pseudoelementos por captura visual. Passar na verificação de largura não significa passar na leitura.
+- Usar `tools/auditar-aparencia.cjs`, `tools/check_portal_links.py` e `tools/verificar-documentacao.py`, conforme [o procedimento da revisão](ATUALIZACOES_PORTAL_2026-11-16.md).
+- Testar busca, menu, sol/lua, preferência Sistema, persistência e prioridade do alto contraste. Conferir impressão e carregamento das imagens.
+- Repetir a checagem no domínio público após o build. Não registrar como testado um fluxo privado, câmera ou envio que não foi exercitado.
 
 ### Toda semana
 
@@ -111,7 +119,7 @@ O GitHub pode desativar workflows agendados de repositórios públicos após lon
 4. Testar em desktop e celular.
 5. Executar testes do backend e verificação de links.
 6. Criar commit com descrição clara.
-7. Publicar o mesmo commit em `main` e `master`.
+7. Publicar somente os arquivos aprovados na branch do componente: frontend em `master`; backend em `main`, com implantação separada na Vercel. Não usar force push ou sincronização integral para uma correção visual.
 8. Confirmar o domínio público e a API depois da propagação.
 9. Registrar commit, backup e resultado dos testes na comunicação da equipe.
 
