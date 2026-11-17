@@ -26,9 +26,15 @@ Preservada a alteração manual recente da linha do tempo nas branches master e 
 
 ## Verificação
 
-- Suíte do workspace: 311 testes aprovados, sem ignorados.
+- Suíte do workspace: 312 testes aprovados, sem ignorados.
 - Teste novo verifica recuperação de trechos para ano de criação, direção, fundação coletiva e primeira diretora não identificada.
 - A geração do acervo não altera credenciais, permissões, limites de IA ou publicações editoriais.
 - Validação do navegador usa serviços simulados; a confirmação de resposta real depende da implantação ativa da API.
 
 Comandos: `node tools/test-sabia-aparencia.cjs`; na pasta backend, `node --test --test-reporter=spec`.
+
+## Correção da seleção de trechos
+
+A primeira pergunta real após a implantação revelou que uma consulta longa com o nome da escola podia priorizar títulos repetidos e excluir o trecho específico da diretora. Corrigido o ranqueamento: palavras completas, frequência dos termos no acervo e maior peso da ocorrência no texto. Um teste de regressão exige o nome da diretora e a ressalva sobre a primeira diretora nos três primeiros trechos da consulta longa.
+
+Após a correção: 312 testes no workspace e 228 na versão isolada da API, todos aprovados. A implantação deve ser acompanhada de nova pergunta real para confirmar o resultado. Os 32 estados visuais usam respostas simuladas.
