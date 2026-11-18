@@ -1,1 +1,19 @@
-{"version":1,"eventos":[],"retirados":[]}
+{
+  "version": 1,
+  "eventos": [
+    {
+      "id": "1dc253e8-0af8-4921-9e85-5d6274f727d0",
+      "revisao": 5,
+      "nome": "Formatura dos terceiros anos",
+      "descricao": "Cerimônia de conclusão do Ensino Médio dos alunos dos terceiros anos da EEMPC Francisco Araújo Barros, com a participação dos educadores, familiares e convidados dos estudantes concluintes.",
+      "data": "2026-12-29",
+      "horario": "15:00",
+      "local": "EEMPC Francisco Araújo Barros – Assentamento Lagoa do Mineiro, Itarema – CE.",
+      "publico": "Alunos concluintes do Ensino Médio da EEMPC Francisco Araújo Barros, do ano letivo de 2026, que aderiram e participaram do pagamento do cerimonial de conclusão do curso, acompanhados de seus respectivos familiares.",
+      "participacao": "A participação será restrita aos alunos concluintes que aderiram ao cerimonial de conclusão do curso e aos seus familiares, conforme a organização e os critérios estabelecidos previamente pela comissão responsável pelo evento.",
+      "responsavel": "Gestão Escolar e Comissão Organizadora da Formatura dos Terceiros Anos – 2026.",
+      "contato": "EEMPC Francisco Araújo Barros – Gestão Escolar."
+    }
+  ],
+  "retirados": []
+}
