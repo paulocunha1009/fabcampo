@@ -52,3 +52,8 @@ Esta é uma entrega de frontend na branch master. Não exige promoção da API n
 Eventos continuam publicáveis sem imagem. A etapa de mídia agora explicita a opção de seguir sem foto, sem instruções de capa obrigatória das reportagens. Agendamentos passou de diálogo modal para tela própria, mantendo menu e botão de retorno disponíveis. O fechamento invalida consultas pendentes sem alterar a programação salva. Publicação de reportagens, eventos e acervo só aparece para contas com permissão `publicar`; contas de rascunho mantêm edição, salvamento e revisão. O backend continua responsável pela autorização de cada operação.
 
 O teste de navegador cobre entrada e saída de Agendamentos, ausência de modal, seis larguras e alternância das permissões de publicação. Nenhuma programação real foi alterada durante esses testes.
+
+
+### Mural e equipe em telas próprias
+
+Mural da Caravana e Equipe e permissões também passaram de diálogos modais para seções da navegação. Menu, indicação de área ativa e retorno ao início permanecem disponíveis. A saída invalida consultas e libera URLs temporárias de fotos; operações já enviadas continuam sob autorização do servidor. As permissões existentes foram preservadas. O teste isolado cobre entrada, saída, seis larguras, ausência de sobreposição modal e ocultação após perda de permissão, usando somente dados simulados.

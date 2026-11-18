@@ -9,17 +9,17 @@ const labels={rascunhos:'Somente rascunhos',publicador:'Acesso editorial complet
 function load(){if(writing||!manager)return;const version=++epoch;revision=null;controls();status('Consultando a equipe…');$('equipe-lista').replaceChildren();$('equipe-confirmar').checked=false;
  requestAuthorizedAction(async credential=>{if(version!==epoch)return;try{const data=await call(credential);if(version!==epoch||!manager)return;revision=data.revisao;$('equipe-responsavel').textContent=`Responsável protegido: ${data.responsavel}. Somente esta conta pode gerenciar a equipe.`;for(const member of data.membros){const li=document.createElement('li'),text=document.createElement('p'),button=document.createElement('button');text.textContent=`${member.email} — ${labels[member.papel]||'Estado não reconhecido'}`;button.type='button';button.className='botao-secundario';button.textContent='Alterar acesso';button.setAttribute('aria-label','Alterar acesso de '+member.email);button.addEventListener('click',()=>{if(writing)return;$('equipe-email').value=member.email;$('equipe-papel').value=member.papel;$('equipe-confirmar').checked=false;controls();$('equipe-papel').focus();});li.append(text,button);$('equipe-lista').append(li);}status(data.membros.length?'Equipe conferida. Selecione um integrante ou informe outro e-mail.':'Nenhum integrante adicional cadastrado.');controls();}catch(error){if(version===epoch){status(error.message);controls();}}});
 }
-$('abrir-equipe').addEventListener('click',()=>{if(!manager)return;dialog.showModal();load();});
+$('abrir-equipe').addEventListener('click',()=>{if(!manager)return;dialog.hidden=false;document.dispatchEvent(new CustomEvent('editorial-equipe-aberta'));load();});
 $('equipe-atualizar').addEventListener('click',load);
 for(const id of ['equipe-email','equipe-papel'])$(id).addEventListener('input',()=>{$('equipe-confirmar').checked=false;controls();});
 $('equipe-confirmar').addEventListener('change',controls);
 $('equipe-form').addEventListener('submit',event=>{event.preventDefault();if(writing||revision===null||!manager||!$('equipe-confirmar').checked)return;const body={email:$('equipe-email').value.trim().toLowerCase(),papel:$('equipe-papel').value,revisao:revision,confirmado:true},version=epoch;
  requestAuthorizedAction(async credential=>{if(version!==epoch||writing||!manager||!$('equipe-confirmar').checked||body.email!==$('equipe-email').value.trim().toLowerCase()||body.papel!==$('equipe-papel').value)return;writing=true;controls();status('Salvando a permissão…');try{const data=await call(credential,body);if(version!==epoch)return;if(data.revisao!==body.revisao+1||data.email!==body.email||data.papel!==body.papel)throw Error('Resposta diferente da alteração solicitada.');status(`Permissão salva: ${data.email} — ${labels[data.papel]}. Consulte a lista para continuar.`);revision=null;}catch(error){if(version===epoch){revision=null;status(error.message+' Consulte a lista antes de outra alteração.');}}finally{writing=false;$('equipe-confirmar').checked=false;controls();}});
 });
-$('equipe-fechar').addEventListener('click',()=>{if(!writing)dialog.close();});
-dialog.addEventListener('cancel',event=>{if(writing)event.preventDefault();});
-dialog.addEventListener('close',()=>{epoch++;revision=null;$('equipe-lista').replaceChildren();$('equipe-responsavel').textContent='';$('equipe-email').value='';$('equipe-confirmar').checked=false;});
-function clear(){manager=false;$('cartao-equipe').hidden=true;epoch++;revision=null;if(dialog.open)dialog.close();}
+function close(){dialog.hidden=true;epoch++;revision=null;$('equipe-lista').replaceChildren();$('equipe-responsavel').textContent='';$('equipe-email').value='';$('equipe-confirmar').checked=false;}
+$('equipe-fechar').addEventListener('click',()=>{close();document.dispatchEvent(new CustomEvent('editorial-equipe-fechada'));});
+document.addEventListener('editorial-ferramenta-saiu',event=>{if(event.detail==='equipe')close();});
+function clear(){manager=false;$('cartao-equipe').hidden=true;epoch++;revision=null;close();document.dispatchEvent(new CustomEvent('editorial-equipe-fechada'));}
 document.addEventListener('editorial-permissions',event=>{manager=event.detail?.gerenciarEquipe===true;$('cartao-equipe').hidden=!manager;if(!manager)clear();});
 new MutationObserver(()=>{if($('situacao-acesso').dataset.estado!=='conectada')clear();}).observe($('situacao-acesso'),{attributes:true,attributeFilter:['data-estado']});
 globalThis.addEventListener?.('beforeunload',event=>{if(writing){event.preventDefault();event.returnValue='';}});
