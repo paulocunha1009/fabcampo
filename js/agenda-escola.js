@@ -1,3 +1,4 @@
+import {criarCalendario} from './calendario-campo.mjs?v=20261118-1';
 import {gerarCalendarioEvento} from './agenda-calendario.mjs?v=20261112-10';
 import {agruparEventos} from './agenda-core.mjs?v=20261112-8';
 const destino=document.getElementById('lista-agenda-escola'),estado=document.getElementById('estado-agenda-escola');
@@ -21,6 +22,8 @@ function cardEvento(item,parent,hoje){
  parent.append(card);
 }
 if(destino&&estado){
+const assinatura=document.createElement('details');assinatura.className='agenda-assinatura';assinatura.innerHTML='<summary>Acompanhar a agenda no Google</summary><p>Adicione esta agenda por URL no Google Agenda, pelo computador. Depois, os eventos publicados serão atualizados conforme a consulta do Google. Esta assinatura contém somente eventos da escola, sem reportagens ou rascunhos.</p><label for="url-agenda-escolar">URL da agenda escolar</label><input id="url-agenda-escolar" readonly value="https://fabcampo-api.vercel.app/api/agenda-escola.ics"><p><a href="https://calendar.google.com/calendar/u/0/r/settings/addbyurl" target="_blank" rel="noopener noreferrer">Abrir Google Agenda para adicionar por URL</a></p>';destino.before(assinatura);
+const calendario=criarCalendario(document.getElementById('calendario-escola'),{titulo:'Calendário dos eventos da escola',onSelect:data=>{for(const card of destino.querySelectorAll('.agenda-evento'))card.hidden=card.querySelector('time')?.dateTime!==data;}});const todos=texto('button','Mostrar todos os eventos',document.createDocumentFragment());todos.type='button';todos.className='agenda-calendario agenda-mostrar-todos';document.getElementById('calendario-escola').after(todos);todos.addEventListener('click',()=>{calendario.selecionar('');for(const card of destino.querySelectorAll('.agenda-evento'))card.hidden=false;});
  const atualizar=texto('button','Atualizar agenda',document.createDocumentFragment());atualizar.type='button';atualizar.id='atualizar-agenda-escola';atualizar.className='agenda-calendario';atualizar.setAttribute('aria-controls','lista-agenda-escola');destino.before(atualizar);
  let carregando=false,carregada=false;
  async function carregar(){
@@ -33,7 +36,7 @@ if(destino&&estado){
   if(!grupos.proximos.length)texto('p','Nenhum evento divulgado para hoje ou para os próximos dias.',conteudo);
   for(const item of grupos.proximos)cardEvento(item,conteudo,grupos.hoje);
   if(grupos.anteriores.length){const anteriores=document.createElement('details');anteriores.className='agenda-anteriores';texto('summary',`Eventos anteriores (${grupos.anteriores.length})`,anteriores);texto('p','Eventos com data anterior a hoje, do mais recente ao mais antigo.',anteriores);for(const item of grupos.anteriores)cardEvento(item,anteriores,grupos.hoje);conteudo.append(anteriores);}
-  destino.replaceChildren(conteudo);carregada=true;atualizar.textContent='Atualizar agenda';estado.textContent=data.eventos.length?'Datas organizadas pelo horário de Fortaleza. Os eventos de hoje permanecem em Próximos eventos durante todo o dia.':'Nenhum evento foi divulgado nesta agenda ainda.';
+  destino.replaceChildren(conteudo);calendario.atualizar(data.eventos.map(e=>({data:e.data,titulo:e.horario+' · '+e.nome})));carregada=true;atualizar.textContent='Atualizar agenda';estado.textContent=data.eventos.length?'Datas organizadas pelo horário de Fortaleza. Os eventos de hoje permanecem em Próximos eventos durante todo o dia.':'Nenhum evento foi divulgado nesta agenda ainda.';
   }catch{estado.textContent=carregada?'Não foi possível atualizar a agenda. Os eventos exibidos são da consulta anterior. Tente novamente.':'Não foi possível carregar a agenda. Use Tentar novamente para consultar os eventos.';atualizar.textContent='Tentar novamente';}
   finally{carregando=false;atualizar.disabled=false;destino.setAttribute('aria-busy','false');if(devolverFoco&&(document.activeElement===document.body||document.activeElement===atualizar))atualizar.focus({preventScroll:true});}
  }
