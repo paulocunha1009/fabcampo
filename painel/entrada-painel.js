@@ -15,7 +15,7 @@ function conferir(){
 }
 function abrirFuncao(tipo){
   if(!conectado)return;
-  const botao=document.querySelector(`[data-tipo="${tipo}"]`);
+  const botao=document.querySelector(`button[data-tipo="${tipo}"]`);
   const selecionado=botao.getAttribute('aria-pressed')==='true';
   if(!selecionado&&botao.disabled){$('estado-funcoes').textContent='Existe uma edição em andamento. Volte à função aberta e guarde a prévia ou descarte a edição antes de trocar de função. Para retomar depois, salve também no painel.';return;}
   if(!selecionado)botao.click();
@@ -34,7 +34,7 @@ $('abrir-rascunhos-central').addEventListener('click',()=>abrirLista(false));
 $('abrir-publicacoes-central').addEventListener('click',()=>abrirLista(true));
 const orientacaoReportagem=$('orientacao-trabalho').innerHTML;
 function ajustarFuncao(){
-  const evento=document.querySelector('[data-tipo="eventos"]').getAttribute('aria-pressed')==='true';
+  const evento=document.querySelector('button[data-tipo="eventos"]').getAttribute('aria-pressed')==='true';
   for(const id of ['ir-publicacao','area-publicacao','acervo-equipe'])$(id).hidden=evento;
   $('publicacao-evento').hidden=!evento;
   document.querySelector('[data-atalho-painel="acervo"]').hidden=evento;

@@ -18,13 +18,13 @@ export function abrirRascunhoRemoto(documento){
   if(!pronto) throw new Error('Aguarde o carregamento dos registros.');
   if(!$('cancelar-edicao').hidden) throw new Error('Guarde a edição local antes de abrir outro rascunho.');
   const registro=validarRegistro(documento.tipo,documento.registro);
-  document.querySelector(`[data-tipo="${documento.tipo}"]`).click();
+  document.querySelector(`button[data-tipo="${documento.tipo}"]`).click();
   const indice=conteudo[tipo].length;conteudo[tipo].push(registro);
   listar(String(indice));escolher();bloquearTroca(false);
   informar('Rascunho do painel aberto para edição. Nenhum conteúdo foi publicado.');
 }
 function bloquearTroca(alterado){
-  document.querySelectorAll('[data-tipo]').forEach(b => { b.disabled = alterado; });
+  document.querySelectorAll('button[data-tipo]').forEach(b => { b.disabled = alterado; });
   $('registro-editorial').disabled = alterado;
   $('baixar-rascunho').disabled = alterado || !pronto;
   $('cancelar-edicao').hidden = !alterado;
@@ -105,9 +105,9 @@ function escolher(){
   if(registro){ previa(registro); informar('Registro carregado para revisão. Nenhuma alteração foi publicada.'); }
   else { $('previa-editorial').replaceChildren(); $('previa-editorial').textContent = 'Preencha os campos e guarde no rascunho para conferir.'; $('pendencias-editoriais').textContent = ''; }
 }
-document.querySelectorAll('[data-tipo]').forEach(botao => botao.addEventListener('click', () => {
+document.querySelectorAll('button[data-tipo]').forEach(botao => botao.addEventListener('click', () => {
   tipo = botao.dataset.tipo;
-  document.querySelectorAll('[data-tipo]').forEach(b => b.setAttribute('aria-pressed', String(b === botao)));
+  document.querySelectorAll('button[data-tipo]').forEach(b => b.setAttribute('aria-pressed', String(b === botao)));
   document.querySelectorAll('[data-campos]').forEach(bloco => { bloco.hidden = bloco.dataset.campos !== tipo; });
   listar(); escolher();
 }));

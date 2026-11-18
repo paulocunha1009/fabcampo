@@ -1,7 +1,7 @@
 import {descreverEstadoEdicao} from './estado-edicao.mjs?v=20261111-3';
 import { requestAuthorizedAction } from './login.js';
 import { EDITORIAL_API } from './auth-config.js';
-import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261112-20';
+import { obterRegistroAtual, abrirRascunhoRemoto } from './painel.js?v=20261118-1';
 import {descreverPublicacao,correspondeFiltroMateria,resumirFiltroMaterias,estadoConfirmadoMateria,dataEdicaoMateria,ordenarMaterias,contarMaterias} from './lista-materias.mjs?v=20261112-21';
 const $=id=>document.getElementById(id);
 const endpoint=EDITORIAL_API.replace(/\/me$/,'/rascunhos');

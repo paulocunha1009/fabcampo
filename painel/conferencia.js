@@ -1,7 +1,7 @@
 import {requestAuthorizedAction} from './login.js';
 import {EDITORIAL_API} from './auth-config.js';
-import {obterVinculoPublicacao,obterVinculoEvento} from './rascunhos.js?v=20261112-21';
-import {obterRegistroAtual} from './painel.js?v=20261112-20';
+import {obterVinculoPublicacao,obterVinculoEvento} from './rascunhos.js?v=20261118-1';
+import {obterRegistroAtual} from './painel.js?v=20261118-1';
 import {conferirVersaoSalva} from './conferencia-core.mjs?v=20261112-20';
 const $=id=>document.getElementById(id),button=$('conferir-versao-salva');let epoch=0,busy=false;
 const tipo=()=>document.querySelector('[data-tipo][aria-pressed="true"]').dataset.tipo;

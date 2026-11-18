@@ -2,6 +2,10 @@
 
 Portal educacional do Assentamento Lagoa do Mineiro, desenvolvido pela EEMPC Francisco Araújo Barros. O frontend usa HTML, CSS e JavaScript no GitHub Pages; os recursos de IA usam um backend Node.js na Vercel.
 
+## Painel da equipe - 18/11/2026
+
+Reportagens e eventos têm telas distintas de lista, edição e revisão/publicação. Consulte [Reestruturação do painel](PAINEL_REESTRUTURADO_2026-11-18.md) para navegação, preservação dos registros, testes e manutenção.
+
 ## Atualização visual e revisão técnica
 
 Estado revisto em 16/11/2026. Consulte [Melhorias e auditoria de novembro](ATUALIZACOES_PORTAL_2026-11-16.md) para o histórico das entregas, arquivos, paleta, testes e pendências.
