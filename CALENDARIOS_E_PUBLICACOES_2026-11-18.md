@@ -38,3 +38,10 @@ O teste real identificou que o repositório usa o novo subject imutável do GitH
 ## Confirmação da disponibilização
 
 Backend `f2db23f` promovido no domínio oficial. Frontend `38b22cc` publicado em master. A assinatura “Campo Digital — Agenda da escola” foi confirmada na conta do professor. A execução [44424211819](https://github.com/paulocunha1009/fabcampo/actions/runs/44424211819) confirmou a identidade do executor e respondeu `sem-pendencias`, sem publicar conteúdo de teste. Consulta pública da agenda respondeu 200 e rotas privadas sem autorização responderam 401. Backend de produção: 235 testes aprovados; testes específicos da identidade repetidos após correção e aprovados. Uma publicação futura real ainda deve ter seu estado conferido no portal após o envio.
+
+
+### Refinamento responsivo dos calendários
+
+Calendários limitados a 336 px, com altura fixa das células e cabeçalho compacto. Na agenda pública e no painel, a grade usa duas colunas quando o próprio bloco tem espaço; abaixo desse limite, os elementos se organizam em sequência. Seletores de datas adicionais continuam recolhidos até o usuário abri-los. Mesmos campos e ouvintes são preservados ao agrupar os controles: nenhuma alteração da API, da fila ou do Google Agenda.
+
+Verificação de navegador ampliada para limitar largura e altura da grade e confirmar o posicionamento ao lado das informações. Agenda pública conferida em 320, 390, 768, 1024, 1280 e 1440 px, nos dois temas; painel em seis larguras. Contraste, seleção de dias, retorno à lista completa e fluxo de revisão mantidos.
