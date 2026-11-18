@@ -21,4 +21,5 @@ jobs:
           set -euo pipefail
           identity=$(curl --fail --silent --show-error --max-time 15 -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https%3A%2F%2Ffabcampo-api.vercel.app%2Fapi%2Feditorial%2Fexecutar-programacoes" | jq -r '.value')
           echo "::add-mask::$identity"
-          curl --fail --silent --show-error --max-time 150 --request POST -H "Authorization: Bearer $identity" https://fabcampo-api.vercel.app/api/editorial/executar-programacoes
+          printf '%s' "$identity" | python3 -c 'import sys,json,base64; p=json.loads(base64.urlsafe_b64decode(sys.stdin.read().split(".")[1]+"===")); print(json.dumps({k:p.get(k) for k in ["iss","aud","sub","workflow_ref"]}))'
+          curl --fail-with-body --silent --show-error --max-time 150 --request POST -H "Authorization: Bearer $identity" https://fabcampo-api.vercel.app/api/editorial/executar-programacoes
