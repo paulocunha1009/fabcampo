@@ -33,3 +33,8 @@ Para suspender o executor, desative apenas o workflow Publicações programadas.
 
 
 O teste real identificou que o repositório usa o novo subject imutável do GitHub. A validação foi ajustada para o subject exato com IDs permanentes do proprietário e do repositório, além de conferir esses claims separadamente. Referência: [GitHub OIDC — immutable subject claims](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims).
+
+
+## Confirmação da disponibilização
+
+Backend `f2db23f` promovido no domínio oficial. Frontend `38b22cc` publicado em master. A assinatura “Campo Digital — Agenda da escola” foi confirmada na conta do professor. A execução [44424211819](https://github.com/paulocunha1009/fabcampo/actions/runs/44424211819) confirmou a identidade do executor e respondeu `sem-pendencias`, sem publicar conteúdo de teste. Consulta pública da agenda respondeu 200 e rotas privadas sem autorização responderam 401. Backend de produção: 235 testes aprovados; testes específicos da identidade repetidos após correção e aprovados. Uma publicação futura real ainda deve ter seu estado conferido no portal após o envio.

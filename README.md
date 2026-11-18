@@ -94,3 +94,8 @@ A reportagem sobre mudanças climáticas oferece uma planilha educativa para fam
 As decisões executadas estão em [DECISOES_IMPLANTACAO_VERCEL.md](DECISOES_IMPLANTACAO_VERCEL.md). A configuração atual está em [backend/DEPLOY_VERCEL.md](backend/DEPLOY_VERCEL.md).
 
 O arquivo [PLANO_BACKEND_RAILWAY.md](PLANO_BACKEND_RAILWAY.md) é mantido somente como registro histórico da proposta substituída.
+
+
+### Calendário da escola e publicações programadas — 18/11/2026
+
+O calendário da página inicial usa somente eventos escolares publicados. O painel separa datas dos conteúdos e horários de publicação; a assinatura no Google recebe apenas eventos. Funcionamento, limites de atualização e verificação: [Calendários e publicações programadas](CALENDARIOS_E_PUBLICACOES_2026-11-18.md).
