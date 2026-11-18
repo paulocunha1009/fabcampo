@@ -1,3 +1,14 @@
 .agenda-escola{min-width:0}.agenda-escola h3{margin:20px 0 12px}.agenda-evento{padding:18px 0;border-bottom:1px solid #d6e1d2;overflow-wrap:anywhere}.agenda-evento h4{font-size:1.15rem;line-height:1.35;margin:0 0 14px}.agenda-evento-dados{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;margin:12px 0 18px;padding:14px;background:#eef4e9;border-radius:8px}.agenda-evento-dados dt{font-weight:700}.agenda-evento-dados dd{margin:0}.agenda-evento img{width:100%;height:auto;border-radius:8px}.agenda-legenda{font-size:.85rem}.agenda-anteriores{margin-top:22px}.agenda-anteriores>summary{cursor:pointer;font-weight:700;padding:12px 0}.agenda-anteriores[open]{border-top:1px solid #d6e1d2}.agenda-anteriores .agenda-evento:last-child{border-bottom:0}@media(max-width:480px){.agenda-evento-dados{grid-template-columns:1fr;gap:4px}.agenda-evento-dados dd{margin-bottom:8px}}
 
 .agenda-calendario{background:#215b39;color:#fff;padding:12px 16px;border:0;border-radius:8px;font:inherit;cursor:pointer;max-width:100%}.agenda-calendario:hover{background:#173e29}.agenda-calendario:focus-visible{outline:3px solid #bc8c2a;outline-offset:3px}
+
+/* A agenda usa superfícies próprias em cada tema, inclusive nos dados dinâmicos. */
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-escola{color:#f2eedf}
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-escola :is(h2,h3,h4,dt,strong,time){color:#f2eedf}
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-escola :is(p,dd,summary){color:#cfddcc}
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-evento-dados{background:#213f31;color:#f2eedf;border:1px solid #3b5748}
+html[data-tema=escuro]:not([data-alto-contraste]) :is(.agenda-evento,.agenda-anteriores[open]){border-color:#3b5748}
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-escola .selo{color:#e3be62}
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-calendario{background:#e3be62;color:#152e23}
+html[data-tema=escuro]:not([data-alto-contraste]) .agenda-calendario:hover{background:#f3d78b}
+@media print{html[data-tema] .agenda-evento-dados{background:#fff!important;color:#111!important;border:1px solid #aaa}}
