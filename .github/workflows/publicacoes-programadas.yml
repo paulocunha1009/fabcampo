@@ -1,0 +1,24 @@
+name: Publicações programadas
+on:
+  schedule:
+    - cron: '3-58/5 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: publicacoes-programadas
+  cancel-in-progress: false
+jobs:
+  executar:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Executar publicação vencida com identidade temporária
+        shell: bash
+        run: |
+          set -euo pipefail
+          identity=$(curl --fail --silent --show-error --max-time 15 -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=https%3A%2F%2Ffabcampo-api.vercel.app%2Fapi%2Feditorial%2Fexecutar-programacoes" | jq -r '.value')
+          echo "::add-mask::$identity"
+          curl --fail --silent --show-error --max-time 150 --request POST -H "Authorization: Bearer $identity" https://fabcampo-api.vercel.app/api/editorial/executar-programacoes

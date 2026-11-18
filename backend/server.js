@@ -1,3 +1,5 @@
+import {obterAgendaPublica} from './lib/school-calendar.mjs';
+import {criarRouterProgramacoes} from './lib/editorial-publication-jobs.js';
 import {createMuralRouter} from './lib/caravana-mural.js';
 import {createScheduleRouter} from './lib/editorial-schedules.js';
 /**
@@ -130,12 +132,15 @@ app.use(cors({
   methods: ['POST', 'GET'],
 }));
 
+app.get('/api/agenda-escola.ics',async(_req,res)=>{try{res.type('text/calendar; charset=utf-8').set('Content-Disposition','inline; filename=agenda-escola.ics').send(await obterAgendaPublica());}catch{res.status(503).type('text/plain').send('Agenda temporariamente indisponível.');}});
+
 app.use(createEditorialImageRouter({ auth: editorialAuth }));
 app.use(createDraftRouter({ auth: editorialAuth }));
 app.use(createReportRouter({auth:editorialAuth,aiClient,rateLimiter,model:GEMINI_MODEL,maxTokens:MAX_TOKENS}));
 app.use(createPublicationRouter({auth:editorialAuth}));
 app.use(createTeamRouter({auth:editorialAuth}));
 app.use(createScheduleRouter({auth:editorialAuth}));
+app.use(criarRouterProgramacoes({auth:editorialAuth}));
 app.use(createMuralRouter({auth:editorialAuth}));
 app.use('/api/editorial/cards', express.json({ limit: '64kb' }));
 app.use(express.json({ limit: '20kb' }));

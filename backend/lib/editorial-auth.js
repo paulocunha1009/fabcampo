@@ -56,6 +56,10 @@ export function createEditorialAuth({
   async function authenticate(authorization, {publicar=false}={}) {
     if (!configured) throw deny(503, 'EDITORIAL_NOT_CONFIGURED');
     const account = await identify(authorization);
+    return authorizeStored(account,{publicar});
+  }
+  async function authorizeStored(account,{publicar=false}={}) {
+    if(!account||typeof account.id!=='string'||typeof account.email!=='string')throw deny(403,'EDITORIAL_ACCESS_DENIED');
     let publisher=subjects.has(account.id);
     let preparer=preparers.has(account.id);
     const member=teamEnabled&&!isManager(account)?await team.find(account.email):null;
@@ -76,6 +80,6 @@ export function createEditorialAuth({
     return account;
   }
 
-  return { configured, authenticate, identify, team, approvedEmails:[...approvedEmails],isManager:account=>teamEnabled&&isManager(account),isProtectedEmail:email=>email===managerEmail,
+  return { configured, authenticate, identify, authorizeStored, team, approvedEmails:[...approvedEmails],isManager:account=>teamEnabled&&isManager(account),isProtectedEmail:email=>email===managerEmail,
     permissions:account=>({rascunhos:publisherAccounts.has(account)||draftAccounts.has(account),publicar:publisherAccounts.has(account)}) };
 }
