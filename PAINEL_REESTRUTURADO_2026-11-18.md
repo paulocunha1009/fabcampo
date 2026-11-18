@@ -45,3 +45,10 @@ Para repetir: Playwright e Chrome instalados, executar `node tools/test-painel-o
 ## Publicação e recuperação
 
 Esta é uma entrega de frontend na branch master. Não exige promoção da API nem sincronização integral com main. Para reverter, revisar e reverter apenas o commit desta interface; preservar arquivos de notícias, agenda e demais edições posteriores. Os rascunhos privados não fazem parte do commit e não devem ser recriados numa reversão visual.
+
+
+### Ajustes após uso pelo professor
+
+Eventos continuam publicáveis sem imagem. A etapa de mídia agora explicita a opção de seguir sem foto, sem instruções de capa obrigatória das reportagens. Agendamentos passou de diálogo modal para tela própria, mantendo menu e botão de retorno disponíveis. O fechamento invalida consultas pendentes sem alterar a programação salva. Publicação de reportagens, eventos e acervo só aparece para contas com permissão `publicar`; contas de rascunho mantêm edição, salvamento e revisão. O backend continua responsável pela autorização de cada operação.
+
+O teste de navegador cobre entrada e saída de Agendamentos, ausência de modal, seis larguras e alternância das permissões de publicação. Nenhuma programação real foi alterada durante esses testes.

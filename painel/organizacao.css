@@ -19,3 +19,5 @@ body[data-gestao-tela=ajuda] .inicio-painel>.funcoes-grade,body[data-gestao-tela
 .gestao-menu:hover:not(:disabled){background:#edf4e8;color:#224e32}.gestao-filtros button:hover:not(:disabled){background:#e6eee1;color:#23472e}.gestao-filtros button[aria-pressed=true]:hover:not(:disabled){background:#173e2c;color:#fff}.gestao-lista #listar-rascunhos:hover:not(:disabled){background:#edf4e8}
 
 .gestao-nav button,.gestao-filtros button,.etapas-editor button{transition:none}
+
+.gestao-agendamentos{background:var(--surface,#fffdf7);border:1px solid #cad8c9;border-radius:16px;padding:clamp(16px,3vw,32px);min-width:0}.gestao-agendamentos .painel-acoes{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.gestao-agendamentos h2{margin:0}.gestao-agendamentos input,.gestao-agendamentos select{max-width:100%;box-sizing:border-box}.gestao-agendamentos ul{padding-left:0;list-style:none}.gestao-agendamentos li{padding:16px;margin:16px 0;background:var(--surface-soft,#eff4e9);border-radius:12px}.gestao-agendamentos li a{display:inline-block;margin:8px 16px 8px 0}.gestao-agendamentos label{display:block;margin-top:16px}
