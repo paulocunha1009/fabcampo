@@ -30,3 +30,6 @@ Referência Google: [Adicionar uma agenda por URL](https://support.google.com/ca
 Backend e workflow ficam em main. Frontend continua em master. Não mesclar branches inteiras. Nenhum novo agendamento de publicação é criado na implantação. O fluxo manual continua disponível.
 
 Para suspender o executor, desative apenas o workflow Publicações programadas. Preserve a fila para conferência; desativar a execução não cancela itens. Não reverta a agenda pública JSON nem os conteúdos publicados por outros editores.
+
+
+O teste real identificou que o repositório usa o novo subject imutável do GitHub. A validação foi ajustada para o subject exato com IDs permanentes do proprietário e do repositório, além de conferir esses claims separadamente. Referência: [GitHub OIDC — immutable subject claims](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims).
