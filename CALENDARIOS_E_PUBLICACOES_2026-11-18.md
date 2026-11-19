@@ -45,3 +45,6 @@ Backend `f2db23f` promovido no domínio oficial. Frontend `38b22cc` publicado em
 Calendários limitados a 336 px, com altura fixa das células e cabeçalho compacto. Na agenda pública e no painel, a grade usa duas colunas quando o próprio bloco tem espaço; abaixo desse limite, os elementos se organizam em sequência. Seletores de datas adicionais continuam recolhidos até o usuário abri-los. Mesmos campos e ouvintes são preservados ao agrupar os controles: nenhuma alteração da API, da fila ou do Google Agenda.
 
 Verificação de navegador ampliada para limitar largura e altura da grade e confirmar o posicionamento ao lado das informações. Agenda pública conferida em 320, 390, 768, 1024, 1280 e 1440 px, nos dois temas; painel em seis larguras. Contraste, seleção de dias, retorno à lista completa e fluxo de revisão mantidos.
+
+
+A pedido do professor, a agenda pública voltou à coluna original da página inicial, com calendário compacto acima dos detalhes do evento, inclusive em tela cheia. Foi retirada a divisão lateral interna dessa agenda e restaurada a proporção original entre notícias e agenda. O painel mantém suas colunas responsivas.

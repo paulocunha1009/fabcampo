@@ -11,8 +11,8 @@
 .cal-campo__topo button:last-child{grid-column:1/-1;justify-self:end;font-size:12px;padding-inline:12px;height:30px;min-height:30px}
 .cal-campo__dias,.cal-campo__semana{gap:2px}.cal-campo__dias button{border-radius:6px}
 .agenda-escola{container-type:inline-size}.agenda-layout{display:grid;gap:24px;min-width:0;align-items:start}.agenda-controles{min-width:0}.agenda-controles .agenda-mes{margin:0 0 12px}.agenda-controles>button{font-size:13px;padding:9px 12px;margin:0 8px 10px 0}.agenda-assinatura{max-width:336px}.agenda-assinatura p{font-size:13px;line-height:1.6}.agenda-assinatura input{font-size:12px;min-width:0}.agenda-layout>#lista-agenda-escola{min-width:0}.agenda-layout>#lista-agenda-escola>h3{margin-top:0}
-@container(min-width:620px){.agenda-layout{grid-template-columns:280px minmax(0,1fr);gap:28px}}
-@media(min-width:1100px){.painel-home{grid-template-columns:minmax(0,.8fr) minmax(0,1.35fr);gap:32px}}
+
+
 #publicacao-programada,.gestao-programacoes{container-type:inline-size;min-width:0} .programacao-layout{display:grid;gap:20px;align-items:start}.programacao-layout>*,.programacao-campos{min-width:0}.programacao-campos>label:first-child{margin-top:0!important}.programacao-campos>input{width:100%;max-width:100%;box-sizing:border-box}#publicacao-programada .cal-campo{max-width:336px;margin:0}.programacao-campos>button{margin:8px 8px 0 0;font-size:13px;white-space:normal}.programacao-campos>p{font-size:13px;line-height:1.65}.programacao-campos .confirmacao-editorial{margin-block:16px}
 @container(min-width:610px){.programacao-layout{grid-template-columns:280px minmax(0,1fr);gap:24px}}
 .calendario-data-evento .cal-campo,#calendario-data-menu{max-width:336px;width:100%;margin-top:12px}.calendario-data-evento summary,#agendamento-form details>summary{font-size:13px;cursor:pointer;padding:8px 0}
