@@ -17,3 +17,7 @@
 @container(min-width:610px){.programacao-layout{grid-template-columns:280px minmax(0,1fr);gap:24px}}
 .calendario-data-evento .cal-campo,#calendario-data-menu{max-width:336px;width:100%;margin-top:12px}.calendario-data-evento summary,#agendamento-form details>summary{font-size:13px;cursor:pointer;padding:8px 0}
 @media(max-width:420px){.cal-campo{padding:10px}.cal-campo__dias button{height:34px;min-height:34px;font-size:13px}.cal-campo__topo strong{font-size:13px}.cal-campo__semana{font-size:10px}#publicacao-programada{padding:12px}.programacao-layout{gap:16px}.agenda-layout{gap:20px}}
+
+/* Mantém o encaixe das telas reduzidas; a volta ao formato vertical vale só no desktop amplo. */
+@container(min-width:620px){.agenda-layout{grid-template-columns:280px minmax(0,1fr);gap:28px}}
+@media(min-width:1100px){.agenda-layout{grid-template-columns:minmax(0,1fr);gap:24px}}

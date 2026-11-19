@@ -48,3 +48,6 @@ Verificação de navegador ampliada para limitar largura e altura da grade e con
 
 
 A pedido do professor, a agenda pública voltou à coluna original da página inicial, com calendário compacto acima dos detalhes do evento, inclusive em tela cheia. Foi retirada a divisão lateral interna dessa agenda e restaurada a proporção original entre notícias e agenda. O painel mantém suas colunas responsivas.
+
+
+Esclarecimento aplicado: a organização vertical anterior é exclusiva de desktop amplo (a partir de 1100 px). Abaixo disso, a agenda mantém o encaixe responsivo por largura do próprio bloco, incluindo duas colunas quando há espaço e sequência vertical no celular.
