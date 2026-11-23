@@ -27,3 +27,6 @@ desktop.ini
 
 # ── SESSÃO DO ASSISTENTE DE DESENVOLVIMENTO ───────────────────
 .claude/
+
+# Copias de pesquisa e indice integral somente local
+documentos/pesquisa/_local/

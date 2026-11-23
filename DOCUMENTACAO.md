@@ -1214,3 +1214,8 @@ Melhorias futuras que não bloqueiam a primeira versão:
 
 O avatar futuro deve manter o pássaro como assinatura visual, usar as cores verde, azul e amarelo do Campo Digital e evitar aparência de fotografia real. A ilustração precisa funcionar em 24 px no botão, 42 px no cabeçalho e em tamanhos maiores para materiais de apresentação.
 
+
+
+## Acervo de pesquisa — 23/11/2026
+
+As 20 referências aprovadas estão organizadas em [documentos/pesquisa/README.md](documentos/pesquisa/README.md), com fichas, autoria, licenças, situação dos integrais e cuidados de interpretação. Originais com redistribuição identificada ficam em rquivos/; cópias locais e índice textual ficam em _local/, excluído do Git. A ferramenta 	ools/consultar-pesquisa.py permite consulta offline com fonte e página. O catálogo não alimenta automaticamente o Gemini nem resolve divergências históricas.
