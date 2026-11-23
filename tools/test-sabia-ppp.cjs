@@ -3,8 +3,27 @@ for(const client of ['standalone','module'])for(const item of [
  {q:'Em que ano foi criada a escola?',answer:/3 de março de 2011/},
  {q:'Quem é a diretora da escola?',answer:/Maria Ivaniza Martins de Sousa Nascimento/},
  {q:'Quem foi a primeira diretora?',answer:/não identifica quem foi a primeira diretora/},
- {q:'Quem fundou a escola?',answer:/Não identifica uma única pessoa como fundadora/}
+ {q:'Quem fundou a escola?',answer:/Não identifica uma única pessoa como fundadora/},
+ {q:'Como surgiu a escola?',answer:/conquista coletiva/},
+ {q:'Resuma a história da escola',answer:/3 de março de 2011/},
+ {q:'Qual é a origem da escola?',answer:/homenageia Francisco Araújo Barros/}
 ])test(client+': PPP disponível quando a API retorna 429: '+item.q,async()=>{
  const context=vm.createContext({window:{PORTAL_AI_ENDPOINT:'https://api.example.test',location:{pathname:'/',href:'https://fabcampo.com.br/',origin:'https://fabcampo.com.br'}},document:{readyState:'loading',addEventListener(){}},AbortSignal,fetch:async()=>({ok:false,status:429,json:async()=>({error:'Limite'})})});
  let source=fs.readFileSync(client==='standalone'?'js/chat-standalone.js':'js/services/ai-service.js','utf8');source=client==='standalone'?source.replace('  // ── Inicia quando o DOM estiver pronto','  globalThis.ask=perguntarAssistente;\n  // ── Inicia quando o DOM estiver pronto'):source.replace('export async function','async function')+'\nglobalThis.ask=perguntarAssistente;';vm.runInContext(source,context);const result=await context.ask(item.q,[]);assert.equal(result.local,true);assert.match(result.content,item.answer);assert.match(result.content,/PPP/);assert.match(result.content,/sem geração por IA/);assert.equal(result.pages[0].url,'pages/historia.html');
+});
+
+for(const client of ['standalone','module'])test(client+': 32 perguntas básicas simultâneas usam o acervo sem consumir API; perguntas abertas preservam IA',async()=>{
+ let calls=0;
+ const context=vm.createContext({window:{PORTAL_AI_ENDPOINT:'https://api.example.test',location:{pathname:'/',href:'https://fabcampo.com.br/',origin:'https://fabcampo.com.br'}},document:{readyState:'loading',addEventListener(){}},AbortSignal,fetch:async()=>{calls++;return {ok:true,json:async()=>({answer:'Resposta do serviço simulado'})};}});
+ let source=fs.readFileSync(client==='standalone'?'js/chat-standalone.js':'js/services/ai-service.js','utf8');
+ source=client==='standalone'?source.replace('  // ── Inicia quando o DOM estiver pronto','  globalThis.ask=perguntarAssistente;\n  // ── Inicia quando o DOM estiver pronto'):source.replace('export async function','async function')+'\nglobalThis.ask=perguntarAssistente;';
+ vm.runInContext(source,context);
+ const questions=['Como surgiu a escola?','Quem é a diretora da escola?','Resuma a história da escola','Em que ano foi criada a escola?'];
+ const results=await Promise.all(Array.from({length:32},(_,i)=>context.ask(questions[i%questions.length],[])));
+ assert.equal(calls,0);assert.equal(results.length,32);
+ for(const result of results){assert.equal(result.local,true);assert.match(result.content,/sem geração por IA/);assert.match(result.content,/PPP/);}
+ for(const q of ['Como surgiu a escola e como isso se relaciona com a comunidade?','Gere um quiz sobre a escola','Quem é a diretora da escola? Compare com a primeira diretora.']){
+  const result=await context.ask(q,[]);assert.equal(result.content,'Resposta do serviço simulado');
+ }
+ assert.equal(calls,3);
 });

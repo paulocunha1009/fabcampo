@@ -289,7 +289,7 @@
       historico.push({ role: 'user', content: mensagemReal });
       container.removeChild(typing);
 
-      if (resposta.local) adicionarMensagem(container, 'Modo local: a IA não respondeu agora. Você pode continuar usando o acervo do portal.', 'bot');
+      if (resposta.local) adicionarMensagem(container, resposta.localReason === 'verified' ? 'Resposta direta do acervo conferido da escola, sem usar a IA.' : 'Modo local: a IA não respondeu agora. Você pode continuar usando o acervo do portal.', 'bot');
       if (resposta.type === 'quiz') {
         renderizarQuiz(container, resposta);
         historico.push({ role: 'assistant', content: '[Quiz sobre "' + (resposta.topic || '') + '" gerado]' });
@@ -314,6 +314,10 @@
 
   // ── Comunicação com o backend / fallback local ───────────────────────────────
   function perguntarAssistente(mensagem, hist) {
+    if (perguntaDiretaEscola(mensagem)) {
+      var resposta = respostaEscolaPPP(mensagem);
+      if (resposta) { resposta.local = true; resposta.localReason = 'verified'; return Promise.resolve(resposta); }
+    }
     // Se não tiver endpoint real configurado, usa fallback local imediatamente
     if (!ENDPOINT || ENDPOINT.includes('seu-backend')) {
       return Promise.resolve(usarRespostaLocal(mensagem));
@@ -346,6 +350,11 @@
   }
 
 
+function perguntaDiretaEscola(pergunta) {
+  const t=pergunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[?.!]+$/,'').trim();
+  return /^(como surgiu a escola|qual (?:e )?a origem da escola|resuma a historia da escola|em que ano foi criada a escola|quando a escola comecou a funcionar|quem (?:e|foi) a (?:primeira )?diretora(?: da escola)?|quem fundou a escola)$/.test(t);
+}
+
 function respostaEscolaPPP(pergunta) {
   const t=pergunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
   if(/^(gere|recomende)|quiz|perguntas de quiz/.test(t)||!/escola|ppp|ivaniza|diretora/.test(t))return null;
@@ -353,6 +362,7 @@ function respostaEscolaPPP(pergunta) {
   if(/diretor|direcao/.test(t))text='Segundo o PPP de 2025, a diretora geral indicada é Maria Ivaniza Martins de Sousa Nascimento (páginas 7 e 80 do PDF, gestão 2025–2027). O documento consultado não identifica quem foi a primeira diretora nem comprova alterações posteriores de gestão.';
   else if(/quem/.test(t)&&/fund|criou|cria|criacao/.test(t))text='O PPP apresenta a escola como conquista coletiva das comunidades do Assentamento Lagoa do Mineiro, do MST e do poder público estadual/SEDUC (páginas 2–4 do PDF). Não identifica uma única pessoa como fundadora. Francisco Araújo Barros é a liderança homenageada no nome da escola, não seu fundador (páginas 16–17).';
   else if(/quando|ano|data|funcion/.test(t)&&/cria|fund|inicio|comec|funcion|nasceu/.test(t))text='Segundo o PPP de 2025, a escola iniciou seu funcionamento em 3 de março de 2011 (páginas 3 e 7 do PDF). Início de funcionamento, autorização e inauguração são marcos diferentes. O campo de fundação em 15/02/2012, no bloco da mantenedora, exige esclarecimento com a gestão antes de ser tratado como a mesma data.';
+  else if(/origem|historia|como.*(?:surgiu|nasceu|criada)|resum/.test(t))text='A Escola Francisco Araújo Barros nasceu de uma conquista coletiva das comunidades do Assentamento Lagoa do Mineiro, articulada ao MST e ao poder público estadual/SEDUC. Segundo o PPP de 2025, começou a funcionar em 3 de março de 2011 (páginas 2–4 e 7 do PDF). Seu nome homenageia Francisco Araújo Barros, agricultor e liderança da luta pela terra; o documento não o apresenta como fundador da escola (páginas 16–17). Início das aulas, autorização e inauguração são marcos diferentes; consulte os detalhes e as ressalvas na página História.';
   if(!text)return null;
   const url=window.location.pathname.includes('/pages/')?'historia.html':'pages/historia.html';
   return {type:'recommendations',content:text+' Fonte: PPP da Escola Francisco Araújo Barros, edição 2025, fornecido pelo professor e conferido pela turma. Resposta do acervo local, sem geração por IA.',pages:[{title:'Nossa escola: informações do PPP',url,reason:'Fonte, páginas consultadas e limites das informações na página História.'}]};
