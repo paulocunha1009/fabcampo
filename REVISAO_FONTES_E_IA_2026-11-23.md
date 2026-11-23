@@ -25,3 +25,10 @@ Datas de posse divergentes, primeira direção, matrícula atual e outros dados 
 - API: cdbe21d, verificações automáticas aprovadas, implantação CtLXSazvNoyhruA1EPNmECgETE9X promovida como Production Current no domínio fabcampo-api.vercel.app.
 - Antes da promoção, a API pública ainda usava a versão anterior e respondeu incorretamente que os 249 alunos eram de 2025. Depois da promoção, o teste real retornou HTTP 200, atribuiu o dado a Nascimento e Diniz, página 3 do PDF, e esclareceu que não comprova matrícula de 2025/2026.
 - Foram usadas duas chamadas reais ao assistente para essa conferência; os testes automatizados não usam o Gemini real. Uma resposta correta não garante ausência de erros em todas as perguntas; a revisão humana permanece necessária.
+
+## Segunda rodada — atribuição dos relatos e datas divergentes
+
+- Relatos de Francisca Martins, Maria Expedita Irineu da Silva e Cosma Damasceno passaram a ser apresentados como sínteses, com as páginas do trabalho de Nascimento e Diniz e as datas das entrevistas de 2016. Não são entrevistas realizadas pela equipe do portal; o cargo de Cosma é identificado como registro daquele período. A síntese preserva a ressalva sobre as dificuldades do campo experimental.
+- A página História atribui 19/09/1986 ao relatório Ipea (2016, p. 29 impressa, posição 31 do PDF) e explicita a diferença para 25/07/1986 no PPP (2025, páginas 12 e 15 do PDF). A conciliação dos documentos permanece pendente.
+- A SábiaIA recebe a divergência com prioridade no contexto, inclusive em perguntas amplas. O início de funcionamento em 03/03/2011 não é confundido com autorização ou campo de fundação de 2012. A primeira direção continua sem identificação confirmada na base.
+- 239 testes do backend e duas verificações de integridade do catálogo passaram, além da conferência dos links internos. Nenhuma cota ou conta foi alterada.
