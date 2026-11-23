@@ -1,0 +1,39 @@
+{
+  "reviewed": "2026-11-23",
+  "policy": "Sínteses de trechos conferidos; o catálogo de vinte obras não implica leitura integral de todas elas.",
+  "entries": [
+    {
+      "id": "decreto-assentamento",
+      "topics": ["assentamento", "lagoa do mineiro", "desapropria", "92.826", "posse"],
+      "text": "O Decreto 92.826 é de 26/06/1986 e declara o imóvel Lagoa do Mineiro ou Córrego do Mineiro de interesse social para fins de desapropriação. Não é um decreto de criação do projeto datado de setembro. A Resolução Incra 21/2002 cita a Portaria 573 de 13/07/1987 na criação do projeto. São atos e marcos distintos; não deduzir a data da posse desses dois atos.",
+      "sources": [
+        {"title": "Brasil, Decreto 92.826/1986, art. 1º", "url": "https://planalto.gov.br/ccivil_03/decreto/1980-1989/1985-1987/d92826impressao.htm"},
+        {"title": "Incra, Resolução 21/2002, DOU 27/12/2002, p. 373", "url": "https://fabcampo.com.br/documentos/pesquisa/arquivos/13.pdf"}
+      ]
+    },
+    {
+      "id": "matriculas-historicas",
+      "topics": ["alunos", "estudantes", "turmas", "matricula", "249", "comunidades"],
+      "text": "O trabalho de Cícero Danilo Gomes do Nascimento e Aldiva Sales Diniz informa aproximadamente 249 estudantes em oito turmas, de 25 comunidades, na página 3 do PDF. O texto reúne entrevistas de 2016; não confirma matrícula de 2025 ou 2026. O ano de publicação do trabalho não foi confirmado. Para quantidade atual, solicitar registro atualizado à escola.",
+      "sources": [{"title": "Nascimento e Diniz, A EEM Francisco Araújo Barros, um símbolo de resistência camponesa no Ceará, PDF p. 3", "url": "https://sistemas.uvanet.br/sadoc/participante/trabalho/trab_pos_e9a9e829440d600e4bf750fb045fa338.pdf"}]
+    },
+    {
+      "id": "geografia-territorio",
+      "topics": ["geografia", "territorio", "educacao do campo", "pesquisa", "praticas docentes"],
+      "text": "Lima e Vasconcelos (2023) estudam a relação entre Educação do Campo e ensino de Geografia na escola Francisco Araújo Barros. O resumo apresenta pesquisa bibliográfica, trabalho de campo e grupo focal com docentes e destaca a importância de vincular práticas educativas à realidade dos educandos. Isso não mede resultados do portal Campo Digital nem comprova impacto de sua IA.",
+      "sources": [{"title": "Lima e Vasconcelos, Geografia Ensino & Pesquisa, 2023, resumo, PDF p. 1; CC BY-NC-SA 4.0", "url": "https://periodicos.ufsm.br/geografia/article/view/71125"}]
+    },
+    {
+      "id": "geografia-pesquisa-em-andamento",
+      "topics": ["geografia", "educacao do campo", "pesquisa", "metodologia"],
+      "text": "Paz e Vasconcelos (2023) apresentam pesquisa em andamento sobre Educação do Campo e ensino de Geografia na escola do assentamento. O resumo descreve pesquisa documental, bibliográfica e trabalho de campo, com proposta de recurso didático. Não apresentar uma proposta ou pesquisa em andamento como atividade concluída ou resultado já alcançado pela turma do portal.",
+      "sources": [{"title": "Paz e Vasconcelos, Revista Mutirõ, 2023, resumo, PDF p. 1; CC BY 4.0", "url": "https://periodicos.ufpe.br/revistas/mutiro/article/download/258897/44359"}]
+    },
+    {
+      "id": "interdisciplinaridade",
+      "topics": ["interdisciplin", "campo experimental", "ppp", "educacao do campo"],
+      "text": "Alves e colaboradores (2022) apresentam um resumo de encontro universitário sobre interdisciplinaridade na escola. Descrevem rodas de conversa e estudo do PPP, relacionando realidade do assentamento, formação e pertencimento. É um resumo de evento, não um artigo completo nem uma avaliação do portal atual.",
+      "sources": [{"title": "Alves et al., Encontros Universitários da UFC, 7(10), 2022, p. 1245", "url": "https://periodicos.ufc.br/eu/article/view/86002"}]
+    }
+  ]
+}

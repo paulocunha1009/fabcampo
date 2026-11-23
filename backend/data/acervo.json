@@ -4,7 +4,7 @@
     {
       "title": "História",
       "url": "pages/historia.html",
-      "sha256": "d9f800157cf6854ecb429e50af156d6629442cb8ddfa81057e03a19077025ed1",
+      "sha256": "a1872263d306ec4be124b34af577beb0babfec895f2858bdfa7426f5010463d1",
       "chunks": [
         {
           "section": "",
@@ -40,7 +40,7 @@
         },
         {
           "section": "Linha do tempo",
-          "text": "1986 Trabalhadores derrubam a cerca da DUCOCO. Três mártires perdem a vida no conflito. O Decreto nº 92.826, de 26 de junho de 1986, determina a desapropriação das terras. Em 19 de setembro, os trabalhadores tomam posse formal do assentamento."
+          "text": "1986 Trabalhadores derrubam a cerca da DUCOCO. Três mártires perdem a vida no conflito. O Decreto nº 92.826, de 26 de junho de 1986, declara o imóvel de interesse social para fins de desapropriação. Em 19 de setembro, os trabalhadores tomam posse formal do assentamento."
         },
         {
           "section": "Linha do tempo",
@@ -100,7 +100,7 @@
         },
         {
           "section": "Crescimento ao longo dos anos",
-          "text": "Hoje, o assentamento reúne 214 famílias — 130 assentadas e 90 agregadas — distribuídas nas sete comunidades. A escola EEMPC Francisco Araújo Barros, com 249 alunos distribuídos em 8 turmas em 2025 , atendendo estudantes de 25 comunidades do entorno, tornou-se o centro irradiador de educação e cultura. Adota a Pedagogia da Alternância para integrar o Tempo Escola ao Tempo Comunidade, valorizando os saberes do campo em cada etapa da formação."
+          "text": "Hoje, o assentamento reúne 214 famílias — 130 assentadas e 90 agregadas — distribuídas nas sete comunidades. A escola EEMPC Francisco Araújo Barros, registrada no estudo de Nascimento e Diniz com cerca de 249 alunos em 8 turmas, de 25 comunidades — dados históricos da pesquisa, não um levantamento de matrículas de 2025 ou 2026 —, tornou-se o centro irradiador de educação e cultura. Adota a Pedagogia da Alternância para integrar o Tempo Escola ao Tempo Comunidade, valorizando os saberes do campo em cada etapa da formação."
         },
         {
           "section": "Crescimento ao longo dos anos",
@@ -180,6 +180,10 @@
         },
         {
           "section": "Nossa escola: informações do PPP",
+          "text": "Em poucas palavras: a escola é uma conquista coletiva das comunidades do Assentamento Lagoa do Mineiro, articulada ao MST e ao poder público estadual/SEDUC. Começou a funcionar em 3 de março de 2011 . Seu nome homenageia Francisco Araújo Barros, agricultor e liderança da luta pela terra. O PPP não apresenta uma única pessoa como fundadora da escola. As fontes e a distinção entre as datas estão detalhadas abaixo."
+        },
+        {
+          "section": "Nossa escola: informações do PPP",
           "text": "Quando a escola começou a funcionar? Segundo o Projeto Político-Pedagógico (PPP), edição de 2025, a Escola Estadual de Ensino Médio e Profissional do Campo Francisco Araújo Barros iniciou seu funcionamento em 3 de março de 2011 . Esse marco aparece na apresentação e na identificação da escola (páginas 3 e 7 do PDF). Não se deve confundir início de funcionamento, autorização e inauguração."
         },
         {
@@ -199,75 +203,83 @@
           "text": "Fonte e conferência: Projeto Político-Pedagógico da Escola Estadual de Ensino Médio e Profissional do Campo Francisco Araújo Barros, edição 2025, arquivo de 85 páginas fornecido pelo professor. Referências acima usam a posição da página no PDF. A turma realizou a conferência das fontes em 17/11/2026. A proposta de atualização do curso de Informática é um documento separado e não foi tratada como alteração já aprovada do PPP."
         },
         {
-          "section": "Nossa escola: informações do PPP",
-          "text": "BRASIL. Decreto n.º 92.826, de 19 de setembro de 1986. Cria o Projeto de Assentamento Lagoa do Mineiro. Diário Oficial da União, Brasília, 1986."
+          "section": "Como estamos conferindo esta história",
+          "text": "A declaração para desapropriação, a posse da terra e a criação administrativa do projeto são marcos distintos. O Decreto 92.826 é de 26/06/1986; a Resolução Incra 21/2002 cita a Portaria 573, de 13/07/1987, na criação do projeto. Datas de posse apresentam diferenças entre o PPP e os estudos e permanecem em conferência com a escola."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
+          "text": "Os números de 249 estudantes, oito turmas e 25 comunidades aparecem na página 3 do estudo de Nascimento e Diniz, que reúne entrevistas de 2016. Eles não confirmam as matrículas atuais. Consultar o ato do Incra (DOU, p. 373) e ver o acervo de pesquisa ."
+        },
+        {
+          "section": "Como estamos conferindo esta história",
+          "text": "BRASIL. Decreto n.º 92.826, de 26 de junho de 1986. Declara o imóvel Lagoa do Mineiro ou Córrego do Mineiro de interesse social para fins de desapropriação. Não se confunde com a criação administrativa do projeto."
+        },
+        {
+          "section": "Como estamos conferindo esta história",
           "text": "BRASIL. Ministério do Desenvolvimento Agrário. Portaria n.º 573/MIRAD, de 1987. Cria oficialmente o PA Lagoa do Mineiro. Brasília: MIRAD, 1987."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "CALDART, Roseli Salete. Pedagogia do Movimento Sem Terra. 3. ed. São Paulo: Expressão Popular, 2004."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "CANUTO, Antônio; LUZ, Cássia Regina da S.; ANDRADE, Thiago Valentim P. (Orgs.). Conflitos no Campo — Brasil. Goiânia: CPT Nacional, 2022."
         },
         {
-          "section": "Nossa escola: informações do PPP",
-          "text": "CEARÁ. Decreto n.º 30.493, de 3 de março de 2011. Autoriza o funcionamento da EEMPC Francisco Araújo Barros. Diário Oficial do Estado do Ceará, Fortaleza, 2011."
+          "section": "Como estamos conferindo esta história",
+          "text": "ESCOLA ESTADUAL DE ENSINO MÉDIO E PROFISSIONAL DO CAMPO FRANCISCO ARAÚJO BARROS. Projeto Político-Pedagógico. Itarema, 2025, p. 7 do PDF. Registra início de funcionamento em 03/03/2011 e cita autorização pelo Decreto n.º 30.493, de 18/04/2011; conferir o ato original para uso normativo."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "COMISSÃO PASTORAL DA TERRA (CPT). Conflitos no Campo Brasil. Goiânia: CPT, 1986–2025."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "FERNANDES, Bernardo Mançano. A Formação do MST no Brasil. Petrópolis: Vozes, 2000."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "FREIRE, Paulo. Pedagogia do Oprimido. 17. ed. Rio de Janeiro: Paz e Terra, 1987."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "INCRA — Instituto Nacional de Colonização e Reforma Agrária. Relatório de assentamentos do Ceará. Brasília: INCRA, 2023."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "MARTINS, José de Souza. O Sujeito Oculto: ordem e transgressão na reforma agrária. Porto Alegre: UFRGS, 2003."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "SILVA, José Graziano da. A modernização dolorosa: estrutura agrária, fronteira agrícola e trabalhadores rurais no Brasil. Rio de Janeiro: Zahar, 1982."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "STÉDILE, João Pedro; FERNANDES, Bernardo Mançano. Brava Gente: a trajetória do MST e a luta pela terra no Brasil. São Paulo: Perseu Abramo, 1999."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "CEARÁ. Lei nº 17.533, de 22 de junho de 2021 (Lei Wilson Brandão). Regularização fundiária de assentamentos estaduais. Fortaleza: IDACE, 2021."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "DAMASCENO, Cosma dos Santos. Contribuições e desafios da Escola do Campo Francisco Araújo Barros para construção do projeto de Agricultura Camponesa do MST — Ceará. Dissertação — UFSC, Florianópolis, 2015."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "DO NASCIMENTO, Cícero Danilo G.; DINIZ, Aldiva Sales. A EEM Francisco Araújo Barros, um símbolo de resistência camponesa no Ceará. MAG/UVA, Sobral, CE."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "MST — Página do MST. Acampamento Francisco Araújo Barros completa dois anos. Por Tiago Pereira, 2016."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "MST — Página do MST. No Ceará, famílias Sem Terra comemoram conquista da terra após sete anos de luta. Por Aline Oliveira, 2021."
         },
         {
-          "section": "Nossa escola: informações do PPP",
+          "section": "Como estamos conferindo esta história",
           "text": "PONTO DE CULTURA \"Nós: Artistas da Vida\". Histórico do Assentamento Lagoa do Mineiro. Itarema, CE."
         },
         {
@@ -417,7 +429,7 @@
     {
       "title": "Educação do Campo",
       "url": "pages/reportagem-educacao.html",
-      "sha256": "ac9bd83f7d9100544a7b50db5f1f93b266e30710cb5a14e56120782767a1bb2d",
+      "sha256": "5740d075c7f73015d5bf9ede0d58cf20416aac777f6646858f3e0dca6c05786d",
       "chunks": [
         {
           "section": "",
@@ -605,7 +617,7 @@
         },
         {
           "section": "A EEMPC Francisco Araújo Barros: a escola que a comunidade conquistou",
-          "text": "249 alunos distribuídos em 8 turmas em 2025, provenientes de 25 comunidades do entorno do assentamento"
+          "text": "Cerca de 249 alunos em oito turmas, de 25 comunidades : registro histórico de Nascimento e Diniz (p. 3 do PDF), em trabalho com entrevistas de 2016; não representa matrícula atual."
         },
         {
           "section": "A EEMPC Francisco Araújo Barros: a escola que a comunidade conquistou",
@@ -756,67 +768,83 @@
           "text": "214 famílias · 7 comunidades · Itarema, CE · desde 1986"
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
+          "text": "No estudo de Lima e Vasconcelos (2023, p. 1 do PDF) , a Geografia é analisada em relação à Educação do Campo e à realidade vivida pelos estudantes da escola. A pesquisa envolve revisão bibliográfica, trabalho de campo e grupo focal com docentes."
+        },
+        {
+          "section": "O que as pesquisas ajudam a compreender",
+          "text": "Paz e Vasconcelos (2023, p. 1 do PDF) apresentam uma pesquisa então em andamento, com proposta de recurso didático. Já Alves e colaboradores (2022, resumo, p. 1245) discutem interdisciplinaridade, estudo do PPP e rodas de conversa."
+        },
+        {
+          "section": "O que as pesquisas ajudam a compreender",
+          "text": "Esses trabalhos ajudam a contextualizar a relação entre escola e território. Não são avaliações do portal Campo Digital e não comprovam resultados de sua IA. Indicadores atuais e resultados do projeto precisam de registros próprios."
+        },
+        {
+          "section": "O que as pesquisas ajudam a compreender",
+          "text": "Fontes: Geografia Ensino & Pesquisa (CC BY-NC-SA 4.0), Revista Mutirõ (CC BY 4.0) e Encontros Universitários da UFC (Creative Commons Attribution). Os PDFs originais estão preservados no acervo."
+        },
+        {
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "BRASIL. Lei n.º 9.394, de 20 de dezembro de 1996. Lei de Diretrizes e Bases da Educação Nacional. Brasília: MEC, 1996. Art. 28."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "BRASIL. Decreto n.º 7.352, de 4 de novembro de 2010. Dispõe sobre a política de educação do campo e o PRONERA. Brasília: Casa Civil, 2010."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "BRASIL. Resolução CNE/CEB n.º 1, de 3 de abril de 2002. Institui Diretrizes Operacionais para a Educação Básica nas Escolas do Campo. Brasília: CNE, 2002."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "CALDART, Roseli Salete. Pedagogia do Movimento Sem Terra. 3. ed. São Paulo: Expressão Popular, 2004."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "CALDART, Roseli Salete et al. (Orgs.). Dicionário da Educação do Campo. Rio de Janeiro/São Paulo: EPSJV/Expressão Popular, 2012."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
-          "text": "CEARÁ. Decreto n.º 30.493, de 3 de março de 2011. Autoriza o funcionamento da EEMPC Francisco Araújo Barros. Diário Oficial do Estado do Ceará, 2011."
+          "section": "O que as pesquisas ajudam a compreender",
+          "text": "ESCOLA FRANCISCO ARAÚJO BARROS. PPP, edição 2025 , p. 7 do PDF: registra funcionamento em 03/03/2011 e cita o Decreto Estadual 30.493, de 18/04/2011. A referência é ao PPP; o ato original deve ser conferido para uso normativo."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "FREIRE, Paulo. Pedagogia do Oprimido. 17. ed. Rio de Janeiro: Paz e Terra, 1987."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "GIMONET, Jean-Claude. Praticar e compreender a Pedagogia da Alternância das CEFFAs. Petrópolis: Vozes/AIMFR, 2007."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "KOLLING, Edgar Jorge; NERY, Irmão; MOLINA, Mônica Castagna (Orgs.). Por Uma Educação Básica do Campo. Brasília: Fundação Universidade de Brasília, 1999."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "MOLINA, Mônica Castagna; FREITAS, Helana Célia de Abreu. Avanços e desafios na construção da Educação do Campo. Em Aberto, Brasília, v. 24, n. 85, 2011."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "MST — Movimento dos Trabalhadores Rurais Sem Terra. Como fazemos a escola de Educação Fundamental. Caderno de Educação n.º 9. São Paulo: MST/SETOR DE EDUCAÇÃO, 1999."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "QUEIROZ, João Batista Pereira de. Construção das Escolas Famílias Agrícolas no Brasil: ensino médio e educação profissional. Brasília: UnB, 2004. Tese (Doutorado)."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "DAMASCENO, Cosma dos Santos. Contribuições e desafios da Escola do Campo Francisco Araújo Barros para construção do projeto de Agricultura Camponesa do MST — Ceará. Dissertação (Mestrado em Agroecossistemas) — UFSC, Florianópolis, 2015."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "DO NASCIMENTO, Cícero Danilo G.; DINIZ, Aldiva Sales. A EEM Francisco Araújo Barros, um símbolo de resistência camponesa no Ceará. MAG/UVA, Sobral, CE."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "CEARÁ. Assembleia Legislativa. Projeto de Lei 08/10 — Dep. Nelson Martins (PT). Denomina a escola como Francisco Araújo Barros. Fortaleza: ALCE, 2010."
         },
         {
-          "section": "O campo tem o direito de ser protagonista de sua própria educação",
+          "section": "O que as pesquisas ajudam a compreender",
           "text": "PONTO DE CULTURA \"Nós: Artistas da Vida\". Histórico do Assentamento Lagoa do Mineiro. Itarema, CE, 2005."
         },
         {

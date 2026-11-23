@@ -24,6 +24,8 @@ test('plano de aula não se transforma em relato de atividades já realizadas',(
   const planejamento={pesquisa:'# AMC — Aula 3: Plano de aula\n\n'+pesquisa};
   assert.equal(researchSource(planejamento).tipoMaterial,'planejamento');
   const proposta=output();proposta.titulo.texto='Proposta de aula sobre a comunidade';proposta.abertura.texto='O plano prevê uma entrevista sobre a escola em 2026.';
+  // O cabeçalho do plano desloca o trecho da entrevista para a posição 3.
+  for(const item of [proposta.titulo,proposta.subtitulo,proposta.abertura,...proposta.secoes])item.fontes=[3];
   assert.equal(validateReport(JSON.stringify(proposta),planejamento).requiresReview,true);
   proposta.secoes[0].texto='Os estudantes realizaram uma entrevista.';
   assert.throws(()=>validateReport(JSON.stringify(proposta),planejamento));

@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { buildResearchContext } from './research-context.js';
 
 export const acervo = JSON.parse(readFileSync(new URL('../data/acervo.json', import.meta.url), 'utf8'));
 export const portalPages = acervo.pages.map(({ title, url }) => ({ title, url }));
@@ -35,5 +36,5 @@ Não complete lacunas nem resolva contradições por suposição. Em divergênci
 Ao usar um trecho em uma mensagem, identifique no texto a página de origem. Não use receitas ou doses como orientação médica.
 Páginas disponíveis: ${JSON.stringify(portalPages)}
 Trechos selecionados para a pergunta atual:
-${excerpts.length ? excerpts.join('\n') : 'Nenhum trecho relevante encontrado. Não atribua ao acervo fatos que não estão nos trechos.'}`;
+${excerpts.length ? excerpts.join('\n') : 'Nenhum trecho relevante encontrado. Não atribua ao acervo fatos que não estão nos trechos.'}${buildResearchContext(message)}`;
 }

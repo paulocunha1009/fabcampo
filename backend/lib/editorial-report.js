@@ -18,6 +18,7 @@ Se tipoMaterial for planejamento, escreva sobre a PROPOSTA: título e abertura d
 Marcadores de página são localizadores da fonte, nunca fatos da reportagem. Considere todo o material recebido, inclusive contradições e ressalvas.
 Pode melhorar a redação e ordenar os fatos; não acrescente pessoas, cargos, datas, números, causas, resultados, locais ou declarações.
 Não deduza informações nem transforme opinião, alegação ou saber tradicional em fato comprovado. Preserve atribuição e incerteza.
+Ao mencionar pesquisa bibliográfica, preserve autor, ano e página recebidos; não confunda o ano da publicação com o período do fato. Números históricos não descrevem automaticamente a situação atual. Se houver fontes divergentes, apresente a divergência com atribuição, sem escolher uma versão por suposição.
 Não crie falas. Prefira discurso indireto; se usar aspas, copie literalmente a fala e atribua somente se a autoria constar na pesquisa.
 Cada parte deve indicar IDs dos trechos que a sustentam. Não escreva uma seção sem apoio.
 Se faltarem quem, o quê, onde, quando, fontes ou confirmação de falas, indique apenas essas lacunas, sem preenchê-las.
@@ -55,7 +56,14 @@ export function validateReport(raw,source) {
     if(!Array.isArray(refs)||refs.length<1||refs.length>4||refs.some(id=>!Number.isInteger(id)||!trechos[id]))throw new Error('Fonte inválida.');
     return [...new Set(refs)].map(id=>({id,texto:trechos[id].texto}));
   };
-  const part=(item,max)=>({texto:text(item?.texto,max),fontes:evidence(item?.fontes)});
+  const part=(item,max)=>{
+    const fontes=evidence(item?.fontes),texto=text(item?.texto,max);
+    const apoio=fontes.map(f=>f.texto).join('\n');
+    const supportedNumbers=new Set(apoio.match(/\d+(?:[.,:/-]\d+)*/g)||[]);
+    for(const number of texto.match(/\d+(?:[.,:/-]\d+)*/g)||[])if(!supportedNumbers.has(number))throw new Error('Número ausente nos trechos citados.');
+    for(const quote of texto.matchAll(/[“"]([^”"\n]+)[”"]/g))if(!apoio.includes(quote[1]))throw new Error('Fala ausente nos trechos citados.');
+    return {texto,fontes};
+  };
   if(!Array.isArray(value.secoes)||value.secoes.length<1||value.secoes.length>3||!Array.isArray(value.cards)||value.cards.length>3)throw new Error('Estrutura inválida.');
   const lacunas=['quem','o que','onde','quando','fontes','confirmacao de falas'];
   if(!Array.isArray(value.lacunas)||value.lacunas.length>6||value.lacunas.some(item=>!lacunas.includes(item)))throw new Error('Lacuna inválida.');
