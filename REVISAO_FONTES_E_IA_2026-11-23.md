@@ -18,3 +18,10 @@
 238 testes do backend passaram, incluindo recuperação das fontes, números históricos, marcos distintos e rejeição de número/fala sem suporte no trecho citado. Prévia da reportagem conferida no navegador em modo escuro. Não foi feita nova auditoria de todos os tamanhos de tela nesta revisão textual.
 
 Datas de posse divergentes, primeira direção, matrícula atual e outros dados não conferidos continuam pendentes. Esta etapa cobre História, Educação do Campo e a base textual da SábiaIA; não é uma revisão completa de todas as reportagens.
+
+## Implantação confirmada
+
+- Portal publicado em master: revisão d04758f, seguida do ajuste de referência oficial 6139996.
+- API: cdbe21d, verificações automáticas aprovadas, implantação CtLXSazvNoyhruA1EPNmECgETE9X promovida como Production Current no domínio fabcampo-api.vercel.app.
+- Antes da promoção, a API pública ainda usava a versão anterior e respondeu incorretamente que os 249 alunos eram de 2025. Depois da promoção, o teste real retornou HTTP 200, atribuiu o dado a Nascimento e Diniz, página 3 do PDF, e esclareceu que não comprova matrícula de 2025/2026.
+- Foram usadas duas chamadas reais ao assistente para essa conferência; os testes automatizados não usam o Gemini real. Uma resposta correta não garante ausência de erros em todas as perguntas; a revisão humana permanece necessária.
