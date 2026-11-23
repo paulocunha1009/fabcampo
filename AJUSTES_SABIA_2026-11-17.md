@@ -73,3 +73,6 @@ Teste simulado: 32 consultas básicas simultâneas por cliente, todas respondida
 ### Preparação da publicação — 23/11/2026
 
 Atualização isolada sobre master, sem incluir alterações pendentes de calendário ou do backend. Busca pública regenerada a partir das páginas desta versão; referências de cache dos dois clientes atualizadas. Conferência no Chrome: 390 e 1440 pixels, claro e escuro, com pergunta sobre a origem da escola e API interceptada; quatro estados aprovados, sem chamada ao assistente. Captura inspecionada no modo escuro móvel. A publicação desta rodada entrega conteúdo e respostas locais; não modifica a configuração ativa do Gemini. O resumo adicional ainda não foi implantado no acervo da API.
+
+
+Publicação confirmada em 23/11/2026: commit `0a51bb7`, implantação GitHub Pages `45187699512` concluída com sucesso. Conferência HTTP 200 do domínio oficial confirmou o novo cliente, a referência de cache da página inicial e o resumo na História. Os testes de capacidade continuam simulados; não foi realizada carga real no Gemini.
