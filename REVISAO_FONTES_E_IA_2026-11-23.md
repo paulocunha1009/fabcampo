@@ -1,0 +1,20 @@
+# Revisão das fontes e da SábiaIA — 23/11/2026
+
+## Conteúdo revisado
+
+- História: corrigida a data/finalidade da referência do Decreto 92.826 (26/06/1986, declaração de interesse social para desapropriação). Diferenciada da Portaria 573 de 13/07/1987 citada pelo Incra.
+- História e reportagem Educação do Campo: retirado o ano de 2025 dos números de 249 estudantes/oito turmas/25 comunidades. O estudo de Nascimento e Diniz é histórico e reúne entrevistas de 2016; não temos matrícula atual conferida.
+- Incluída contextualização dos estudos de Lima e Vasconcelos, Paz e Vasconcelos e Alves e colaboradores, com links aos originais e limites dos estudos. Eles não avaliam o portal atual.
+
+## IA
+
+- Acrescentado contexto separado com cinco sínteses documentais e atribuição/localizador. Somente trechos lidos entram como evidência; as vinte fichas não equivalem a vinte textos integralmente validados.
+- Geração de reportagens continua usando somente a pesquisa enviada pelo usuário. A base externa não é acrescentada silenciosamente à apuração do aluno.
+- Números e falas passaram a ser validados também nos trechos efetivamente citados, não apenas em algum ponto da pesquisa inteira. Isso bloqueia alguns apoios incorretos, mas não substitui revisão humana de relações, nomes e datas.
+- Mantidos modelo, contas, cotas e autenticação existentes.
+
+## Verificação e limites
+
+238 testes do backend passaram, incluindo recuperação das fontes, números históricos, marcos distintos e rejeição de número/fala sem suporte no trecho citado. Prévia da reportagem conferida no navegador em modo escuro. Não foi feita nova auditoria de todos os tamanhos de tela nesta revisão textual.
+
+Datas de posse divergentes, primeira direção, matrícula atual e outros dados não conferidos continuam pendentes. Esta etapa cobre História, Educação do Campo e a base textual da SábiaIA; não é uma revisão completa de todas as reportagens.
