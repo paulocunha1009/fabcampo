@@ -4,7 +4,7 @@
     {
       "title": "História",
       "url": "pages/historia.html",
-      "sha256": "465242dbf62d547abafa84abf984399868b1627c6e74586d01064354c41e3cb6",
+      "sha256": "5bf59dc936e153870c6409cab06afbf1f331a07288613d014ac348b6cba24109",
       "chunks": [
         {
           "section": "",
@@ -40,7 +40,7 @@
         },
         {
           "section": "Linha do tempo",
-          "text": "1986 Trabalhadores derrubam a cerca da DUCOCO. Três mártires perdem a vida no conflito. O Decreto nº 92.826, de 26 de junho de 1986, declara o imóvel de interesse social para fins de desapropriação. Em 19 de setembro, os trabalhadores tomam posse formal do assentamento."
+          "text": "1986 Trabalhadores derrubam a cerca da DUCOCO. Três mártires perdem a vida no conflito. O Decreto nº 92.826, de 26 de junho de 1986, declara o imóvel de interesse social para fins de desapropriação. Segundo o Ipea (2016, p. 29), a imissão na posse pelo Incra ocorreu em 19 de setembro; o PPP registra outra data, detalhada na nota de conferência documental."
         },
         {
           "section": "Linha do tempo",
@@ -132,7 +132,7 @@
         },
         {
           "section": "Galeria histórica",
-          "text": "Posse formal do assentamento — 19 de setembro de 1986"
+          "text": "Posse do assentamento — 19/09/1986 segundo o Ipea; data divergente no PPP, em conferência"
         },
         {
           "section": "Galeria histórica",
@@ -204,11 +204,11 @@
         },
         {
           "section": "Como estamos conferindo esta história",
-          "text": "A declaração para desapropriação, a posse da terra e a criação administrativa do projeto são marcos distintos. O Decreto 92.826 é de 26/06/1986; a Resolução Incra 21/2002 cita a Portaria 573, de 13/07/1987, na criação do projeto. Datas de posse apresentam diferenças entre o PPP e os estudos e permanecem em conferência com a escola."
+          "text": "A declaração para desapropriação, a posse da terra e a criação administrativa do projeto são marcos distintos. O Decreto 92.826 é de 26/06/1986; a Resolução Incra 21/2002 cita a Portaria 573, de 13/07/1987, na criação do projeto. Sobre a posse, o PPP de 2025 menciona 25/07/1986 (páginas 12 e 15 do PDF), enquanto o Ipea registra 19/09/1986 (p. 29 impressa, posição 31 do PDF). Essas atribuições permanecem em conferência com a escola; não foram unificadas por suposição."
         },
         {
           "section": "Como estamos conferindo esta história",
-          "text": "Os números de 249 estudantes, oito turmas e 25 comunidades aparecem na página 3 do estudo de Nascimento e Diniz, que reúne entrevistas de 2016. Eles não confirmam as matrículas atuais. Consultar o ato do Incra (DOU, p. 373) e ver o acervo de pesquisa ."
+          "text": "Os números de 249 estudantes, oito turmas e 25 comunidades aparecem na página 3 do estudo de Nascimento e Diniz, que reúne entrevistas de 2016. Eles não confirmam as matrículas atuais. Consultar o ato do Incra (DOU, p. 373) e ver o acervo de pesquisa . Conferir a cronologia no relatório do Ipea ."
         },
         {
           "section": "Como estamos conferindo esta história",
@@ -429,7 +429,7 @@
     {
       "title": "Educação do Campo",
       "url": "pages/reportagem-educacao.html",
-      "sha256": "a698f0dafb6b2adff5700f1a1de726c004326270c6b3cee0ce5dbe010ffe7b02",
+      "sha256": "16f07ea8de93f901405f5846c10278986c30f8f04376508661b5404c922ad3ea",
       "chunks": [
         {
           "section": "",
@@ -629,15 +629,19 @@
         },
         {
           "section": "A EEMPC Francisco Araújo Barros: a escola que a comunidade conquistou",
-          "text": "\"A escola foi uma conquista mais importante até mesmo que a Igreja Católica da comunidade.\""
+          "text": "Em seu relato, Dona Chiquinha Louvado destaca a importância da conquista da escola para a comunidade."
         },
         {
           "section": "A EEMPC Francisco Araújo Barros: a escola que a comunidade conquistou",
-          "text": "\"Foi isso que nois desejemos desde o início, e foi isso que nois conseguimos — e hoje ela tá lá, bonita com nossos filhos trabalhando.\""
+          "text": "Dona Maria Bia relaciona a escola ao desejo e à luta da comunidade por uma educação de qualidade."
         },
         {
           "section": "A EEMPC Francisco Araújo Barros: a escola que a comunidade conquistou",
-          "text": "\"A gente ver que tem uma pequena contribuição na conscientização com o natural, nessa discussão da agroecologia, de uma matriz tecnológica diferente, vinculada à vida do ser humano.\""
+          "text": "Cosma Damasceno aponta contribuições da escola à discussão da agroecologia e também dificuldades de pessoas e materiais para o campo experimental."
+        },
+        {
+          "section": "A EEMPC Francisco Araújo Barros: a escola que a comunidade conquistou",
+          "text": "Os relatos acima foram registrados pelos pesquisadores Nascimento e Diniz, não em entrevistas realizadas pela equipe do portal. São sínteses em discurso indireto. Consultar o trabalho original da UVA ."
         },
         {
           "section": "O que torna essa educação genuinamente diferenciada",

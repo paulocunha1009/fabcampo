@@ -16,6 +16,13 @@ test('estudos acadêmicos não são apresentados como avaliação da IA',()=>{
  assert.match(c,/nem comprova impacto de sua IA/);assert.match(c,/pesquisa em andamento/);
  assert.equal(buildResearchContext('Quanto é dois mais dois?'),'');
 });
+test('divergências de posse sobrevivem à seleção de contexto de uma pergunta ampla',()=>{
+ const c=buildResearchContext('Explique a pesquisa de educação do campo, PPP, escola, assentamento Lagoa do Mineiro, alunos, território e geografia.');
+ assert.match(c,/25\/07\/1986/);assert.match(c,/19\/09\/1986/);
+ assert.match(c,/não escolha uma data/);assert.match(c,/páginas 12 e 15/);
+ assert.match(c,/03\/03\/2011/);assert.match(c,/não identifica a primeira diretora/);
+ assert.equal((c.match(/"id":/g)||[]).length,5);
+});
 test('reportagem não pode apoiar número ou citação em outro trecho não citado',()=>{
  const source={pesquisa:'O estudo histórico registrou 249 alunos.\nO registro atual da turma menciona 2026.\nA pessoa entrevistada disse: “Aprendemos juntos”.'};
  assert.equal(researchSource(source).trechos.length,3);

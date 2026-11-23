@@ -4,7 +4,9 @@ const research=JSON.parse(readFileSync(new URL('../data/pesquisa-conferida.json'
 const normal=text=>text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 export function buildResearchContext(message){
   const text=normal(message);
-  const entries=research.entries.filter(entry=>entry.topics.some(topic=>text.includes(topic)));
+  // Ressalvas documentais têm prioridade mesmo em perguntas longas com vários temas.
+  const entries=research.entries.filter(entry=>entry.topics.some(topic=>text.includes(topic)))
+    .sort((a,b)=>(b.priority||0)-(a.priority||0));
   if(!entries.length)return '';
   return `\nPESQUISA DOCUMENTAL CONFERIDA
 Estas sínteses têm autoria e localizador. Use-as para contextualizar o portal, citando a fonte e a página quando indicada.
