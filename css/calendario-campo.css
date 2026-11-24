@@ -21,3 +21,22 @@
 /* Mantém o encaixe das telas reduzidas; a volta ao formato vertical vale só no desktop amplo. */
 @container(min-width:620px){.agenda-layout{grid-template-columns:280px minmax(0,1fr);gap:28px}}
 @media(min-width:1100px){.agenda-layout{grid-template-columns:minmax(0,1fr);gap:24px}}
+
+/* O calendário não deve herdar margens dos botões do formulário hospedeiro. */
+.cal-campo button,#agendamento-form .cal-campo button,#publicacao-programada .cal-campo button,#editorial-form .cal-campo button{margin:0;box-sizing:border-box}
+@media(max-height:520px){body[data-page=inicio] .cabecalho,.gestao-acoes-editor{position:static}}
+@media(max-width:280px){
+ .gestao-layout{min-width:0}.container:has(.gestao-layout){padding-inline:8px}
+ .gestao-formulario>.painel-cartao{padding:8px}.gestao-agendamentos#agendamentos-dialog{padding:10px}
+ #publicacao-programada{padding:6px}.cal-campo{padding:6px}.cal-campo__dias,.cal-campo__semana{gap:1px}
+ .cal-campo__dias button{font-size:12px;height:32px;min-height:32px}.cal-campo__semana{font-size:9px}
+ .cal-campo__topo{grid-template-columns:26px minmax(0,1fr) 26px}.cal-campo__topo strong{font-size:11px}
+ .gestao-acoes-editor{position:static;display:grid;grid-template-columns:1fr;gap:6px}.gestao-acoes-editor button{width:100%;margin:0!important}
+ .gestao-formulario .rascunhos-equipe{padding:6px}.gestao-formulario a{overflow-wrap:anywhere}
+ body[data-page=inicio] .cabecalho{position:static}
+}
+
+@media(max-width:360px){.painel-topo .container{flex-wrap:wrap;gap:8px;min-height:0}.painel-topo img{width:130px;max-width:55vw}.painel-topo a{overflow-wrap:anywhere}}
+
+/* Em celulares estreitos, o cabeçalho acompanha a rolagem e libera a área útil. */
+@media(max-width:360px){body[data-page=inicio] .cabecalho{position:static}}
