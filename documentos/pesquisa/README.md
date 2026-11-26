@@ -54,3 +54,8 @@ Guardar PDFs no GitHub não faz o Gemini lê-los automaticamente. Este acervo of
 ## Pendências
 
 Os registros com download pendente permanecem no catálogo e nas fichas. O vídeo não foi baixado. Para completar o acervo, obter os integrais nas instituições e conferir as permissões antes de republicá-los.
+
+
+## Fontes complementares para outras reportagens
+
+[TIC Educação 2024](complementares/README.md): fonte nacional conferida na revisão da reportagem sobre IA em 26/11/2026, com PDF disponível para consulta offline. Não integra a lista original de vinte referências locais.
