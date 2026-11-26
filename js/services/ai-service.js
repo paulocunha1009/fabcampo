@@ -48,6 +48,10 @@ export async function perguntarAssistente(mensagem, historico = []) {
 
 function respostaPesquisaConferida(pergunta) {
   const t=pergunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[?.!]+$/,'').trim();
+  if(/^(?:(?:fale|me fale|conte|me conte)(?: um pouco)? sobre|explique|o que e|qual (?:e )?o objetivo d[oe]) (?:o )?(?:projeto (?:deste|desse|do) portal|projeto campo digital|campo digital|portal campo digital)$/.test(t)) {
+    const home=window.location.pathname.includes('/pages/')?'../index.html#titulo-campo-digital':'index.html#titulo-campo-digital';
+    return {type:'recommendations',content:'O Campo Digital é um projeto desenvolvido por estudantes da Escola Francisco Araújo Barros, em Itarema (CE), para valorizar a memória, a história e os saberes do Assentamento Lagoa do Mineiro e da comunidade escolar. O trabalho reúne pesquisa documental, escuta da comunidade e organização dos registros em páginas, reportagens e materiais de estudo. O portal também oferece a SábIA como apoio à consulta; ela utiliza o Gemini e informações documentais, e suas respostas precisam ser conferidas. A equipe autorizada usa um painel para preparar reportagens e eventos. O objetivo é aproximar território, tecnologia e aprendizagem. Este resumo vem da apresentação do próprio portal, sem geração por IA.',pages:[{title:'Conheça o projeto Campo Digital',url:home,reason:'Objetivos e etapas do projeto apresentados no portal.'}],local:true,localReason:'verified'};
+  }
   let text='';
   if(/^(quantos alunos (?:tem|ha na) a? ?escola|quantos alunos tem a escola hoje|os 249 alunos sao de 2025 ou 2026)$/.test(t)) {
     text='Não há matrícula atual confirmada nesta base. Nascimento e Diniz registram cerca de 249 estudantes em oito turmas, de 25 comunidades, na página 3 do PDF de seu estudo. O trabalho reúne entrevistas de 2016; isso não comprova matrícula de 2025 ou 2026. Para o número atual, consulte a escola.';

@@ -34,3 +34,15 @@ for(const kind of ['standalone','module'])for(const path of ['/','/pages/histori
   assert.equal(c.calls(),5);
  });
 }
+
+for(const kind of ['standalone','module'])for(const path of ['/','/pages/historia.html']){
+ test(`${kind} ${path}: apresentação do projeto sem depender da API`,async()=>{
+  const c=client(kind,path);
+  for(const q of ['fale sobre o projeto deste portal','Fale sobre o projeto desse portal!','O que é o Campo Digital?','Qual o objetivo do projeto Campo Digital?']){
+   const r=await c.ask(q);assert.equal(r.localReason,'verified');assert.match(r.content,/pesquisa documental/);assert.match(r.content,/Gemini/);assert.match(r.pages[0].url,/index.html#titulo-campo-digital$/);
+  }
+  assert.equal(c.calls(),0);
+  for(const q of ['Fale sobre o projeto deste portal e compare com outro','Fale sobre o projeto de outro portal'])assert.equal((await c.ask(q)).content,'Resposta simulada da API');
+  assert.equal(c.calls(),2);
+ });
+}
