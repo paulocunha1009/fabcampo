@@ -8,7 +8,7 @@
  *   🔍 Explorar  — recomendações de páginas
  */
 
-import { perguntarAssistente } from '../services/ai-service.js?v=20261123-1';
+import { perguntarAssistente } from '../services/ai-service.js?v=20261126-1';
 
 // ── Estado global ────────────────────────────────────────────────────────────
 let historico    = [];   // [{ role: 'user'|'assistant', content: string }]
@@ -223,7 +223,7 @@ async function enviar(mensagemReal, container, campo, textoExibido) {
 
     container.removeChild(typing);
 
-    if (resposta.local) adicionarMensagem(container, resposta.localReason === 'verified' ? 'Resposta direta do acervo conferido da escola, sem usar a IA.' : 'Modo local: a IA não respondeu agora. Você pode continuar usando o acervo do portal.', 'bot');
+    if (resposta.local) adicionarMensagem(container, resposta.localReason === 'verified' ? 'Resposta direta do acervo conferido, sem usar a IA.' : 'Modo local: a IA não respondeu agora. Você pode continuar usando o acervo do portal.', 'bot');
     if (resposta.type === 'quiz') {
       renderizarQuiz(container, resposta);
       historico.push({ role: 'assistant', content: `[Quiz sobre "${resposta.topic}" gerado com ${resposta.questions?.length} questões]` });

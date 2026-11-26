@@ -13,6 +13,8 @@ const endpoint = window.PORTAL_AI_ENDPOINT || 'http://localhost:3001/api/assiste
  * @returns {Promise<{type: string, content?: string, questions?: Array, pages?: Array}>}
  */
 export async function perguntarAssistente(mensagem, historico = []) {
+  const documental=respostaPesquisaConferida(mensagem);
+  if(documental)return documental;
   if (perguntaDiretaEscola(mensagem)) {
     const resposta = respostaEscolaPPP(mensagem);
     if (resposta) return { ...resposta, local:true, localReason:'verified' };
@@ -43,6 +45,21 @@ export async function perguntarAssistente(mensagem, historico = []) {
 }
 
 // ── Fallback local (sem backend) ─────────────────────────────────────────────
+
+function respostaPesquisaConferida(pergunta) {
+  const t=pergunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[?.!]+$/,'').trim();
+  let text='';
+  if(/^(quantos alunos (?:tem|ha na) a? ?escola|quantos alunos tem a escola hoje|os 249 alunos sao de 2025 ou 2026)$/.test(t)) {
+    text='Não há matrícula atual confirmada nesta base. Nascimento e Diniz registram cerca de 249 estudantes em oito turmas, de 25 comunidades, na página 3 do PDF de seu estudo. O trabalho reúne entrevistas de 2016; isso não comprova matrícula de 2025 ou 2026. Para o número atual, consulte a escola.';
+  } else if(/^(?:em que ano foi criado|quando foi criado) o assentamento(?: lagoa do mineiro)?$/.test(t)) {
+    text='É preciso distinguir os marcos: o Decreto 92.826, de 26/06/1986, declara o imóvel de interesse social para fins de desapropriação; a Portaria 573, de 13/07/1987, é citada na criação administrativa do projeto pelo Ipea (2016, p. 29 impressa/31 do PDF) e pela Resolução Incra 21/2002 (DOU de 27/12/2002, p. 373). Esses marcos não são a mesma coisa que o início da luta ou a posse. Sobre a posse há divergência: PPP 2025, pp. 12 e 15 do PDF, menciona 25/07/1986; Ipea registra 19/09/1986. As duas atribuições permanecem em conferência.';
+  } else if(/^(quando foi a posse do assentamento(?: lagoa do mineiro)?|qual (?:e )?a data da posse do assentamento(?: lagoa do mineiro)?)$/.test(t)) {
+    text='Há divergência entre as fontes: o PPP da escola, edição 2025, menciona 25/07/1986 nas páginas 12 e 15 do PDF; o relatório Ipea de 2016 registra imissão na posse pelo Incra em 19/09/1986, na página 29 impressa (31 do PDF). Não escolhemos uma versão por suposição. É necessário confrontar os atos originais com a escola. Posse, declaração para desapropriação e criação administrativa são marcos distintos.';
+  }
+  if(!text)return null;
+  const url=window.location.pathname.includes('/pages/')?'historia.html':'pages/historia.html';
+  return {type:'recommendations',content:text+' Resposta documental do acervo conferido, sem geração por IA.',pages:[{title:'História: fontes e conferência documental',url,reason:'Consultar a atribuição das fontes, os dados históricos e as divergências registradas.'}],local:true,localReason:'verified'};
+}
 
 function perguntaDiretaEscola(pergunta) {
   const t=pergunta.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[?.!]+$/,'').trim();
